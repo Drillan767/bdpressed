@@ -8,7 +8,12 @@ const password = ref('')
 const submit = async () => {
   const result = await signUp({
     username: 'jd.levarato@gmail.com',
-    password: password.value,
+    password: 'P@ssw0rd',
+    options: {
+        userAttributes: {
+            'custom:role': 'admin',
+        }
+    }
   })
 
   console.log(result)
@@ -17,7 +22,7 @@ const submit = async () => {
 const confirm = async () => {
   const { isSignUpComplete, nextStep } = await confirmSignUp({
     username: 'jd.levarato@gmail.com',
-    confirmationCode: '919892',
+    confirmationCode: '123456',
   })
 
   console.log(isSignUpComplete, nextStep)

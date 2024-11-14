@@ -1,9 +1,9 @@
-import { createRouter, createMemoryHistory } from 'vue-router'
+import { createRouter, createWebHistory } from 'vue-router'
 
 import login from '@/pages/login.vue'
 import register from '@/pages/register.vue'
 import index from '@/pages/index.vue'
-import admin from '@/pages/admin.vue'
+import admin from './admin'
 
 const routes = [
   {
@@ -21,18 +21,12 @@ const routes = [
     name: 'register',
     component: register
   },
-  {
-    path: '/admin',
-    name: 'admin',
-    component: admin
-  }
+  ...admin,
 ]
 
 const router = createRouter({
-  history: createMemoryHistory(),
+  history: createWebHistory(),
   routes
 })
-
-console.log()
 
 export default router
