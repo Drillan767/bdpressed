@@ -12,7 +12,6 @@ dist
 dist-ssr
 *.local
 
-amplify_outputs.json
 .amplify
 amplify/team-provider-info.json
 
