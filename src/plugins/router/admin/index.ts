@@ -4,6 +4,6 @@ export default [
     {
         path: '/admin',
         name: 'admin',
-        component: admin
-      }
+        component: admin,
+    },
 ]

@@ -1,14 +1,13 @@
-import { ref } from 'vue'
-import { defineStore } from 'pinia'
-import { Hub } from 'aws-amplify/utils'
 import { fetchAuthSession, fetchUserAttributes } from 'aws-amplify/auth'
+import { Hub } from 'aws-amplify/utils'
+import { defineStore } from 'pinia'
+import { ref } from 'vue'
 
 const useAuthStore = defineStore('auth', () => {
     const isAuthenticated = ref(false)
     const currentRole = ref<'admin' | 'user' | undefined>()
 
     async function setAuthWatch() {
-
         const session = await fetchAuthSession()
 
         if (session.tokens?.idToken) {
@@ -36,10 +35,10 @@ const useAuthStore = defineStore('auth', () => {
         }
     }
 
-  return {
-    isAuthenticated,
-    setAuthWatch,
-  }
+    return {
+        isAuthenticated,
+        setAuthWatch,
+    }
 })
 
 export default useAuthStore

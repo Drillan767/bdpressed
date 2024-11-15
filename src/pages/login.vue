@@ -1,38 +1,44 @@
 <script setup lang="ts">
-import { ref } from 'vue'
 import { signIn } from 'aws-amplify/auth'
+import { ref } from 'vue'
 
 const email = ref('')
 const password = ref('')
 
-const submit = async () => {
-  const result = await signIn({
-    username: email.value,
-    password: password.value,
-    options: {
-        authFlowType: 'USER_PASSWORD_AUTH'
-    }
-  })
+async function submit() {
+    const result = await signIn({
+        username: email.value,
+        password: password.value,
+        options: {
+            authFlowType: 'USER_PASSWORD_AUTH',
+        },
+    })
 
-  console.log(result)
+    console.log(result)
 }
 </script>
 
 <template>
-  <div>
-    <h1>Login</h1>
+    <div>
+        <h1>Login</h1>
 
-    <form>
-        <label for="email">Email</label>
-        <input type="email" id="email" v-model="email" />
-        <br />
-        <label for="password">Password</label>
-        <input type="password" id="password" v-model="password" />
-        <br />
-        <button @click.prevent="submit">Login</button>
-    </form>
+        <form>
+            <label for="email">Email</label>
+            <input id="email" v-model="email" type="email">
+            <br>
+            <label for="password">Password</label>
+            <input id="password" v-model="password" type="password">
+            <br>
+            <button @click.prevent="submit">
+                Login
+            </button>
+        </form>
 
-    <RouterLink to="/">Home</RouterLink><br />
-    <RouterLink to="/admin">Admin</RouterLink>
-  </div>
+        <RouterLink to="/">
+            Home
+        </RouterLink><br>
+        <RouterLink to="/admin">
+            Admin
+        </RouterLink>
+    </div>
 </template>

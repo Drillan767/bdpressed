@@ -10,14 +10,13 @@ lerna-debug.log*
 node_modules
 dist
 dist-ssr
+.yarn
 *.local
 
 .amplify
 amplify/team-provider-info.json
 
 # Editor directories and files
-.vscode/*
-!.vscode/extensions.json
 .idea
 .DS_Store
 *.suo

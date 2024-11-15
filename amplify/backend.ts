@@ -3,4 +3,4 @@ import { auth } from './auth/resource'
 
 defineBackend({
     auth,
-});
+})
