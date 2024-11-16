@@ -1,4 +1,4 @@
-import admin from '@/pages/admin.vue'
+import admin from '@/pages/admin/Dashboard.vue'
 
 export default [
     {

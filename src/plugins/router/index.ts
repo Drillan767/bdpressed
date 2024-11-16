@@ -40,7 +40,7 @@ router.beforeEach((to) => {
         }
     }
 
-    if (destinationRoute.startsWith('auth.') && isAuthenticated && currentRole) {
+    if (destinationRoute.startsWith('auth.') && isAuthenticated.value && currentRole.value) {
         return currentRole.value === 'admin' ? '/admin' : '/utilisateur'
     }
 })
