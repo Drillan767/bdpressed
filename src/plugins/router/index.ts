@@ -27,7 +27,7 @@ router.beforeEach((to) => {
     const { isAuthenticated, currentRole } = storeToRefs(useAuthStore())
 
     if (destinationRoute.startsWith('admin.') || destinationRoute.startsWith('user.')) {
-        if (!isAuthenticated) {
+        if (!isAuthenticated.value) {
             return '/connexion'
         }
 
