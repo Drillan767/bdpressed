@@ -12,7 +12,7 @@ export const auth = defineAuth({
                     <br />
                     Veuillew renseigner le code suivant pour activer votre compte :
                     <br />
-                    ${createCode}
+                    ${createCode()}
                     <br />
                 `
             },
