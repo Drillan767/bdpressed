@@ -5,4 +5,5 @@ export default antfu({
         indent: 4,
         quotes: 'single',
     },
+    jsonc: false,
 })
