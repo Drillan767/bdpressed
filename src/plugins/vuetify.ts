@@ -1,12 +1,13 @@
 import { createVuetify } from 'vuetify'
 import { md3 } from 'vuetify/blueprints'
 
+import '@mdi/font/css/materialdesignicons.css'
 import 'vuetify/styles'
 
 export default createVuetify({
     blueprint: md3,
     defaults: {
-        VTextfield: {
+        VTextField: {
             color: 'primary',
             variant: 'outlined',
         },
@@ -21,6 +22,9 @@ export default createVuetify({
         VDataTable: {
             mobileBreak: 'sm',
             mobile: null,
+        },
+        VBtn: {
+            color: 'primary',
         },
     },
 })
