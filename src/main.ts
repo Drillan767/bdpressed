@@ -5,6 +5,7 @@ import outputs from '../amplify_outputs.json'
 import App from './App.vue'
 import router from './plugins/router'
 import vuetify from './plugins/vuetify'
+import './plugins/vee-validate'
 
 Amplify.configure(outputs)
 const pinia = createPinia()
