@@ -16,6 +16,7 @@ const emit = defineEmits<{
 const otp = ref('')
 const loading = ref(false)
 const otpError = ref<string>()
+const displaySuccess = ref(false)
 
 async function confirm() {
     try {
@@ -83,5 +84,12 @@ watch(otp, (value) => {
                 </VCol>
             </VRow>
         </template>
+        <VSnackbar
+            v-model="displaySuccess"
+            color="success"
+            icon="mdi-check-circle-outline"
+            timeout="3000"
+            text="Inscription validée, vous pouvez vous connecter"
+        />
     </VCard>
 </template>
