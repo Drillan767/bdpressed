@@ -5,14 +5,14 @@
 <template>
     <div>
         <h1>Hello World</h1>
-        <RouterLink to="/login">
+        <RouterLink :to="{ name: 'auth.login' }">
             Login
         </RouterLink><br>
-        <RouterLink to="/register">
+        <RouterLink :to="{ name: 'auth.register' }">
             Register
         </RouterLink><br>
-        <RouterLink to="/admin">
-            Admin
+        <RouterLink :to="{ name: 'admin' }">
+            Admin / User
         </RouterLink>
     </div>
 </template>

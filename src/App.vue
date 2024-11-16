@@ -4,9 +4,11 @@ import useAuthStore from './stores/authStore'
 
 const { setAuthWatch } = useAuthStore()
 
-onMounted(async () => setAuthWatch())
+onMounted(setAuthWatch)
 </script>
 
 <template>
-    <router-view />
+    <VLayout>
+        <RouterView />
+    </VLayout>
 </template>

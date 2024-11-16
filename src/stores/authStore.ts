@@ -1,4 +1,4 @@
-import { fetchAuthSession, fetchUserAttributes } from 'aws-amplify/auth'
+import { AuthError, fetchUserAttributes, getCurrentUser } from 'aws-amplify/auth'
 import { Hub } from 'aws-amplify/utils'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
@@ -8,11 +8,7 @@ const useAuthStore = defineStore('auth', () => {
     const currentRole = ref<'admin' | 'user' | undefined>()
 
     async function setAuthWatch() {
-        const session = await fetchAuthSession()
-
-        if (session.tokens?.idToken) {
-            isAuthenticated.value = true
-        }
+        await retrieveUser()
 
         Hub.listen('auth', ({ payload }) => {
             if (payload.event === 'signedIn') {
@@ -27,6 +23,24 @@ const useAuthStore = defineStore('auth', () => {
         })
     }
 
+    async function retrieveUser() {
+        try {
+            const currentUser = await getCurrentUser()
+            if (currentUser) {
+                isAuthenticated.value = true
+                retrieveRole()
+            }
+        }
+        catch (error) {
+            if (error instanceof AuthError) {
+                if (error.name === 'UserUnAuthenticatedException') {
+                    isAuthenticated.value = false
+                    currentRole.value = undefined
+                }
+            }
+        }
+    }
+
     async function retrieveRole() {
         const userAttributes = await fetchUserAttributes()
         const role = userAttributes['custom:role']
@@ -37,6 +51,7 @@ const useAuthStore = defineStore('auth', () => {
 
     return {
         isAuthenticated,
+        currentRole,
         setAuthWatch,
     }
 })
