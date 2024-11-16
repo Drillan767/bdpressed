@@ -7,10 +7,10 @@ export const auth = defineAuth({
             verificationEmailSubject: 'Vérification de votre adresse email',
             verificationEmailBody(createCode) {
                 return `
-                    Bonjour !,
+                    Bonjour !
                     <br />
                     <br />
-                    Veuillew renseigner le code suivant pour activer votre compte :
+                    Veuillez renseigner le code suivant pour activer votre compte :
                     <br />
                     ${createCode()}
                     <br />
