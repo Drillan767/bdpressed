@@ -11,6 +11,7 @@ import vuetify from 'vite-plugin-vuetify'
 export default defineConfig({
     plugins: [
         vueRouter({
+            logs: true,
             routesFolder: [{
                 path: '',
                 src: './src/pages',
