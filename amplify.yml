@@ -3,12 +3,11 @@ backend:
     phases:
         build:
             commands:
-                - yarn install --frozen-lockfile --cache-folder .yarn
+                - nvm use 20
+                - yarn install --frozen-lockfile
                 - npx ampx pipeline-deploy --branch $AWS_BRANCH --app-id $AWS_APP_ID
 frontend:
     phases:
-        install:
-            runtime: nodejs:20
         build:
             commands:
                 - yarn build

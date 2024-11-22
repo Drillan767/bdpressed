@@ -12,6 +12,7 @@ dist
 dist-ssr
 *.local
 .pnp*
+.yarn*
 
 # Editor directories and files
 
