@@ -1,12 +1,22 @@
 import { defineAuth } from '@aws-amplify/backend'
 
-/**
- * Define and configure your auth resource
- * @see https://docs.amplify.aws/gen2/build-a-backend/auth
- */
 export const auth = defineAuth({
     loginWith: {
-        email: true,
+        email: {
+            verificationEmailStyle: 'CODE',
+            verificationEmailSubject: 'Vérification de votre adresse email',
+            verificationEmailBody(createCode) {
+                return `
+                    Bonjour !
+                    <br />
+                    <br />
+                    Veuillez renseigner le code suivant pour activer votre compte :
+                    <br />
+                    ${createCode()}
+                    <br />
+                `
+            },
+        },
     },
     userAttributes: {
         'custom:role': {
