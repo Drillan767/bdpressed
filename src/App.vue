@@ -1,9 +1,14 @@
 <script setup lang="ts">
-import Todos from './components/Todos.vue'
+import { onMounted } from 'vue'
+import useAuthStore from './stores/authStore'
+
+const { setAuthWatch } = useAuthStore()
+
+onMounted(setAuthWatch)
 </script>
 
 <template>
-    <main>
-        <Todos />
-    </main>
+    <VLayout>
+        <RouterView />
+    </VLayout>
 </template>
