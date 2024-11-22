@@ -9,11 +9,17 @@
 
     /* Bundler mode */
     "moduleResolution": "Bundler",
-    "allowImportingTsExtensions": true,
+    "allowImportingTsExtensions": false,
     "isolatedModules": true,
     "moduleDetection": "force",
-    "noEmit": true,
+    "noEmit": false,
     "jsx": "preserve",
+    "composite": true,
+
+    "paths": {
+        "@/*": ["./src/*"],
+        "@root/*": ["./*"]
+    },
 
     /* Linting */
     "strict": true,

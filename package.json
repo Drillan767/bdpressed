@@ -6,9 +6,12 @@
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc -b && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
   },
   "dependencies": {
+    "@antfu/eslint-config": "^3.9.2",
     "@mdi/font": "^7.4.47",
     "@vee-validate/rules": "^4.14.7",
     "@vueuse/core": "^11.3.0",
@@ -24,13 +27,16 @@
     "vuetify": "^3.7.4"
   },
   "devDependencies": {
+    "@antfu/eslint-config": "^3.9.2",
     "@aws-amplify/backend": "^1.8.0",
     "@aws-amplify/backend-cli": "^1.4.2",
     "@vitejs/plugin-vue": "^5.2.0",
     "aws-cdk": "^2.170.0",
     "aws-cdk-lib": "^2.170.0",
     "constructs": "^10.4.2",
+    "eslint": "^9.15.0",
     "typescript": "^5.6.3",
+    "unplugin-vue-router": "^0.10.8",
     "vite": "^5.4.11",
     "vue-tsc": "^2.1.10"
   },
