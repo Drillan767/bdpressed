@@ -7059,6 +7059,7 @@ __metadata:
     aws-amplify: "npm:^6.9.0"
     aws-cdk: "npm:^2.170.0"
     aws-cdk-lib: "npm:^2.170.0"
+    constructs: "npm:^10.4.2"
     dayjs: "npm:^1.11.13"
     pinia: "npm:^2.2.6"
     pinia-plugin-persistedstate: "npm:^4.1.3"
@@ -7588,6 +7589,13 @@ __metadata:
     tslib: "npm:^2.0.3"
     upper-case: "npm:^2.0.2"
   checksum: 10c0/91d54f18341fcc491ae66d1086642b0cc564be3e08984d7b7042f8b0a721c8115922f7f11d6a09f13ed96ff326eabae11f9d1eb0335fa9d8b6e39e4df096010e
+  languageName: node
+  linkType: hard
+
+"constructs@npm:^10.4.2":
+  version: 10.4.2
+  resolution: "constructs@npm:10.4.2"
+  checksum: 10c0/dcd5edd631c7313964f89fffb7365e1eebaede16cbc9ae69eab5337710353913684b860ccc4b2a3dfaf147656f48f0ae7853ca94cb51833e152b46047ac7a4ff
   languageName: node
   linkType: hard
 
