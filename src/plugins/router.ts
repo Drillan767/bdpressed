@@ -1,23 +1,7 @@
+import useAuthStore from '@/stores/authStore'
+import { storeToRefs } from 'pinia'
 import { createRouter, createWebHistory } from 'vue-router'
 import { handleHotUpdate, routes } from 'vue-router/auto-routes'
-
-/* const routes: RouteRecordRaw[] = [
-    {
-        path: '/',
-        name: 'home',
-        component: () => import('@/pages/index.vue'),
-    },
-    {
-        path: '/login',
-        name: 'login',
-        component: () => import('@/pages/login.vue'),
-    },
-    {
-        path: '/administration',
-        name: 'administration',
-        component: () => import('@/pages/administration.vue'),
-    },
-] */
 
 const router = createRouter({
     history: createWebHistory(),
@@ -27,5 +11,22 @@ const router = createRouter({
 if (import.meta.hot) {
     handleHotUpdate(router)
 }
+
+router.beforeEach((to) => {
+    const { ensureLoggedIn } = useAuthStore()
+    const { currentUser } = storeToRefs(useAuthStore())
+
+    if (to.meta.requiresAuth && !ensureLoggedIn()) {
+        return '/connexion'
+    }
+
+    if ((to.path === '/connexion' || to.path === '/inscription' || to.path === '/oubli-mot-de-passe') && currentUser.value) {
+        return currentUser.value.role === 'admin' ? '/administration' : '/utilisateur'
+    }
+
+    if (to.meta.requiresRole && currentUser.value?.role !== to.meta.requiresRole) {
+        return '/'
+    }
+})
 
 export default router
