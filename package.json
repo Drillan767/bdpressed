@@ -36,12 +36,12 @@
     "constructs": "^10.4.2",
     "eslint": "^9.15.0",
     "sass": "^1.81.0",
-    "typescript": "^5.6.3",
+    "typescript": "5.6.3",
     "unplugin-vue-router": "^0.10.8",
     "vite": "^5.4.11",
     "vite-plugin-vue-devtools": "^7.6.4",
     "vite-plugin-vuetify": "^2.0.4",
-    "vue-tsc": "^2.1.10"
+    "vue-tsc": "2.0.29"
   },
   "packageManager": "yarn@1.22.19"
 }
