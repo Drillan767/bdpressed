@@ -9,4 +9,5 @@ export default antfu({
     rules: {
         'vue/valid-v-slot': 'off',
     },
+    ignores: ['.github/*'],
 })

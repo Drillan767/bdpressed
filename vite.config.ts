@@ -1,18 +1,20 @@
-import { fileURLToPath, URL } from 'node:url'
 import vue from '@vitejs/plugin-vue'
-import vueRouter from 'unplugin-vue-router/vite'
 import { defineConfig } from 'vite'
+import vueDevTools from 'vite-plugin-vue-devtools'
+import vuetify from 'vite-plugin-vuetify'
 
 // https://vite.dev/config/
 export default defineConfig({
     plugins: [
-        vueRouter(),
         vue(),
+        vuetify(),
+        vueDevTools(),
     ],
     resolve: {
         alias: {
-            '@': fileURLToPath(new URL('./src', import.meta.url)),
-            '@root': fileURLToPath(new URL('./', import.meta.url)),
+            '@': '/src',
+            '@root': '/',
         },
     },
+
 })
