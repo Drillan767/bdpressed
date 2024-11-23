@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import RegisterForm from '@/components/auth/RegisterForm.vue'
 import RegisterOTP from '@/components/auth/RegisterOTP.vue'
+import useToast from '@/composables/toast'
 import AuthLayout from '@/layouts/AuthLayout.vue'
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
@@ -13,12 +14,14 @@ definePage({
 })
 
 const router = useRouter()
+const { showSuccess } = useToast()
 
 const registerStatus = ref<'form' | 'otp'>('form')
 const registerEmail = ref('')
 
 function handleSuccess() {
     router.push('/connexion')
+        .then(() => showSuccess('Email validé, vous pouvez vous connecter 🎉'))
 }
 </script>
 
