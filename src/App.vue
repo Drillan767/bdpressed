@@ -1,20 +1,14 @@
+<script setup lang="ts">
+import { onMounted } from 'vue'
+import useAuthStore from './stores/authStore'
+
+const { setAuthWatch } = useAuthStore()
+
+onMounted(setAuthWatch)
+</script>
+
 <template>
-    <RouterView />
-
-    <p>
-        <RouterLink to="/login">
-            Connexion
-        </RouterLink>
-    </p>
-    <p>
-        <RouterLink to="/administration">
-            Administration
-        </RouterLink>
-    </p>
-
-    <p>
-        <RouterLink to="/">
-            Accueil
-        </RouterLink>
-    </p>
+    <VLayout>
+        <RouterView />
+    </VLayout>
 </template>
