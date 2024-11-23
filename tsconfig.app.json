@@ -21,11 +21,6 @@
         "@root/*": ["./*"]
     },
 
-    "paths": {
-        "@/*": ["./src/*"],
-        "@root/*": ["./*"]
-    },
-
     /* Linting */
     "strict": true,
     "noUnusedLocals": true,
@@ -33,5 +28,5 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true
   },
-  "include": ["amplify/**/*.ts", "src/**/*.ts", "src/**/*.tsx", "src/**/*.vue"]
+  "include": ["./typed-router.d.ts","amplify/**/*.ts", "src/**/*.ts", "src/**/*.tsx", "src/**/*.vue"]
 }
