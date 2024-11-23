@@ -22,6 +22,6 @@ declare module 'vue-router/auto-routes' {
     '/administration': RouteRecordInfo<'/administration', '/administration', Record<never, never>, Record<never, never>>,
     '/connexion': RouteRecordInfo<'/connexion', '/connexion', Record<never, never>, Record<never, never>>,
     '/inscription': RouteRecordInfo<'/inscription', '/inscription', Record<never, never>, Record<never, never>>,
-    '/mot-de-passe-oublie': RouteRecordInfo<'/mot-de-passe-oublie', '/mot-de-passe-oublie', Record<never, never>, Record<never, never>>,
+    '/oubli-mot-de-passe': RouteRecordInfo<'/oubli-mot-de-passe', '/oubli-mot-de-passe', Record<never, never>, Record<never, never>>,
   }
 }

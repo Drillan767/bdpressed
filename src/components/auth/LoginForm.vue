@@ -120,7 +120,7 @@ defineExpose({ submit })
             <VRow no-gutters>
                 <VCol class="text-right">
                     <RouterLink
-                        to="/mot-de-passe-oublie"
+                        to="/oubli-mot-de-passe"
                         class="text-caption"
                     >
                         Mot de passe oublié ?
