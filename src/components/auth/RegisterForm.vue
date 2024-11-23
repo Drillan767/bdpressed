@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import useToast from '@/composables/toast'
 import validationConfig from '@/plugins/validationConfig'
 import { AuthError, signUp } from 'aws-amplify/auth'
 import { useForm, useIsFormValid } from 'vee-validate'
@@ -15,6 +16,8 @@ const emit = defineEmits<{
 }>()
 
 const propsEmail = defineModel<string>({ required: true })
+
+const { showSuccess } = useToast()
 
 const { defineField, handleSubmit, setErrors } = useForm<RegisterForm>({
     validationSchema: {
@@ -38,7 +41,6 @@ const confirmPasswordVisible = ref(false)
 const loading = ref(false)
 
 const submit = handleSubmit(async (form) => {
-    console.log(form)
     loading.value = true
     try {
         await signUp({
@@ -50,6 +52,8 @@ const submit = handleSubmit(async (form) => {
                 },
             },
         })
+
+        showSuccess('Bienvenue 🎉 Vous pouvez maintenant valider votre inscription.')
 
         emit('success')
     }
