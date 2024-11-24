@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { ProductForm } from '@/types'
 import type { SchemaType } from '@root/amplify/data/resource'
+import type { VFileInput } from 'vuetify/components'
 import useBuckets from '@/composables/buckets'
 import useToast from '@/composables/toast'
 import validationConfig from '@/plugins/validationConfig'
@@ -24,7 +25,7 @@ const editedProduct = defineModel<Product>('product', { required: true })
 const { updateProduct, updateProductImages, removeProductImages } = useProductsStore()
 const { getSingleItem, getItems } = useBuckets()
 
-const fileInput = useTemplateRef('fileInput')
+const fileInput = useTemplateRef<VFileInput>('fileInput')
 
 const { showSuccess } = useToast()
 
