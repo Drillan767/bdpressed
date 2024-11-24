@@ -8,6 +8,7 @@ export default a.model({
     price: a.float().required(),
     images: a.string().required().array().required(),
     promotedImage: a.string().required(),
+    tags: a.hasMany('ProductTag', 'productId'),
     createdAt: a.datetime().required(),
     updatedAt: a.datetime().required(),
 })
