@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { SchemaType } from '@root/amplify/data/resource'
 import DeleteArticleDialog from '@/components/admin/articles/DeleteArticleDialog.vue'
+import EditArticleDialog from '@/components/admin/articles/EditArticleDialog.vue'
 import useNumbers from '@/composables/numbers'
 import useStrings from '@/composables/strings'
 import useToast from '@/composables/toast'
@@ -11,6 +12,8 @@ import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useDisplay } from 'vuetify'
 
+type Product = SchemaType<'Product'> & { id: string }
+
 const { params: { id: articleId } } = useRoute<'/administration/articles/[id]'>()
 const router = useRouter()
 
@@ -20,11 +23,12 @@ const { toParagraphs } = useStrings()
 const { formatPrice } = useNumbers()
 const { mobile } = useDisplay()
 
-const product = ref<SchemaType<'Product'>>()
+const product = ref<Product>()
 const imgUrls = ref<string[]>([])
 const promotedImage = ref('')
 const displayPreview = ref(false)
 const previewUrl = ref('')
+const displayEditDialog = ref(false)
 const displayDeleteDialog = ref(false)
 
 const globalImageHeight = computed(() => mobile.value ? 150 : 300)
@@ -36,13 +40,15 @@ const formattedDescription = computed(() => {
     return toParagraphs(product.value.description)
 })
 
-onMounted(async () => {
+onMounted(loadProduct)
+
+async function loadProduct() {
     const result = await getSingleProduct(articleId)
 
     if (result) {
-        product.value = result
+        product.value = result as Product
     }
-})
+}
 
 async function loadPromotedImage() {
     if (!product.value)
@@ -71,6 +77,12 @@ async function loadImages() {
 function openPreview(url: string) {
     displayPreview.value = true
     previewUrl.value = url
+}
+
+async function articleUpdated() {
+    await loadProduct()
+    showSuccess('L\'article a été modifié avec succès.')
+    displayEditDialog.value = false
 }
 
 function articleDeleted() {
@@ -106,7 +118,7 @@ watch(product, () => {
                     <VBtn
                         variant="outlined"
                         icon="mdi-pencil"
-                        @click="console.log('edit')"
+                        @click="displayEditDialog = true"
                     />
                     <VBtn
                         variant="outlined"
@@ -191,6 +203,12 @@ watch(product, () => {
         >
             <VImg :src="previewUrl" />
         </VDialog>
+        <EditArticleDialog
+            v-if="product"
+            v-model="displayEditDialog"
+            v-model:product="product"
+            @success="articleUpdated"
+        />
         <DeleteArticleDialog
             v-if="product"
             v-model="displayDeleteDialog"

@@ -6,3 +6,7 @@ export interface ProductForm {
     images?: File[]
     promotedImage?: File | null
 }
+
+export interface EditProductForm extends ProductForm {
+    id: string
+}

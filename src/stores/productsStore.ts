@@ -1,4 +1,4 @@
-import type { ProductForm } from '@/types'
+import type { EditProductForm, ProductForm } from '@/types'
 import type { Schema, SchemaType } from '@root/amplify/data/resource'
 import useBuckets from '@/composables/buckets'
 import { generateClient } from 'aws-amplify/data'
@@ -74,6 +74,67 @@ const useProductsStore = defineStore('products', () => {
         return data
     }
 
+    async function updateProduct(form: EditProductForm) {
+        /*  productsLoading.value = true
+
+        let newPromotedImage = ''
+        const newImagesPaths: string[] = []
+        const { images, promotedImage, ...fields } = form
+
+        // Load original product's images and promoted image paths.
+        const { data: originalProduct } = await client.models.Product.get(
+            { id: form.id },
+            { selectionSet: ['images', 'promotedImage'] },
+        )
+
+        if (!originalProduct) {
+            console.error('Impossible de récupérer le produit')
+            return
+        }
+
+        // Check if the promoted image has changed.
+        if (form.promotedImage) {
+            const newFileName = form.promotedImage.name
+            const oldFilename = originalProduct.promotedImage
+                .substring(originalProduct.promotedImage.lastIndexOf('\/') + 1)
+
+            if (newFileName !== oldFilename) {
+                // Delete the old file.
+                await deleteFiles([`products/${form.id}/${oldFilename}`])
+
+                // Store the new file.
+                const promotedImage = await storeSingleFile(form.promotedImage, `products/${form.id}/${newFileName}`)
+
+                if (!promotedImage) {
+                    console.error('Impossible de stocker le nouveau promoted image')
+                    return
+                }
+
+                newPromotedImage = promotedImage
+            }
+            // filePath.substring(filePath.lastIndexOf('\/')+1);
+            // products/252218cb-1bd0-40bd-ac33-4c7202f27f4d/wallpaper_0009.jpg
+        }
+
+        // Check if the images have changed.
+        if (form.images) {
+
+        } */
+
+        const { data } = await client.models.Product.update({
+            id: form.id,
+            name: form.name,
+            description: form.description,
+            price: form.price,
+            quickDescription: form.quickDescription,
+            updatedAt: new Date().toISOString(),
+        })
+
+        if (!data) {
+            console.error('Impossible de mettre à jour le produit')
+        }
+    }
+
     async function deleteProduct(product: Product) {
         productsLoading.value = true
 
@@ -94,6 +155,7 @@ const useProductsStore = defineStore('products', () => {
         getProducts,
         getSingleProduct,
         storeProducts,
+        updateProduct,
         deleteProduct,
     }
 })

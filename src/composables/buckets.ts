@@ -1,4 +1,4 @@
-import { remove, uploadData } from 'aws-amplify/storage'
+import { getUrl, remove, uploadData } from 'aws-amplify/storage'
 
 export default function useBuckets() {
     async function storeSingleFile(file: File, path: string) {
@@ -35,6 +35,26 @@ export default function useBuckets() {
         }
     }
 
+    async function getSingleItem(path: string) {
+        const result = await getUrl({
+            path,
+        })
+
+        return result.url.href
+    }
+
+    async function getItems(paths: string[]) {
+        const promises = paths.map(async (path) => {
+            const result = await getUrl({
+                path,
+            })
+
+            return result.url.href
+        })
+
+        return Promise.all(promises)
+    }
+
     async function deleteFiles(files: string[]) {
         try {
             for (const file of files) {
@@ -49,6 +69,8 @@ export default function useBuckets() {
     }
 
     return {
+        getSingleItem,
+        getItems,
         storeFiles,
         storeSingleFile,
         deleteFiles,
