@@ -5,7 +5,7 @@ import { generateClient } from 'aws-amplify/data'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
-type Product = SchemaType<'Product'>
+type Product = SchemaType<'Product'> & { id: string }
 
 const useProductsStore = defineStore('products', () => {
     const { getItems, storeFiles, storeSingleFile, deleteFiles } = useBuckets()
@@ -18,7 +18,7 @@ const useProductsStore = defineStore('products', () => {
         const { data: productsData } = await client.models.Product.list()
 
         if (productsData) {
-            products.value = productsData
+            products.value = productsData as Product[]
         }
 
         productsLoading.value = false

@@ -22,7 +22,6 @@ const { defineField, controlledValues, resetForm } = useForm<ProductForm>({
         quickDescription: 'required',
         description: 'required',
         price: 'required',
-        images: 'required',
         promotedImage: 'required',
     },
     initialValues: props.form,

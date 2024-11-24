@@ -4,7 +4,7 @@ import useProductsStore from '@/stores/productsStore'
 import { storeToRefs } from 'pinia'
 import { computed } from 'vue'
 
-type Product = SchemaType<'Product'>
+type Product = SchemaType<'Product'> & { id: string }
 
 interface Props {
     product: Product
@@ -27,6 +27,7 @@ const valueData = computed({
 
 function handleDelete() {
     deleteProduct(props.product)
+    valueData.value = false
     emit('success')
 }
 </script>
