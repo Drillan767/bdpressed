@@ -2,10 +2,11 @@
 import type { ProductForm } from '@/types'
 import type { SchemaType } from '@root/amplify/data/resource'
 import useBuckets from '@/composables/buckets'
+import useToast from '@/composables/toast'
 import validationConfig from '@/plugins/validationConfig'
 import useProductsStore from '@/stores/productsStore'
 import { useForm, useIsFormValid } from 'vee-validate'
-import { ref, watch } from 'vue'
+import { ref, useTemplateRef, watch } from 'vue'
 
 type Product = SchemaType<'Product'> & { id: string }
 
@@ -20,8 +21,12 @@ const emit = defineEmits<{
 const displayDialog = defineModel<boolean>({ required: true })
 const editedProduct = defineModel<Product>('product', { required: true })
 
-const { updateProduct } = useProductsStore()
+const { updateProduct, updateProductImages, removeProductImages } = useProductsStore()
 const { getSingleItem, getItems } = useBuckets()
+
+const fileInput = useTemplateRef('fileInput')
+
+const { showSuccess } = useToast()
 
 const loading = ref(false)
 const displayPreview = ref(false)
@@ -49,7 +54,6 @@ defineField('id')
 const [name, nameProps] = defineField('name', validationConfig)
 const [quickDescription, quickDescriptionProps] = defineField('quickDescription', validationConfig)
 const [description, descriptionProps] = defineField('description', validationConfig)
-const [images, imagesProps] = defineField('images', validationConfig)
 const [promotedImage, promotedImageProps] = defineField('promotedImage', validationConfig)
 const [price, priceProps] = defineField('price', validationConfig)
 
@@ -74,8 +78,33 @@ function openPreview(url: string) {
     previewUrl.value = url
 }
 
-function removeSingleImage(index: number) {
-    imagesPreviews.value?.splice(index, 1)
+function handleSelectImage() {
+    fileInput.value?.click()
+}
+
+async function handleUploadedImages(files: File | File[]) {
+    if (Array.isArray(files)) {
+        const newList = await updateProductImages(files, editedProduct.value.id)
+        if (newList && newList.length > 0) {
+            imagesPreviews.value = newList
+        }
+    }
+    else {
+        const newList = await updateProductImages([files], editedProduct.value.id)
+        if (newList && newList.length > 0) {
+            imagesPreviews.value = newList
+        }
+    }
+
+    showSuccess('Les nouvelles images ont été ajoutées avec succès.')
+}
+
+async function removeSingleImage(path: string) {
+    const newList = await removeProductImages(path, editedProduct.value.id)
+
+    if (newList && newList.length > 0) {
+        imagesPreviews.value = newList
+    }
 }
 
 watch(displayDialog, async (value) => {
@@ -168,19 +197,6 @@ watch(displayDialog, async (value) => {
                         />
                     </VCol>
                 </VRow>
-                <VRow>
-                    <VCol>
-                        <VFileInput
-                            v-bind="imagesProps"
-                            v-model="images"
-                            label="Illustrations"
-                            accept="image/*"
-                            prepend-icon="mdi-image-multiple"
-                            chips
-                            multiple
-                        />
-                    </VCol>
-                </VRow>
                 <VRow v-if="imagesPreviews.length > 0">
                     <VCol
                         v-for="(preview, index) in imagesPreviews"
@@ -189,7 +205,7 @@ watch(displayDialog, async (value) => {
                         md="3"
                     >
                         <VCard
-                            height="160"
+                            height="210"
                             class="pa-2"
                             variant="flat"
                         >
@@ -201,13 +217,48 @@ watch(displayDialog, async (value) => {
                                 height="auto"
                                 @click="openPreview(preview)"
                             />
-                            <VBtn
-                                variant="text"
-                                icon="mdi-close"
-                                color="error"
-                                class="position-absolute top-0 right-0"
-                                @click.stop="removeSingleImage(index)"
-                            />
+
+                            <VCardActions>
+                                <VBtn
+                                    variant="outlined"
+                                    color="error"
+                                    prepend-icon="mdi-trash-can-outline"
+                                    block
+                                    @click="removeSingleImage(preview)"
+                                >
+                                    Supprimer
+                                </VBtn>
+                            </VCardActions>
+                        </VCard>
+                    </VCol>
+                    <VCol
+                        cols="12"
+                        md="3"
+                    >
+                        <VCard
+                            height="190"
+                            variant="flat"
+                            @click="handleSelectImage"
+                        >
+                            <template #text>
+                                <VEmptyState
+                                    text="Ajouter des illustrations"
+                                    class="border-sm border-primary rounded-lg"
+                                >
+                                    <template #media>
+                                        <VIcon
+                                            icon="mdi-image-plus-outline"
+                                            color="primary"
+                                        />
+                                    </template>
+                                </VEmptyState>
+                                <VFileInput
+                                    ref="fileInput"
+                                    multiple
+                                    class="d-none"
+                                    @update:model-value="handleUploadedImages"
+                                />
+                            </template>
                         </VCard>
                     </VCol>
                 </VRow>
