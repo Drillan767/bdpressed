@@ -1,15 +1,18 @@
 <script setup lang="ts">
 import type { SchemaType } from '@root/amplify/data/resource'
 import CreateArticleDialog from '@/components/admin/articles/CreateArticleDialog.vue'
+import DeleteArticleDialog from '@/components/admin/articles/DeleteArticleDialog.vue'
+import EditArticleDialog from '@/components/admin/articles/EditArticleDialog.vue'
 import useDayjs from '@/composables/dayjs'
 import useNumbers from '@/composables/numbers'
+import useToast from '@/composables/toast'
 import AdminLayout from '@/layouts/AdminLayout.vue'
 import useProductsStore from '@/stores/productsStore'
 import { storeToRefs } from 'pinia'
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
-type Product = SchemaType<'Product'>
+type Product = SchemaType<'Product'> & { id: string }
 
 interface DataTableHeader {
     title: string
@@ -62,11 +65,39 @@ const { getProducts } = useProductsStore()
 const router = useRouter()
 const { dayjs } = useDayjs()
 const { formatPrice } = useNumbers()
+const { showSuccess } = useToast()
 
+const selectedProduct = ref<Product>()
 const displayCreateDialog = ref(false)
+const displayEditDialog = ref(false)
+const displayDeleteDialog = ref(false)
 
 function showProduct(item: Product) {
     router.push(`/administration/articles/${item.id}`)
+}
+
+function handleEditProduct(item: Product) {
+    selectedProduct.value = item
+    displayEditDialog.value = true
+}
+
+function handleDeleteProduct(item: Product) {
+    selectedProduct.value = item
+    displayDeleteDialog.value = true
+}
+
+function handleSuccess(action: 'edit' | 'delete') {
+    /* if (action === 'edit') {
+        showSuccess('L\'article a été modifié avec succès.')
+    } */
+
+    showSuccess(
+        action === 'edit'
+            ? 'L\'article a été modifié avec succès.'
+            : 'L\'article a été supprimé avec succès.',
+    )
+
+    getProducts()
 }
 
 onMounted(getProducts)
@@ -74,7 +105,10 @@ onMounted(getProducts)
 
 <template>
     <AdminLayout>
-        <h1>Articles</h1>
+        <h1 class="mb-2">
+            <VIcon icon="mdi-package-variant" />
+            Articles
+        </h1>
         <VDataTable
             :headers
             :items="products"
@@ -115,12 +149,14 @@ onMounted(getProducts)
                         color="primary"
                         icon="mdi-pencil"
                         class="mx-2"
+                        @click="handleEditProduct(item)"
                     />
 
                     <VBtn
                         variant="text"
                         color="error"
                         icon="mdi-delete"
+                        @click="handleDeleteProduct(item)"
                     />
                 </div>
             </template>
@@ -128,6 +164,18 @@ onMounted(getProducts)
         <CreateArticleDialog
             v-model="displayCreateDialog"
             @success="getProducts"
+        />
+        <EditArticleDialog
+            v-if="selectedProduct"
+            v-model="displayEditDialog"
+            v-model:product="selectedProduct"
+            @success="handleSuccess('edit')"
+        />
+        <DeleteArticleDialog
+            v-if="selectedProduct"
+            v-model="displayDeleteDialog"
+            :product="selectedProduct"
+            @success="handleSuccess('delete')"
         />
     </AdminLayout>
 </template>
