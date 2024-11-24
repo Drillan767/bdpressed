@@ -1,10 +1,14 @@
 import { a, type ClientSchema, defineData } from '@aws-amplify/backend'
 import products from './tables/products'
+import productsTags from './tables/products_tags'
+import tags from './tables/tags'
 import users from './tables/users'
 
 const schema = a.schema({
     User: users,
     Product: products,
+    Tag: tags,
+    ProductTag: productsTags,
 })
 
 export type Schema = ClientSchema <typeof schema>
