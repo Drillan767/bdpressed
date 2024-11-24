@@ -8,7 +8,7 @@ import { ref } from 'vue'
 type Product = SchemaType<'Product'>
 
 const useProductsStore = defineStore('products', () => {
-    const { storeFiles, storeSingleFile, deleteFiles } = useBuckets()
+    const { getItems, storeFiles, storeSingleFile, deleteFiles } = useBuckets()
     const products = ref<Product[]>([])
     const productsLoading = ref(false)
     const client = generateClient<Schema>()
@@ -75,51 +75,11 @@ const useProductsStore = defineStore('products', () => {
     }
 
     async function updateProduct(form: EditProductForm) {
-        /*  productsLoading.value = true
+        let newPromotedImage: string | undefined
 
-        let newPromotedImage = ''
-        const newImagesPaths: string[] = []
-        const { images, promotedImage, ...fields } = form
-
-        // Load original product's images and promoted image paths.
-        const { data: originalProduct } = await client.models.Product.get(
-            { id: form.id },
-            { selectionSet: ['images', 'promotedImage'] },
-        )
-
-        if (!originalProduct) {
-            console.error('Impossible de récupérer le produit')
-            return
-        }
-
-        // Check if the promoted image has changed.
         if (form.promotedImage) {
-            const newFileName = form.promotedImage.name
-            const oldFilename = originalProduct.promotedImage
-                .substring(originalProduct.promotedImage.lastIndexOf('\/') + 1)
-
-            if (newFileName !== oldFilename) {
-                // Delete the old file.
-                await deleteFiles([`products/${form.id}/${oldFilename}`])
-
-                // Store the new file.
-                const promotedImage = await storeSingleFile(form.promotedImage, `products/${form.id}/${newFileName}`)
-
-                if (!promotedImage) {
-                    console.error('Impossible de stocker le nouveau promoted image')
-                    return
-                }
-
-                newPromotedImage = promotedImage
-            }
-            // filePath.substring(filePath.lastIndexOf('\/')+1);
-            // products/252218cb-1bd0-40bd-ac33-4c7202f27f4d/wallpaper_0009.jpg
+            newPromotedImage = await storeSingleFile(form.promotedImage, `products/${form.id}/${form.promotedImage.name}`)
         }
-
-        // Check if the images have changed.
-        if (form.images) {
-
-        } */
 
         const { data } = await client.models.Product.update({
             id: form.id,
@@ -128,11 +88,81 @@ const useProductsStore = defineStore('products', () => {
             price: form.price,
             quickDescription: form.quickDescription,
             updatedAt: new Date().toISOString(),
+            ...newPromotedImage && {
+                promotedImage: newPromotedImage,
+            },
         })
 
         if (!data) {
             console.error('Impossible de mettre à jour le produit')
         }
+    }
+
+    async function updateProductImages(files: File[], productId: string) {
+        const { data } = await client.models.Product.get(
+            { id: productId },
+            { selectionSet: ['images'] },
+        )
+
+        if (!data) {
+            console.error('Impossible de récupérer le produit')
+            return
+        }
+
+        const currentImages = data.images
+
+        const newImages = await storeFiles(files, `products/${productId}`)
+
+        if (!newImages) {
+            console.error('Impossible de stocker les nouvelles images')
+            return
+        }
+
+        const newImagesList = currentImages.concat(newImages)
+
+        const { data: updatedProduct } = await client.models.Product.update({
+            id: productId,
+            images: newImagesList,
+        })
+
+        if (!updatedProduct) {
+            console.error('Impossible de mettre à jour les images du produit')
+            return
+        }
+
+        const fullPaths = await getItems(newImagesList)
+
+        return fullPaths
+    }
+
+    async function removeProductImages(paths: string, productId: string) {
+        const { data } = await client.models.Product.get(
+            { id: productId },
+            { selectionSet: ['images'] },
+        )
+
+        if (!data) {
+            console.error('Impossible de récupérer le produit')
+            return
+        }
+
+        const currentImages = data.images
+
+        const newList = currentImages.filter(image => !paths.includes(image))
+
+        const { data: updatedProduct } = await client.models.Product.update({
+            id: productId,
+            images: newList,
+        })
+
+        if (!updatedProduct) {
+            console.error('Impossible de mettre à jour les images du produit')
+            return
+        }
+
+        const fullPaths = await getItems(newList)
+
+        return fullPaths
     }
 
     async function deleteProduct(product: Product) {
@@ -155,6 +185,8 @@ const useProductsStore = defineStore('products', () => {
         getProducts,
         getSingleProduct,
         storeProducts,
+        removeProductImages,
+        updateProductImages,
         updateProduct,
         deleteProduct,
     }
