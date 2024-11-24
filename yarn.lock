@@ -5630,6 +5630,11 @@
     hookable "^5.5.3"
     unhead "1.11.11"
 
+"@vee-validate/i18n@^4.14.7":
+  version "4.14.7"
+  resolved "https://registry.yarnpkg.com/@vee-validate/i18n/-/i18n-4.14.7.tgz#846301d67edcbbdf4b9c2944962033e20d405919"
+  integrity sha512-CTGNXC0d6tMSi6pEbf+jW1ZsLhvtNClgKDna8QmHD9G/8U8W9MlyQfgcQMqmpUz0kUHyGHNZ3B13jzILUeVcXw==
+
 "@vee-validate/rules@^4.14.7":
   version "4.14.7"
   resolved "https://registry.yarnpkg.com/@vee-validate/rules/-/rules-4.14.7.tgz#99c9c11e0964b167b0f52175acb94f903aa64b13"

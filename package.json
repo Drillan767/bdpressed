@@ -13,6 +13,7 @@
   "dependencies": {
     "@antfu/eslint-config": "^3.9.2",
     "@mdi/font": "^7.4.47",
+    "@vee-validate/i18n": "^4.14.7",
     "@vee-validate/rules": "^4.14.7",
     "@vueuse/core": "^11.3.0",
     "@vueuse/head": "^2.0.0",
