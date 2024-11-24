@@ -49,7 +49,7 @@ function closeDialog() {
     >
         <VCard
             :loading
-            prepend-icon="mdi-package-variant-closed-plus"
+            prepend-icon="mdi-package-variant-plus"
             title="Créer un article"
         >
             <VContainer>
