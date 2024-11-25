@@ -7,6 +7,8 @@ import { computed, ref, watch } from 'vue'
 interface Props {
     form: ProductForm
     formValid: boolean
+    previewUrl?: string
+    edit?: boolean
 }
 
 const props = defineProps<Props>()
@@ -16,14 +18,14 @@ const emit = defineEmits<{
     (e: 'update:form-valid', valid: boolean): void
 }>()
 
-const { defineField, controlledValues, resetForm } = useForm<ProductForm>({
-    validationSchema: {
+const { defineField, controlledValues, resetForm, setValues } = useForm<ProductForm>({
+    validationSchema: computed(() => ({
         name: 'required',
         quickDescription: 'required',
         description: 'required',
         price: 'required',
-        promotedImage: 'required',
-    },
+        promotedImage: props.edit ? '' : 'required',
+    })),
     initialValues: props.form,
 })
 
@@ -38,19 +40,13 @@ const formValid = useIsFormValid()
 
 const displayPreview = ref(false)
 const previewUrl = ref('')
+const promotedPreview = ref('')
 
 const imagesPreviews = computed(() => {
     if (!images.value)
         return []
 
     return Array.from(images.value).map(image => URL.createObjectURL(image))
-})
-
-const promotedPreview = computed(() => {
-    if (!promotedImage.value)
-        return ''
-
-    return URL.createObjectURL(promotedImage.value)
 })
 
 function removeSingleImage(index: number) {
@@ -62,11 +58,26 @@ function openPreview(url: string) {
     previewUrl.value = url
 }
 
+function generatePreviewUrl(file: File | File[]) {
+    if (Array.isArray(file))
+        return
+    promotedPreview.value = URL.createObjectURL(file)
+}
+
+watch(() => props.form, (form) => {
+    if (props.edit)
+        setValues(form)
+})
+
+watch(() => props.previewUrl, (url) => {
+    if (props.edit && url) {
+        promotedPreview.value = url
+    }
+})
+
 watch(formValid, valid => emit('update:form-valid', valid), { immediate: true })
 
-watch(controlledValues, (values) => {
-    emit('update:form', values)
-})
+watch(controlledValues, values => emit('update:form', values))
 
 defineExpose({
     resetForm,
@@ -105,11 +116,9 @@ defineExpose({
                 prepend-icon="mdi-image-frame"
                 label="Illustration principale"
                 accept="image/*"
+                @update:model-value="generatePreviewUrl"
             >
-                <template
-                    v-if="promotedImage"
-                    #append-inner
-                >
+                <template #append-inner>
                     <VAvatar
                         :image="promotedPreview"
                         class="cursor-pointer"
@@ -137,7 +146,7 @@ defineExpose({
             />
         </VCol>
     </VRow>
-    <VRow>
+    <VRow v-if="!edit">
         <VCol>
             <VFileInput
                 v-bind="imagesProps"
@@ -150,7 +159,7 @@ defineExpose({
             />
         </VCol>
     </VRow>
-    <VRow v-if="imagesPreviews.length">
+    <VRow v-if="!edit && imagesPreviews.length">
         <VCol
             v-for="(preview, index) in imagesPreviews"
             :key="index"
