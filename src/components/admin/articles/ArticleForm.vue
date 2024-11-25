@@ -167,7 +167,7 @@ defineExpose({
             md="3"
         >
             <VCard
-                height="160"
+                height="210"
                 class="pa-2"
                 variant="flat"
             >
@@ -179,13 +179,25 @@ defineExpose({
                     height="auto"
                     @click="openPreview(preview)"
                 />
-                <VBtn
+                <!-- <VBtn
                     variant="text"
                     icon="mdi-close"
                     color="error"
                     class="position-absolute top-0 right-0"
                     @click.stop="removeSingleImage(index)"
-                />
+                /> -->
+                <VCardActions>
+                    <VBtn
+                        variant="outlined"
+                        prepend-icon="mdi-close"
+                        color="error"
+                        size="small"
+                        block
+                        @click.stop="removeSingleImage(index)"
+                    >
+                        Retirer
+                    </VBtn>
+                </VCardActions>
             </VCard>
         </VCol>
     </VRow>

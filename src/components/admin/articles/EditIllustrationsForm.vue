@@ -70,7 +70,7 @@ onMounted(async () => {
             md="3"
         >
             <VCard
-                height="210"
+                height="320"
                 class="pa-2"
                 variant="flat"
             >
