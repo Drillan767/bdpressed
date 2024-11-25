@@ -18,6 +18,7 @@ const editedProduct = defineModel<Product>('product', { required: true })
 const { updateProduct } = useProductsStore()
 const { getSingleItem } = useBuckets()
 
+const articleForm = ref<InstanceType<typeof ArticleForm>>()
 const loading = ref(false)
 const displayPreview = ref(false)
 const previewUrl = ref('')
@@ -45,7 +46,7 @@ async function submit() {
 
 function closeDialog() {
     displayDialog.value = false
-    // resetForm()
+    articleForm.value?.resetForm()
 }
 
 watch(displayDialog, async (value) => {
@@ -78,6 +79,7 @@ watch(displayDialog, async (value) => {
         >
             <VContainer>
                 <ArticleForm
+                    ref="articleForm"
                     v-model:form="form"
                     v-model:form-valid="formValid"
                     v-model:preview-url="previewUrl"

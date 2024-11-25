@@ -54,6 +54,7 @@ function closeDialog() {
         >
             <VContainer>
                 <ArticleForm
+                    ref="articleForm"
                     v-model:form="form"
                     v-model:form-valid="formValid"
                     :edit="false"
