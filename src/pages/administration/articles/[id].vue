@@ -2,6 +2,7 @@
 import type { SchemaType } from '@root/amplify/data/resource'
 import DeleteArticleDialog from '@/components/admin/articles/DeleteArticleDialog.vue'
 import EditArticleDialog from '@/components/admin/articles/EditArticleDialog.vue'
+import EditIllustrationsForm from '@/components/admin/articles/EditIllustrationsForm.vue'
 import useNumbers from '@/composables/numbers'
 import useStrings from '@/composables/strings'
 import useToast from '@/composables/toast'
@@ -169,28 +170,17 @@ watch(product, () => {
                                 />
 
                                 <VRow>
-                                    <VCol>
+                                    <VCol cols="12">
                                         <p class="text-h6">
                                             Illustrations
                                         </p>
                                     </VCol>
                                 </VRow>
-                                <VRow>
-                                    <VCol
-                                        v-for="(image, index) in imgUrls"
-                                        :key="index"
-                                        cols="12"
-                                        md="3"
-                                    >
-                                        <VImg
-                                            :src="image"
-                                            :height="globalImageHeight"
-                                            width="100%"
-                                            class="rounded cursor-pointer"
-                                            @click="openPreview(image)"
-                                        />
-                                    </VCol>
-                                </VRow>
+
+                                <EditIllustrationsForm
+                                    v-model:images="product.images"
+                                    :product-id="product.id"
+                                />
                             </template>
                         </template>
                     </VCard>
