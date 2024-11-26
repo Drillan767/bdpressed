@@ -14,7 +14,7 @@ const drawer = ref(false)
             <VListItem
                 title="Panier"
                 color="primary"
-                class="bg-primary"
+                class="basket-title bg-primary"
             >
                 <template #append>
                     <VBtn
@@ -25,13 +25,27 @@ const drawer = ref(false)
                     />
                 </template>
             </VListItem>
+
+            <p class="placeholder">
+                Lorsque toudincou, un panier vide. 👁️👄👁️
+            </p>
         </VNavigationDrawer>
         <VAppBar
-            title="Bjr"
+
+            title="Bédéprimée 🗣️🗣️🔊🔊"
             border
         >
+            <template #prepend>
+                <VAvatar
+                    class="ml-16"
+                    image="/logo.png"
+                />
+            </template>
             <template #append>
-                <VBtn stacked>
+                <VBtn
+                    stacked
+                    to="/connexion"
+                >
                     <VIcon icon="mdi-account-circle-outline" />
                     Compte
                 </VBtn>
@@ -60,3 +74,19 @@ const drawer = ref(false)
         </VMain>
     </VLayout>
 </template>
+
+<style lang="scss" scoped>
+.basket-title :deep(.v-list-item-title) {
+    font-size: 40px;
+}
+
+:deep(.v-toolbar) {
+    .v-toolbar-title__placeholder {
+        font-size: 28px;
+    }
+}
+
+.placeholder {
+    font-size: 35px;
+}
+</style>

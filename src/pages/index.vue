@@ -5,43 +5,14 @@ import { storeToRefs } from 'pinia'
 
 definePage({
     meta: {
-        title: 'Bédé Primée 🗣️🗣️🔊🔊',
+        title: 'Bédéprimée 🗣️🗣️🔊🔊',
         requiresAuth: false,
     },
 })
-
-const { isAuthenticated, currentUser } = storeToRefs(useAuthStore())
 </script>
 
 <template>
     <VisitorLayout>
-        <h1>Bédé Primée 🗣️🗣️🔊🔊</h1>
-
-        <p v-if="currentUser">
-            {{ currentUser }}
-        </p>
-        <template v-if="isAuthenticated">
-            <RouterLink
-                v-if="currentUser?.role === 'admin'"
-                to="/administration"
-            >
-                Admin Dashboard
-            </RouterLink>
-            <RouterLink
-                v-if="currentUser?.role === 'user'"
-                to="/utilisateur"
-            >
-                User Dashboard
-            </RouterLink>
-        </template>
-        <template v-else>
-            <RouterLink to="/connexion">
-                Connexion
-            </RouterLink><br>
-            <RouterLink to="/inscription">
-                Inscription
-            </RouterLink><br>
-        </template>
         <p>
             I'm baby letterpress chia pabst waistcoat single-origin coffee deep v knausgaard. Subway tile microdosing roof party kitsch pitchfork jianbing cliche mlkshk flexitarian air plant man braid iceland before they sold out. Sus palo santo next level, tumeric retro authentic four dollar toast actually prism 3 wolf moon fingerstache vinyl hot chicken. Raw denim banjo mixtape organic, flannel hammock wolf street art subway tile vape. Beard gatekeep artisan retro squid asymmetrical.
         </p>
