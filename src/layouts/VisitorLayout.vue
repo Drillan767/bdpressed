@@ -27,10 +27,10 @@ const drawer = ref(false)
     </VNavigationDrawer>
     <VAppBar title="Bjr" border>
         <template #append>
-            <VBtn
-                icon="mdi-account-circle-outline"
-                variant="text"
-            />
+            <VBtn stacked>
+                <VIcon icon="mdi-account-circle-outline" />
+                Compte
+            </VBtn>
             <VBtn stacked>
                 <VBadge
                     color="primary"
