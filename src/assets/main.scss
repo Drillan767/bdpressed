@@ -11,27 +11,31 @@
 }
 
 .visitors-layout {
-    font-size: 28px;
-    z-index: 1;
-    position: relative;
+    font-family: 'bedeprimee';
 
-    &::before {
-        content: '';
-        position: fixed;
-        z-index: 0;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(180deg, rgba(235,226,102,1) 0%, rgba(244,57,187,1) 100%);;
-        background-attachment: fixed;
-        background-size: 100vh;
-        mask-image: url(flowers.png);
-        mask-repeat: repeat;
-        mask-size: 600px 300px;
-    }
-
-    .v-container {
+    .v-main {
+        font-size: 28px;
+        z-index: 1;
         position: relative;
+
+        &::before {
+            content: '';
+            position: fixed;
+            z-index: 0;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(180deg, rgba(235,226,102,1) 0%, rgba(244,57,187,1) 100%);;
+            background-attachment: fixed;
+            background-size: 100vh;
+            mask-image: url(flowers.png);
+            mask-repeat: repeat;
+            mask-size: 600px 300px;
+        }
+
+        .v-container {
+            position: relative;
+        }
     }
 }

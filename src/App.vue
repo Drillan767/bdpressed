@@ -8,7 +8,5 @@ onMounted(setAuthWatch)
 </script>
 
 <template>
-    <VLayout>
-        <RouterView />
-    </VLayout>
+    <RouterView />
 </template>
