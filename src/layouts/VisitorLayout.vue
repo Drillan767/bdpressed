@@ -25,7 +25,11 @@ const drawer = ref(false)
             </template>
         </VListItem>
     </VNavigationDrawer>
-    <VAppBar title="Bjr" border>
+    <VAppBar
+        class="bd"
+        title="Bjr"
+        border
+    >
         <template #append>
             <VBtn stacked>
                 <VIcon icon="mdi-account-circle-outline" />
@@ -45,7 +49,7 @@ const drawer = ref(false)
             </VBtn>
         </template>
     </VAppBar>
-    <VMain class="visitors-layout h-screen">
+    <VMain class="visitors-layout h-screen bd">
         <VContainer>
             <VRow>
                 <VCol>
