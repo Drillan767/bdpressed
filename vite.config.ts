@@ -18,5 +18,11 @@ export default defineConfig({
             '@root': '/',
         },
     },
-
+    css: {
+        preprocessorOptions: {
+            scss: {
+                api: 'modern',
+            },
+        },
+    },
 })
