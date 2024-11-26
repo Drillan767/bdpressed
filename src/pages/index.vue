@@ -1,7 +1,5 @@
 <script setup lang="ts">
 import VisitorLayout from '@/layouts/VisitorLayout.vue'
-import useAuthStore from '@/stores/authStore'
-import { storeToRefs } from 'pinia'
 
 definePage({
     meta: {
