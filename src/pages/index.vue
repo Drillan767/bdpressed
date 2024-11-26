@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import VisitorLayout from '@/layouts/VisitorLayout.vue'
 import useAuthStore from '@/stores/authStore'
 import { storeToRefs } from 'pinia'
 
@@ -13,7 +14,7 @@ const { isAuthenticated, currentUser } = storeToRefs(useAuthStore())
 </script>
 
 <template>
-    <div>
+    <VisitorLayout>
         <h1>Bédé Primée 🗣️🗣️🔊🔊</h1>
 
         <p v-if="currentUser">
@@ -41,5 +42,5 @@ const { isAuthenticated, currentUser } = storeToRefs(useAuthStore())
                 Inscription
             </RouterLink><br>
         </template>
-    </div>
+    </VisitorLayout>
 </template>
