@@ -15,13 +15,23 @@
 
     .v-main {
         font-size: 28px;
-        z-index: 1;
+        z-index: 2;
         position: relative;
 
         &::before {
             content: '';
             position: fixed;
-            z-index: 0;
+            z-index: -1;
+            inset: 0;
+            background: url(bg.jpg);
+            background-size: cover;
+            background-attachment: fixed;
+        }
+
+        &::after {
+            content: '';
+            position: fixed;
+            z-index: -1;
             top: 0;
             left: 0;
             width: 100%;
@@ -35,7 +45,8 @@
         }
 
         .v-container {
-            position: relative;
+            color: white;
+            text-shadow: 0 0 2px purple;
         }
     }
 }
