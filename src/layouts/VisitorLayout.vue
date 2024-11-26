@@ -46,29 +46,13 @@ const drawer = ref(false)
         </template>
     </VAppBar>
     <VMain class="visitors-layout h-screen">
-        <VContainer style="position: relative; z-index: 1;">
-            <slot />
+        <VContainer>
+            <VRow>
+                <VCol>
+                    <slot />
+                </VCol>
+            </VRow>
         </VContainer>
     </VMain>
+    <img src="/bg.jpg" alt="bg" style="position: fixed; inset: 0;">
 </template>
-
-<style lang="scss" scoped>
-.visitors-layout {
-    background-image: url('/bg.jpg');
-    background-size: cover;
-    background-position: center;
-
-    &::before {
-        content: '';
-        position: absolute;
-        z-index: 0;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-image: url('/flowers.png');
-        background-size: 600px 300px;
-        background-repeat: repeat
-    }
-}
-</style>
