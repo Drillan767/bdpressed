@@ -58,6 +58,5 @@ const drawer = ref(false)
                 </VRow>
             </VContainer>
         </VMain>
-        <img src="/bg.jpg" alt="bg" style="position: fixed; inset: 0;">
     </VLayout>
 </template>
