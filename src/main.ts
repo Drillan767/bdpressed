@@ -7,6 +7,8 @@ import App from './App.vue'
 import router from './plugins/router'
 import vuetify from './plugins/vuetify'
 import './plugins/vee-validate'
+
+import './assets/main.scss'
 import 'vue3-toastify/dist/index.css'
 
 Amplify.configure(outputs)
