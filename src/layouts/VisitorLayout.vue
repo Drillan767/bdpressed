@@ -31,18 +31,63 @@ const drawer = ref(false)
             </p>
         </VNavigationDrawer>
         <VAppBar
-
-            title="Bédéprimée 🗣️🗣️🔊🔊"
-            border
+            class="navigation rounded-b-xl pr-8"
+            elevation="4"
         >
             <template #prepend>
-                <VAvatar
-                    class="ml-16"
-                    image="/logo.png"
-                />
+                <RouterLink to="/">
+                    <VAvatar
+                        size="96"
+                        class="mt-16 ml-16 elevation-4"
+                        image="/logo.png"
+                    />
+                </RouterLink>
+            </template>
+            <template #default>
+                <VContainer>
+                    <VRow>
+                        <VCol class="links d-flex justify-center ga-4">
+                            <RouterLink to="/">
+                                Accueil
+                            </RouterLink>
+                            <RouterLink to="/">
+                                Bédés
+                            </RouterLink>
+                            <RouterLink to="/">
+                                Boutique
+                            </RouterLink>
+                            <RouterLink to="/">
+                                Contact
+                            </RouterLink>
+                        </VCol>
+                    </VRow>
+                </VContainer>
             </template>
             <template #append>
-                <VBtn
+                <div class="mt-16 d-flex ga-2">
+                    <RouterLink to="/connexion">
+                        <VAvatar
+                            size="48"
+                            image="/logo.png"
+                            class="elevation-4"
+                        />
+                    </RouterLink>
+
+                    <VBadge
+                        color="primary"
+                        content="45"
+                        max="9"
+                    >
+                        <VAvatar
+                            size="48"
+                            image="/logo.png"
+                            class="elevation-4 cursor-pointer"
+                            @click="drawer = true"
+                        />
+                    </VBadge>
+                </div>
+
+                <!-- <VBtn
                     stacked
                     to="/connexion"
                 >
@@ -60,11 +105,11 @@ const drawer = ref(false)
                     </VBadge>
 
                     Panier
-                </VBtn>
+                </VBtn> -->
             </template>
         </VAppBar>
         <VMain class="h-screen">
-            <VContainer>
+            <VContainer class="mt-16">
                 <VRow>
                     <VCol>
                         <slot />
@@ -81,8 +126,17 @@ const drawer = ref(false)
 }
 
 :deep(.v-toolbar) {
+    .v-toolbar__content {
+        overflow: initial;
+    }
+
     .v-toolbar-title__placeholder {
         font-size: 28px;
+    }
+
+    .links a {
+        text-decoration: none;
+        font-size: 24px;
     }
 }
 
