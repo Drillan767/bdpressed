@@ -1,6 +1,6 @@
 @font-face {
     font-family: 'bedeprimee';
-    src: url('/bedeprimee.otf') format("opentype");
+    src: url('../assets/fonts/bedeprimee.otf') format("opentype");
     font-weight: 400;
     font-style: normal;
     font-display: auto;
@@ -23,7 +23,7 @@
             position: fixed;
             z-index: -1;
             inset: 0;
-            background: url(bg.jpg);
+            background: url('../assets/images/bg.jpg');
             background-size: cover;
             background-attachment: fixed;
         }
@@ -39,7 +39,7 @@
             background: linear-gradient(180deg, rgba(235,226,102,1) 0%, rgba(244,57,187,1) 100%);;
             background-attachment: fixed;
             background-size: 100vh;
-            mask-image: url(flowers.png);
+            mask-image: url('../assets/images/flowers.png');
             mask-repeat: repeat;
             mask-size: 600px 300px;
         }
