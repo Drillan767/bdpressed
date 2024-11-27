@@ -2,49 +2,56 @@
 import { ref } from 'vue'
 
 const drawer = ref(false)
+const linksDrawer = ref(false)
 </script>
 
 <template>
     <VLayout class="visitors-layout">
-        <VNavigationDrawer
-            v-model="drawer"
-            :temporary="true"
-            location="right"
-        >
+        <VNavigationDrawer v-model="linksDrawer">
             <VListItem
-                title="Panier"
-                color="primary"
-                class="basket-title bg-primary"
-            >
-                <template #append>
-                    <VBtn
-                        icon="mdi-close"
-                        variant="text"
-                        color="white"
-                        @click="drawer = false"
-                    />
-                </template>
-            </VListItem>
-
-            <p class="placeholder">
-                Lorsque toudincou, un panier vide. 👁️👄👁️
-            </p>
+                prepend-icon="mdi-home"
+                title="Accueil"
+                nav
+                exact
+            />
+            <VListItem
+                prepend-icon="mdi-package-variant"
+                title="Bédés"
+                nav
+            />
+            <VListItem
+                prepend-icon="mdi-store"
+                title="Boutique"
+                nav
+            />
+            <VListItem
+                prepend-icon="mdi-email-fast"
+                title="Contact"
+                nav
+            />
         </VNavigationDrawer>
         <VAppBar
             class="navigation rounded-b-xl pr-8"
             elevation="4"
         >
             <template #prepend>
-                <RouterLink to="/">
+                <VAppBarNavIcon
+                    class="display-sm-and-up"
+                    @click="linksDrawer = true"
+                />
+                <RouterLink
+                    class="mt-16 ml-md-16"
+                    to="/"
+                >
                     <VAvatar
                         size="96"
-                        class="mt-16 ml-16 elevation-4"
+                        class=" elevation-4"
                         image="/logo.png"
                     />
                 </RouterLink>
             </template>
             <template #default>
-                <VContainer>
+                <VContainer class="hidden-sm-and-down">
                     <VRow>
                         <VCol class="links d-flex justify-center ga-4">
                             <RouterLink to="/">
@@ -86,28 +93,32 @@ const drawer = ref(false)
                         />
                     </VBadge>
                 </div>
-
-                <!-- <VBtn
-                    stacked
-                    to="/connexion"
-                >
-                    <VIcon icon="mdi-account-circle-outline" />
-                    Compte
-                </VBtn>
-                <VBtn stacked>
-                    <VBadge
-                        color="primary"
-                        content="45"
-                        max="9"
-                        @click="drawer = true"
-                    >
-                        <v-icon icon="mdi-shopping-outline" />
-                    </VBadge>
-
-                    Panier
-                </VBtn> -->
             </template>
         </VAppBar>
+        <VNavigationDrawer
+            v-model="drawer"
+            :temporary="true"
+            location="right"
+        >
+            <VListItem
+                title="Panier"
+                color="primary"
+                class="basket-title bg-primary"
+            >
+                <template #append>
+                    <VBtn
+                        icon="mdi-close"
+                        variant="text"
+                        color="white"
+                        @click="drawer = false"
+                    />
+                </template>
+            </VListItem>
+
+            <p class="placeholder">
+                Lorsque toudincou, un panier vide. 👁️👄👁️
+            </p>
+        </VNavigationDrawer>
         <VMain class="h-screen">
             <VContainer class="mt-16">
                 <VRow>
