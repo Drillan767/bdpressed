@@ -4,6 +4,7 @@ import validationConfig from '@/plugins/validationConfig'
 import { AuthError, signUp } from 'aws-amplify/auth'
 import { useForm, useIsFormValid } from 'vee-validate'
 import { ref, watch } from 'vue'
+import { useDisplay } from 'vuetify'
 
 interface RegisterForm {
     email: string
@@ -18,6 +19,7 @@ const emit = defineEmits<{
 const propsEmail = defineModel<string>({ required: true })
 
 const { showSuccess } = useToast()
+const { smAndDown } = useDisplay()
 
 const { defineField, handleSubmit, setErrors } = useForm<RegisterForm>({
     validationSchema: {
@@ -81,9 +83,9 @@ watch([email, formValid], ([email, valid]) => {
 
 <template>
     <VCard
+        :width="smAndDown ? '100%' : '560'"
         prepend-icon="mdi-account-plus"
         title="Inscription"
-        width="560"
     >
         <template #text>
             <VRow>

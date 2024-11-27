@@ -3,6 +3,7 @@ import validationConfig from '@/plugins/validationConfig'
 import { AuthError, confirmResetPassword } from 'aws-amplify/auth'
 import { useForm, useIsFormValid } from 'vee-validate'
 import { ref } from 'vue'
+import { useDisplay } from 'vuetify'
 
 interface NewPasswordForm {
     username: string
@@ -16,6 +17,8 @@ const emit = defineEmits<{
 }>()
 
 const propsEmail = defineModel<string>({ required: true })
+
+const { smAndDown } = useDisplay()
 
 const { defineField, handleSubmit, setErrors } = useForm<NewPasswordForm>({
     validationSchema: {
@@ -72,9 +75,9 @@ const submit = handleSubmit(async (form) => {
 
 <template>
     <VCard
+        :width="smAndDown ? '100%' : '560'"
         prepend-icon="mdi-account-edit-outline"
         title="Changer le mot de passe"
-        width="560"
     >
         <template #text>
             <VRow>

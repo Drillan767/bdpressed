@@ -2,6 +2,7 @@
 import useUserStore from '@/stores/userStore'
 import { AuthError, confirmSignUp } from 'aws-amplify/auth'
 import { ref, watch } from 'vue'
+import { useDisplay } from 'vuetify'
 
 interface Props {
     email: string
@@ -15,6 +16,7 @@ const emit = defineEmits<{
 }>()
 
 const { createUser } = useUserStore()
+const { smAndDown } = useDisplay()
 
 const otp = ref('')
 const loading = ref(false)
@@ -56,9 +58,9 @@ watch(otp, (value) => {
 
 <template>
     <VCard
+        :width="smAndDown ? '100%' : '560'"
         prepend-icon="mdi-numeric"
         title="Valider l'inscription"
-        width="560"
     >
         <template #text>
             <VRow>
