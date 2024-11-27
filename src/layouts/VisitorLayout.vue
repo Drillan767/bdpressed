@@ -30,13 +30,37 @@ const linksDrawer = ref(false)
                 nav
             />
         </VNavigationDrawer>
+        <VNavigationDrawer
+            v-model="drawer"
+            :temporary="true"
+            location="right"
+        >
+            <VListItem
+                title="Panier"
+                color="primary"
+                class="basket-title bg-primary"
+            >
+                <template #append>
+                    <VBtn
+                        icon="mdi-close"
+                        variant="text"
+                        color="white"
+                        @click="drawer = false"
+                    />
+                </template>
+            </VListItem>
+
+            <p class="placeholder">
+                Lorsque toudincou, un panier vide. 👁️👄👁️
+            </p>
+        </VNavigationDrawer>
         <VAppBar
             class="navigation rounded-b-xl pr-8"
             elevation="4"
         >
             <template #prepend>
                 <VAppBarNavIcon
-                    class="display-sm-and-up"
+                    class="hidden-sm-and-up"
                     @click="linksDrawer = true"
                 />
                 <RouterLink
@@ -95,30 +119,7 @@ const linksDrawer = ref(false)
                 </div>
             </template>
         </VAppBar>
-        <VNavigationDrawer
-            v-model="drawer"
-            :temporary="true"
-            location="right"
-        >
-            <VListItem
-                title="Panier"
-                color="primary"
-                class="basket-title bg-primary"
-            >
-                <template #append>
-                    <VBtn
-                        icon="mdi-close"
-                        variant="text"
-                        color="white"
-                        @click="drawer = false"
-                    />
-                </template>
-            </VListItem>
 
-            <p class="placeholder">
-                Lorsque toudincou, un panier vide. 👁️👄👁️
-            </p>
-        </VNavigationDrawer>
         <VMain class="h-screen">
             <VContainer class="mt-16">
                 <VRow>
