@@ -6,6 +6,7 @@ import { storeToRefs } from 'pinia'
 import { useForm, useIsFormValid } from 'vee-validate'
 import { ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
+import { useDisplay } from 'vuetify'
 
 interface LoginForm {
     email: string
@@ -18,6 +19,7 @@ const emit = defineEmits<{
 
 const router = useRouter()
 const { currentUser, loadingUser } = storeToRefs(useAuthStore())
+const { smAndDown } = useDisplay()
 
 const { defineField, handleSubmit, setErrors } = useForm<LoginForm>({
     validationSchema: {
@@ -82,9 +84,9 @@ defineExpose({ submit })
 
 <template>
     <VCard
+        :width="smAndDown ? '100%' : '560'"
         prepend-icon="mdi-login"
         title="Connexion"
-        width="560"
     >
         <template #text>
             <VRow>

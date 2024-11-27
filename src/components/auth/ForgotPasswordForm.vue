@@ -3,6 +3,7 @@ import validationConfig from '@/plugins/validationConfig'
 import { AuthError, resetPassword } from 'aws-amplify/auth'
 import { useForm, useIsFormValid } from 'vee-validate'
 import { ref } from 'vue'
+import { useDisplay } from 'vuetify'
 
 interface ForgotPasswordForm {
     email: string
@@ -23,6 +24,7 @@ const { defineField, handleSubmit, setErrors } = useForm<ForgotPasswordForm>({
 const [email, emailProps] = defineField('email', validationConfig)
 
 const formValid = useIsFormValid()
+const { smAndDown } = useDisplay()
 
 const loading = ref(false)
 
@@ -53,9 +55,9 @@ const submit = handleSubmit(async (form) => {
 
 <template>
     <VCard
+        :width="smAndDown ? '100%' : '560'"
         prepend-icon="mdi-email-outline"
         title="Mot de passe oublié"
-        width="560"
     >
         <template #text>
             <VRow>
