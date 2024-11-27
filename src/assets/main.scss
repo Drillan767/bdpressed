@@ -1,6 +1,9 @@
 @font-face {
     font-family: 'bedeprimee';
-    src: url('../assets/fonts/bedeprimee.otf') format("opentype");
+    src:
+        local('bdprimee'),
+        url('../../public/fonts/bedeprimee.ttf') format("truetype"),
+        url('../../public/fonts/bedeprimee.otf') format("opentype");
     font-weight: 400;
     font-style: normal;
     font-display: auto;
