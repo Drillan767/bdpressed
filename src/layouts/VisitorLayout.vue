@@ -86,13 +86,13 @@ const linksDrawer = ref(false)
                             <RouterLink to="/">
                                 Accueil
                             </RouterLink>
-                            <RouterLink to="/">
+                            <RouterLink to="/bedes">
                                 Bédés
                             </RouterLink>
-                            <RouterLink to="/">
+                            <RouterLink to="/boutique">
                                 Boutique
                             </RouterLink>
-                            <RouterLink to="/">
+                            <RouterLink to="/contact">
                                 Contact
                             </RouterLink>
                         </VCol>
@@ -160,6 +160,13 @@ const linksDrawer = ref(false)
 
     .links a {
         text-decoration: none;
+
+        color: rgb(var(--v-theme-secondary));
+
+        &.router-link-active {
+            color: rgb(var(--v-theme-primary));
+        }
+
     }
 }
 </style>

@@ -5,13 +5,7 @@ import VisitorLayout from '@/layouts/VisitorLayout.vue'
 import { useHead } from '@vueuse/head'
 
 useHead({
-    title: 'Accueil',
-})
-
-definePage({
-    meta: {
-        requiresAuth: false,
-    },
+    title: 'Bédés',
 })
 </script>
 
@@ -27,8 +21,8 @@ definePage({
                 <VCol>
                     <BedeBlock>
                         <h1 class="mb-2">
-                            <VIcon icon="mdi-home-circle-outline" />
-                            Accueil
+                            <VIcon icon="mdi-grid-large" />
+                            Bédés
                         </h1>
                         <p>
                             I'm baby letterpress chia pabst waistcoat single-origin coffee deep v knausgaard. Subway tile microdosing roof party kitsch pitchfork jianbing cliche mlkshk flexitarian air plant man braid iceland before they sold out. Sus palo santo next level, tumeric retro authentic four dollar toast actually prism 3 wolf moon fingerstache vinyl hot chicken. Raw denim banjo mixtape organic, flannel hammock wolf street art subway tile vape. Beard gatekeep artisan retro squid asymmetrical.

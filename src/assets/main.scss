@@ -12,6 +12,7 @@
 
 p {
     margin-bottom: 1rem;
+    line-height: 2;
 }
 
 .bd {
@@ -43,17 +44,12 @@ p {
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(180deg, rgba(235,226,102,1) 0%, rgba(244,57,187,1) 100%);
+            background: linear-gradient(180deg, #ff802b 0%, #e53d85 100%);
             background-attachment: fixed;
             background-size: 100vh;
             mask-image: url('../assets/images/flowers.png');
             mask-repeat: repeat;
             mask-size: 600px 300px;
-        }
-
-        .v-container {
-            color: white;
-            text-shadow: 0 0 2px purple;
         }
     }
 }
