@@ -3,20 +3,24 @@ import LoginForm from '@/components/auth/LoginForm.vue'
 import RegisterOTP from '@/components/auth/RegisterOTP.vue'
 import useToast from '@/composables/toast'
 import AuthLayout from '@/layouts/AuthLayout.vue'
+import { useHead } from '@vueuse/head'
 import { ref } from 'vue'
+
+definePage({
+    meta: {
+        requiresAuth: false,
+    },
+})
+
+useHead({
+    title: 'Connexion',
+})
 
 const { showSuccess, showInfo } = useToast()
 
 const loginForm = ref<InstanceType<typeof LoginForm>>()
 const loginStatus = ref<'form' | 'otp'>('form')
 const loginEmail = ref('')
-
-definePage({
-    meta: {
-        title: 'Connexion',
-        requiresAuth: false,
-    },
-})
 
 function handleStepChange(email: string) {
     showInfo('Code de confirmation renvoyé')

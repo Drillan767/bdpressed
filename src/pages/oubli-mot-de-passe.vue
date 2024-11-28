@@ -2,14 +2,18 @@
 import ForgotPasswordForm from '@/components/auth/ForgotPasswordForm.vue'
 import NewPasswordForm from '@/components/auth/NewPasswordForm.vue'
 import AuthLayout from '@/layouts/AuthLayout.vue'
+import { useHead } from '@vueuse/head'
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 definePage({
     meta: {
-        title: 'Mot de passe oublié',
         requiresAuth: false,
     },
+})
+
+useHead({
+    title: 'Mot de passe oublié',
 })
 
 const router = useRouter()

@@ -1,9 +1,13 @@
 <script setup lang="ts">
 import VisitorLayout from '@/layouts/VisitorLayout.vue'
+import { useHead } from '@vueuse/head'
+
+useHead({
+    title: 'Accueil',
+})
 
 definePage({
     meta: {
-        title: 'Bédéprimée 🗣️🗣️🔊🔊',
         requiresAuth: false,
     },
 })

@@ -8,9 +8,21 @@ import useNumbers from '@/composables/numbers'
 import useToast from '@/composables/toast'
 import AdminLayout from '@/layouts/AdminLayout.vue'
 import useProductsStore from '@/stores/productsStore'
+import { useHead } from '@vueuse/head'
 import { storeToRefs } from 'pinia'
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
+
+definePage({
+    meta: {
+        requiresAuth: true,
+        requiresRole: 'admin',
+    },
+})
+
+useHead({
+    title: 'Articles',
+})
 
 type Product = SchemaType<'Product'> & { id: string }
 
