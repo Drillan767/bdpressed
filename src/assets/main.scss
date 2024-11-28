@@ -4,9 +4,14 @@
         local('bdprimee'),
         url('../../public/fonts/bedeprimee.ttf') format("truetype"),
         url('../../public/fonts/bedeprimee.otf') format("opentype");
+    size-adjust: 200%;
     font-weight: 400;
     font-style: normal;
     font-display: auto;
+}
+
+p {
+    margin-bottom: 1rem;
 }
 
 .bd {
@@ -17,7 +22,6 @@
     font-family: 'bedeprimee';
 
     .v-main {
-        font-size: 28px;
         z-index: 2;
         position: relative;
 
@@ -39,7 +43,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(180deg, rgba(235,226,102,1) 0%, rgba(244,57,187,1) 100%);;
+            background: linear-gradient(180deg, rgba(235,226,102,1) 0%, rgba(244,57,187,1) 100%);
             background-attachment: fixed;
             background-size: 100vh;
             mask-image: url('../assets/images/flowers.png');

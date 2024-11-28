@@ -100,27 +100,42 @@ const linksDrawer = ref(false)
                 </VContainer>
             </template>
             <template #append>
-                <div class="mt-16 d-flex ga-2">
-                    <RouterLink to="/connexion">
-                        <VAvatar
-                            size="48"
-                            image="/logo.png"
-                            class="elevation-4"
-                        />
-                    </RouterLink>
+                <div class="mt-16 mr-16 d-flex ga-2">
+                    <VTooltip location="bottom">
+                        <template #activator="{ props }">
+                            <RouterLink
+                                v-bind="props"
+                                to="/connexion"
+                            >
+                                <VAvatar
+                                    size="48"
+                                    image="/account.png"
+                                    class="elevation-4"
+                                />
+                            </RouterLink>
+                        </template>
 
-                    <VBadge
-                        color="primary"
-                        content="45"
-                        max="9"
-                    >
-                        <VAvatar
-                            size="48"
-                            image="/logo.png"
-                            class="elevation-4 cursor-pointer"
-                            @click="drawer = true"
-                        />
-                    </VBadge>
+                        Accéder à votre compte
+                    </VTooltip>
+
+                    <VTooltip location="bottom">
+                        <template #activator="{ props }">
+                            <VBadge
+                                v-bind="props"
+                                color="primary"
+                                content="45"
+                                max="9"
+                            >
+                                <VAvatar
+                                    size="48"
+                                    image="/cart.png"
+                                    class="elevation-4 cursor-pointer"
+                                    @click="drawer = true"
+                                />
+                            </VBadge>
+                        </template>
+                        Panier
+                    </VTooltip>
                 </div>
             </template>
         </VAppBar>
@@ -138,26 +153,13 @@ const linksDrawer = ref(false)
 </template>
 
 <style lang="scss" scoped>
-.basket-title :deep(.v-list-item-title) {
-    font-size: 40px;
-}
-
 :deep(.v-toolbar) {
     .v-toolbar__content {
         overflow: initial;
     }
 
-    .v-toolbar-title__placeholder {
-        font-size: 28px;
-    }
-
     .links a {
         text-decoration: none;
-        font-size: 24px;
     }
-}
-
-.placeholder {
-    font-size: 35px;
 }
 </style>
