@@ -8,10 +8,18 @@ import useStrings from '@/composables/strings'
 import useToast from '@/composables/toast'
 import AdminLayout from '@/layouts/AdminLayout.vue'
 import useProductsStore from '@/stores/productsStore'
+import { useHead } from '@vueuse/head'
 import { getUrl } from 'aws-amplify/storage'
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useDisplay } from 'vuetify'
+
+definePage({
+    meta: {
+        requiresAuth: true,
+        requiresRole: 'admin',
+    },
+})
 
 type Product = SchemaType<'Product'> & { id: string }
 
@@ -90,6 +98,10 @@ function articleDeleted() {
     router.push('/administration/articles')
         .then(() => showSuccess('L\'article a été supprimé'))
 }
+
+useHead({
+    title: () => `${product.value?.name} | Article`,
+})
 
 watch(product, () => {
     loadImages()

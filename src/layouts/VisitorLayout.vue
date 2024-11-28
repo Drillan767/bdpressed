@@ -1,5 +1,10 @@
 <script setup lang="ts">
+import { useHead } from '@vueuse/head'
 import { ref } from 'vue'
+
+useHead({
+    titleTemplate: () => `%s | Bédéprimée`,
+})
 
 const drawer = ref(false)
 const linksDrawer = ref(false)

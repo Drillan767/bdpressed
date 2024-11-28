@@ -1,15 +1,19 @@
 <script setup lang="ts">
 import AdminLayout from '@/layouts/AdminLayout.vue'
-
-/* const { products, getProducts, storeProducts } = useProducts()
+import { useHead } from '@vueuse/head'
 
 definePage({
     meta: {
-        title: 'Administration',
         requiresAuth: true,
         requiresRole: 'admin',
     },
 })
+
+useHead({
+    title: 'Administration',
+})
+
+/* const { products, getProducts, storeProducts } = useProducts()
 
 const router = useRouter()
 

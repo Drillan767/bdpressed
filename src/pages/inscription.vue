@@ -3,14 +3,18 @@ import RegisterForm from '@/components/auth/RegisterForm.vue'
 import RegisterOTP from '@/components/auth/RegisterOTP.vue'
 import useToast from '@/composables/toast'
 import AuthLayout from '@/layouts/AuthLayout.vue'
+import { useHead } from '@vueuse/head'
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 definePage({
     meta: {
-        title: 'Inscription',
         requiresAuth: false,
     },
+})
+
+useHead({
+    title: 'Inscription',
 })
 
 const router = useRouter()

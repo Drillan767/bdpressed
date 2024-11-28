@@ -1,11 +1,15 @@
 <script setup lang="ts">
+import { useHead } from '@vueuse/head'
 import { signOut } from 'aws-amplify/auth'
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useDisplay } from 'vuetify'
 
-const router = useRouter()
+useHead({
+    titleTemplate: () => `%s | BédéAdmin ☝️🤓`,
+})
 
+const router = useRouter()
 const { mobile } = useDisplay()
 
 const openDrawer = ref(true)

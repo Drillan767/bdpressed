@@ -1,3 +1,4 @@
+import { createHead } from '@vueuse/head'
 import { Amplify } from 'aws-amplify'
 import { createPinia } from 'pinia'
 import piniaPersistedState from 'pinia-plugin-persistedstate'
@@ -16,7 +17,10 @@ Amplify.configure(outputs)
 const pinia = createPinia()
 pinia.use(piniaPersistedState)
 
+const head = createHead()
+
 createApp(App)
+    .use(head)
     .use(pinia)
     .use(vuetify)
     .use(router)
