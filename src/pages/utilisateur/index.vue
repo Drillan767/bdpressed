@@ -3,14 +3,6 @@ import UserLayout from '@/layouts/UserLayout.vue'
 import { signOut } from 'aws-amplify/auth'
 import { useRouter } from 'vue-router'
 
-definePage({
-    meta: {
-        title: 'Tableau de bord',
-        requiresAuth: true,
-        requiresRole: 'user',
-    },
-})
-
 const router = useRouter()
 
 async function logout() {
