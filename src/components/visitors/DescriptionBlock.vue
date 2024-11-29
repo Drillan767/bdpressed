@@ -1,17 +1,19 @@
 <script setup lang="ts">
+import { useDisplay } from 'vuetify'
 
+const { smAndUp } = useDisplay()
 </script>
 
 <template>
     <VCard
         class="description-block"
         width="650"
-        height="350"
+        :height="smAndUp ? 350 : 'auto'"
     >
         <VCardText>
             <VContainer>
                 <VRow>
-                    <VCol class="">
+                    <VCol cols="12" md="6">
                         <VImg
                             class="rounded-xl"
                             src="/yell.png"
@@ -21,7 +23,11 @@
                             cover
                         />
                     </VCol>
-                    <VCol class="text-center d-flex flex-column justify-center text-secondary">
+                    <VCol
+                        cols="12"
+                        md="6"
+                        class="text-center d-flex flex-column justify-center text-secondary"
+                    >
                         <p>
                             Bienvenue dans mon journal intime pas très intime, mi burn-out mi révolution pantoufle.
                         </p>
