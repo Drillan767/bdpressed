@@ -2,7 +2,6 @@
 import LoginForm from '@/components/auth/LoginForm.vue'
 import RegisterOTP from '@/components/auth/RegisterOTP.vue'
 import useToast from '@/composables/toast'
-import AuthLayout from '@/layouts/AuthLayout.vue'
 import { useHead } from '@vueuse/head'
 import { ref } from 'vue'
 
@@ -30,22 +29,26 @@ function handleSuccess() {
 </script>
 
 <template>
-    <AuthLayout>
-        <VTabsWindow v-model="loginStatus">
-            <VTabsWindowItem value="form">
-                <LoginForm
-                    ref="loginForm"
-                    v-model="loginEmail"
-                    @change-step="handleStepChange"
-                />
-            </VTabsWindowItem>
-            <VTabsWindowItem value="otp">
-                <RegisterOTP
-                    :email="loginEmail"
-                    @back="loginStatus = 'form'"
-                    @success="handleSuccess"
-                />
-            </VTabsWindowItem>
-        </VTabsWindow>
-    </AuthLayout>
+    <VContainer>
+        <VRow>
+            <VCol class="d-flex justify-center">
+                <VTabsWindow v-model="loginStatus">
+                    <VTabsWindowItem value="form">
+                        <LoginForm
+                            ref="loginForm"
+                            v-model="loginEmail"
+                            @change-step="handleStepChange"
+                        />
+                    </VTabsWindowItem>
+                    <VTabsWindowItem value="otp">
+                        <RegisterOTP
+                            :email="loginEmail"
+                            @back="loginStatus = 'form'"
+                            @success="handleSuccess"
+                        />
+                    </VTabsWindowItem>
+                </VTabsWindow>
+            </VCol>
+        </VRow>
+    </VContainer>
 </template>

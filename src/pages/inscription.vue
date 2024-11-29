@@ -2,16 +2,9 @@
 import RegisterForm from '@/components/auth/RegisterForm.vue'
 import RegisterOTP from '@/components/auth/RegisterOTP.vue'
 import useToast from '@/composables/toast'
-import AuthLayout from '@/layouts/AuthLayout.vue'
 import { useHead } from '@vueuse/head'
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-
-definePage({
-    meta: {
-        requiresAuth: false,
-    },
-})
 
 useHead({
     title: 'Inscription',
@@ -30,20 +23,24 @@ function handleSuccess() {
 </script>
 
 <template>
-    <AuthLayout>
-        <VTabsWindow v-model="registerStatus">
-            <VTabsWindowItem value="form">
-                <RegisterForm
-                    v-model="registerEmail"
-                    @success="registerStatus = 'otp'"
-                />
-            </VTabsWindowItem>
-            <VTabsWindowItem value="otp">
-                <RegisterOTP
-                    :email="registerEmail"
-                    @success="handleSuccess"
-                />
-            </VTabsWindowItem>
-        </VTabsWindow>
-    </AuthLayout>
+    <VContainer>
+        <VRow>
+            <VCol class="d-flex justify-center">
+                <VTabsWindow v-model="registerStatus">
+                    <VTabsWindowItem value="form">
+                        <RegisterForm
+                            v-model="registerEmail"
+                            @success="registerStatus = 'otp'"
+                        />
+                    </VTabsWindowItem>
+                    <VTabsWindowItem value="otp">
+                        <RegisterOTP
+                            :email="registerEmail"
+                            @success="handleSuccess"
+                        />
+                    </VTabsWindowItem>
+                </VTabsWindow>
+            </VCol>
+        </VRow>
+    </VContainer>
 </template>
