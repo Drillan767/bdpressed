@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useHead } from '@vueuse/head'
 import { ref } from 'vue'
+import { RouterView } from 'vue-router'
 
 useHead({
     titleTemplate: () => `%s | Bédéprimée`,
@@ -144,7 +145,7 @@ const linksDrawer = ref(false)
             <VContainer class="mt-16">
                 <VRow>
                     <VCol>
-                        <slot />
+                        <RouterView />
                     </VCol>
                 </VRow>
             </VContainer>
@@ -160,10 +161,9 @@ const linksDrawer = ref(false)
 
     .links a {
         text-decoration: none;
-
         color: rgb(var(--v-theme-secondary));
 
-        &.router-link-active {
+        &.router-link-exact-active {
             color: rgb(var(--v-theme-primary));
         }
 

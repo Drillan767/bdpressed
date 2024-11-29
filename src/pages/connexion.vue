@@ -6,12 +6,6 @@ import AuthLayout from '@/layouts/AuthLayout.vue'
 import { useHead } from '@vueuse/head'
 import { ref } from 'vue'
 
-definePage({
-    meta: {
-        requiresAuth: false,
-    },
-})
-
 useHead({
     title: 'Connexion',
 })

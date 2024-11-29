@@ -1,16 +1,20 @@
 import useAuthStore from '@/stores/authStore'
 import { storeToRefs } from 'pinia'
 import { createRouter, createWebHistory } from 'vue-router'
-import { handleHotUpdate, routes } from 'vue-router/auto-routes'
+import administration from './administration'
+import utilisateur from './utilisateur'
+import visitors from './visitors'
+
+const routes = [
+    ...administration,
+    ...visitors,
+    ...utilisateur,
+]
 
 const router = createRouter({
     history: createWebHistory(),
     routes,
 })
-
-if (import.meta.hot) {
-    handleHotUpdate(router)
-}
 
 router.beforeEach((to) => {
     const { ensureLoggedIn } = useAuthStore()
