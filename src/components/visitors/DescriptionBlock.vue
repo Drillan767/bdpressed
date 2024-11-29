@@ -39,7 +39,7 @@
 .description-block {
     padding: 1rem;
     border-radius: 1rem;
-    box-shadow: 1px 16px 18px 7px #891e00;
+    box-shadow: 0 16px 18px 0 #891e00;
     border-radius: 48px !important;
 }
 </style>
