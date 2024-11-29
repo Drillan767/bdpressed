@@ -1,13 +1,5 @@
 <script setup lang="ts">
-import AdminLayout from '@/layouts/AdminLayout.vue'
 import { useHead } from '@vueuse/head'
-
-definePage({
-    meta: {
-        requiresAuth: true,
-        requiresRole: 'admin',
-    },
-})
 
 useHead({
     title: 'Administration',
@@ -29,10 +21,9 @@ async function testStoreProducts() {
 </script>
 
 <template>
-    <AdminLayout>
-        <h1>Admin Dashboard</h1>
-        <h2>Ici faut imaginer des petites stats bien stylées et tout</h2>
-        <!-- <VBtn @click="logout">
+    <h1>Admin Dashboard</h1>
+    <h2>Ici faut imaginer des petites stats bien stylées et tout</h2>
+    <!-- <VBtn @click="logout">
             Logout
         </VBtn>
 
@@ -47,5 +38,4 @@ async function testStoreProducts() {
         <div>
             {{ products }}
         </div> -->
-    </AdminLayout>
 </template>

@@ -5,7 +5,7 @@ export default [
         component: () => import('@/layouts/AdminLayout.vue'),
         children: [
             {
-                path: '/administration',
+                path: '',
                 name: 'administration.dashboard',
                 component: () => import('@/pages/administration/index.vue'),
                 meta: {
