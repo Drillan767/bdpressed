@@ -76,7 +76,7 @@ async function logout() {
         </VNavigationDrawer>
         <VMain class="bg-grey-lighten-2 h-screen">
             <VContainer>
-                <slot />
+                <RouterView />
             </VContainer>
         </VMain>
     </VLayout>

@@ -6,20 +6,12 @@ import EditIllustrationsForm from '@/components/admin/articles/EditIllustrations
 import useNumbers from '@/composables/numbers'
 import useStrings from '@/composables/strings'
 import useToast from '@/composables/toast'
-import AdminLayout from '@/layouts/AdminLayout.vue'
 import useProductsStore from '@/stores/productsStore'
 import { useHead } from '@vueuse/head'
 import { getUrl } from 'aws-amplify/storage'
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useDisplay } from 'vuetify'
-
-definePage({
-    meta: {
-        requiresAuth: true,
-        requiresRole: 'admin',
-    },
-})
 
 type Product = SchemaType<'Product'> & { id: string }
 
@@ -52,7 +44,7 @@ const formattedDescription = computed(() => {
 onMounted(loadProduct)
 
 async function loadProduct() {
-    const result = await getSingleProduct(articleId)
+    const result = await getSingleProduct(articleId.toString())
 
     if (result) {
         product.value = result as Product
@@ -110,114 +102,112 @@ watch(product, () => {
 </script>
 
 <template>
-    <AdminLayout>
-        <VContainer>
-            <VRow>
-                <VCol
-                    v-if="product"
-                    cols="12"
-                    md="8"
-                >
-                    <h1>
-                        <VIcon icon="mdi-package-variant" />
-                        {{ product.name }} ({{ formatPrice(product.price) }})
-                    </h1>
-                </VCol>
-                <VCol
-                    cols="12"
-                    md="4"
-                    class="text-end"
-                >
-                    <VBtn
-                        variant="outlined"
-                        icon="mdi-pencil"
-                        @click="displayEditDialog = true"
-                    />
-                    <VBtn
-                        variant="outlined"
-                        icon="mdi-delete"
-                        class="ml-2"
-                        color="error"
-                        @click="displayDeleteDialog = true"
-                    />
-                </VCol>
-            </VRow>
-            <VRow>
-                <VCol>
-                    <VCard v-if="product">
-                        <template #text>
+    <VContainer>
+        <VRow>
+            <VCol
+                v-if="product"
+                cols="12"
+                md="8"
+            >
+                <h1>
+                    <VIcon icon="mdi-package-variant" />
+                    {{ product.name }} ({{ formatPrice(product.price) }})
+                </h1>
+            </VCol>
+            <VCol
+                cols="12"
+                md="4"
+                class="text-end"
+            >
+                <VBtn
+                    variant="outlined"
+                    icon="mdi-pencil"
+                    @click="displayEditDialog = true"
+                />
+                <VBtn
+                    variant="outlined"
+                    icon="mdi-delete"
+                    class="ml-2"
+                    color="error"
+                    @click="displayDeleteDialog = true"
+                />
+            </VCol>
+        </VRow>
+        <VRow>
+            <VCol>
+                <VCard v-if="product">
+                    <template #text>
+                        <VRow>
+                            <VCol cols="12" md="6">
+                                <p class="text-h6">
+                                    Description rapide
+                                </p>
+                                <p>
+                                    {{ product.quickDescription }}
+                                </p>
+                                <VDivider class="my-4" />
+                                <p class="text-h6">
+                                    Description
+                                </p>
+                                <div
+                                    class="text-body-2 description"
+                                    v-html="formattedDescription"
+                                />
+                            </VCol>
+                            <VCol cols="12" md="6">
+                                <p class="text-h6 text-center">
+                                    Illustration principale
+                                </p>
+                                <VImg
+                                    :src="promotedImage"
+                                    :height="globalImageHeight"
+                                    width="100%"
+                                    class="rounded cursor-pointer"
+                                    @click="openPreview(promotedImage)"
+                                />
+                            </vcol>
+                        </VRow>
+                        <template v-if="product.images.length > 0">
+                            <VDivider
+                                class="my-4"
+                            />
+
                             <VRow>
-                                <VCol cols="12" md="6">
+                                <VCol cols="12">
                                     <p class="text-h6">
-                                        Description rapide
+                                        Illustrations
                                     </p>
-                                    <p>
-                                        {{ product.quickDescription }}
-                                    </p>
-                                    <VDivider class="my-4" />
-                                    <p class="text-h6">
-                                        Description
-                                    </p>
-                                    <div
-                                        class="text-body-2 description"
-                                        v-html="formattedDescription"
-                                    />
                                 </VCol>
-                                <VCol cols="12" md="6">
-                                    <p class="text-h6 text-center">
-                                        Illustration principale
-                                    </p>
-                                    <VImg
-                                        :src="promotedImage"
-                                        :height="globalImageHeight"
-                                        width="100%"
-                                        class="rounded cursor-pointer"
-                                        @click="openPreview(promotedImage)"
-                                    />
-                                </vcol>
                             </VRow>
-                            <template v-if="product.images.length > 0">
-                                <VDivider
-                                    class="my-4"
-                                />
 
-                                <VRow>
-                                    <VCol cols="12">
-                                        <p class="text-h6">
-                                            Illustrations
-                                        </p>
-                                    </VCol>
-                                </VRow>
-
-                                <EditIllustrationsForm
-                                    v-model:images="product.images"
-                                    :product-id="product.id"
-                                />
-                            </template>
+                            <EditIllustrationsForm
+                                v-model:images="product.images"
+                                :product-id="product.id"
+                            />
                         </template>
-                    </VCard>
-                </VCol>
-            </VRow>
-        </VContainer>
-        <VDialog
-            v-model="displayPreview"
-            :width="800"
-        >
-            <VImg :src="previewUrl" />
-        </VDialog>
-        <EditArticleDialog
-            v-if="product"
-            v-model="displayEditDialog"
-            v-model:product="product"
-            @success="articleUpdated"
-        />
-        <DeleteArticleDialog
-            v-if="product"
-            v-model="displayDeleteDialog"
-            :product="product"
-            @success="articleDeleted"
-        />
-    </AdminLayout>
+                    </template>
+                </VCard>
+            </VCol>
+        </VRow>
+    </VContainer>
+    <VDialog
+        v-model="displayPreview"
+        :width="800"
+    >
+        <VImg :src="previewUrl" />
+    </VDialog>
+    <EditArticleDialog
+        v-if="product"
+        v-model="displayEditDialog"
+        v-model:product="product"
+        @success="articleUpdated"
+    />
+    <DeleteArticleDialog
+        v-if="product"
+        v-model="displayDeleteDialog"
+        :product="product"
+        @success="articleDeleted"
+    />
 </template>
 
 <style scoped>

@@ -6,19 +6,11 @@ import EditArticleDialog from '@/components/admin/articles/EditArticleDialog.vue
 import useDayjs from '@/composables/dayjs'
 import useNumbers from '@/composables/numbers'
 import useToast from '@/composables/toast'
-import AdminLayout from '@/layouts/AdminLayout.vue'
 import useProductsStore from '@/stores/productsStore'
 import { useHead } from '@vueuse/head'
 import { storeToRefs } from 'pinia'
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
-
-definePage({
-    meta: {
-        requiresAuth: true,
-        requiresRole: 'admin',
-    },
-})
 
 useHead({
     title: 'Articles',
@@ -116,78 +108,76 @@ onMounted(getProducts)
 </script>
 
 <template>
-    <AdminLayout>
-        <h1 class="mb-2">
-            <VIcon icon="mdi-package-variant" />
-            Articles
-        </h1>
-        <VDataTable
-            :headers
-            :items="products"
-            :loading="productsLoading ? 'primary' : false"
-        >
-            <template #top>
-                <div class="d-flex justify-end mt-4 mr-4">
-                    <VBtn
-                        variant="outlined"
-                        color="primary"
-                        append-icon="mdi-package-variant-plus"
-                        @click="displayCreateDialog = true"
-                    >
-                        Créer un article
-                    </VBtn>
-                </div>
-            </template>
-            <template #item.createdAt="{ item }">
-                {{ dayjs(item.createdAt).format('DD/MM/YYYY HH:mm') }}
-            </template>
-            <template #item.updatedAt="{ item }">
-                {{ dayjs(item.updatedAt).format('DD/MM/YYYY HH:mm') }}
-            </template>
-            <template #item.price="{ item }">
-                {{ formatPrice(item.price) }}
-            </template>
-            <template #item.actions="{ item }">
-                <div class="d-flex justify-end">
-                    <VBtn
-                        variant="text"
-                        color="blue"
-                        icon="mdi-eye"
-                        @click="showProduct(item)"
-                    />
+    <h1 class="mb-2">
+        <VIcon icon="mdi-package-variant" />
+        Articles
+    </h1>
+    <VDataTable
+        :headers
+        :items="products"
+        :loading="productsLoading ? 'primary' : false"
+    >
+        <template #top>
+            <div class="d-flex justify-end mt-4 mr-4">
+                <VBtn
+                    variant="outlined"
+                    color="primary"
+                    append-icon="mdi-package-variant-plus"
+                    @click="displayCreateDialog = true"
+                >
+                    Créer un article
+                </VBtn>
+            </div>
+        </template>
+        <template #item.createdAt="{ item }">
+            {{ dayjs(item.createdAt).format('DD/MM/YYYY HH:mm') }}
+        </template>
+        <template #item.updatedAt="{ item }">
+            {{ dayjs(item.updatedAt).format('DD/MM/YYYY HH:mm') }}
+        </template>
+        <template #item.price="{ item }">
+            {{ formatPrice(item.price) }}
+        </template>
+        <template #item.actions="{ item }">
+            <div class="d-flex justify-end">
+                <VBtn
+                    variant="text"
+                    color="blue"
+                    icon="mdi-eye"
+                    @click="showProduct(item)"
+                />
 
-                    <VBtn
-                        variant="text"
-                        color="primary"
-                        icon="mdi-pencil"
-                        class="mx-2"
-                        @click="handleEditProduct(item)"
-                    />
+                <VBtn
+                    variant="text"
+                    color="primary"
+                    icon="mdi-pencil"
+                    class="mx-2"
+                    @click="handleEditProduct(item)"
+                />
 
-                    <VBtn
-                        variant="text"
-                        color="error"
-                        icon="mdi-delete"
-                        @click="handleDeleteProduct(item)"
-                    />
-                </div>
-            </template>
-        </VDataTable>
-        <CreateArticleDialog
-            v-model="displayCreateDialog"
-            @success="getProducts"
-        />
-        <EditArticleDialog
-            v-if="selectedProduct"
-            v-model="displayEditDialog"
-            v-model:product="selectedProduct"
-            @success="handleSuccess('edit')"
-        />
-        <DeleteArticleDialog
-            v-if="selectedProduct"
-            v-model="displayDeleteDialog"
-            :product="selectedProduct"
-            @success="handleSuccess('delete')"
-        />
-    </AdminLayout>
+                <VBtn
+                    variant="text"
+                    color="error"
+                    icon="mdi-delete"
+                    @click="handleDeleteProduct(item)"
+                />
+            </div>
+        </template>
+    </VDataTable>
+    <CreateArticleDialog
+        v-model="displayCreateDialog"
+        @success="getProducts"
+    />
+    <EditArticleDialog
+        v-if="selectedProduct"
+        v-model="displayEditDialog"
+        v-model:product="selectedProduct"
+        @success="handleSuccess('edit')"
+    />
+    <DeleteArticleDialog
+        v-if="selectedProduct"
+        v-model="displayDeleteDialog"
+        :product="selectedProduct"
+        @success="handleSuccess('delete')"
+    />
 </template>
