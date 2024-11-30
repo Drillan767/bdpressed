@@ -87,9 +87,6 @@ const linksDrawer = ref(false)
                             <RouterLink to="/">
                                 Accueil
                             </RouterLink>
-                            <RouterLink to="/bedes">
-                                Bédés
-                            </RouterLink>
                             <RouterLink to="/boutique">
                                 Boutique
                             </RouterLink>

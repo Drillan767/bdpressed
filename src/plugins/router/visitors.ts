@@ -13,14 +13,6 @@ export default [
                 },
             },
             {
-                path: '/bedes',
-                name: 'visitors.bedes',
-                component: () => import('@/pages/bedes.vue'),
-                meta: {
-                    requiresAuth: false,
-                },
-            },
-            {
                 path: '/boutique',
                 name: 'visitors.boutique',
                 component: () => import('@/pages/boutique.vue'),
