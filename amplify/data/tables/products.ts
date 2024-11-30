@@ -12,4 +12,8 @@ export default a.model({
     createdAt: a.datetime().required(),
     updatedAt: a.datetime().required(),
 })
-    .authorization(allow => [allow.publicApiKey()])
+    .authorization(allow => [
+        allow.group('ADMINS'),
+        allow.group('USERS').to(['read']),
+        allow.guest().to(['read']),
+    ])
