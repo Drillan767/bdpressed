@@ -72,6 +72,12 @@ async function logout() {
                     title="Articles"
                     nav
                 />
+                <VListItem
+                    to="/administration/users"
+                    prepend-icon="mdi-account-group-outline"
+                    title="Utilisateurs"
+                    nav
+                />
             </VList>
         </VNavigationDrawer>
         <VMain class="bg-grey-lighten-2 h-screen">

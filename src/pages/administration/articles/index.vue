@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { DataTableHeader } from '@/types'
 import type { SchemaType } from '@root/amplify/data/resource'
 import CreateArticleDialog from '@/components/admin/articles/CreateArticleDialog.vue'
 import DeleteArticleDialog from '@/components/admin/articles/DeleteArticleDialog.vue'
@@ -17,18 +18,6 @@ useHead({
 })
 
 type Product = SchemaType<'Product'> & { id: string }
-
-interface DataTableHeader {
-    title: string
-    align?: 'start' | 'center' | 'end'
-    sortable?: boolean
-    width?: string | number
-    key: string
-    nowrap?: boolean
-    cellProps?: {
-        class: string
-    }
-}
 
 const headers: DataTableHeader[] = [
     {

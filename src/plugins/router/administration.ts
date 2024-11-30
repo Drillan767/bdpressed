@@ -13,6 +13,7 @@ export default [
                     requiresRole: 'admin',
                 },
             },
+            // ARTICLES
             {
                 path: '/administration/articles',
                 name: 'administration.articles',
@@ -26,6 +27,26 @@ export default [
                 path: '/administration/articles/:id',
                 name: 'administration.articles.id',
                 component: () => import('@/pages/administration/articles/[id].vue'),
+                meta: {
+                    requiresAuth: true,
+                    requiresRole: 'admin',
+                },
+            },
+
+            // USERS
+            {
+                path: '/administration/users',
+                name: 'administration.users',
+                component: () => import('@/pages/administration/users/index.vue'),
+                meta: {
+                    requiresAuth: true,
+                    requiresRole: 'admin',
+                },
+            },
+            {
+                path: '/administration/users/:id',
+                name: 'administration.users.id',
+                component: () => import('@/pages/administration/users/[id].vue'),
                 meta: {
                     requiresAuth: true,
                     requiresRole: 'admin',

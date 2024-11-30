@@ -50,7 +50,7 @@ const submit = handleSubmit(async (form) => {
             password: form.password,
             options: {
                 userAttributes: {
-                    'custom:role': 'admin',
+                    'custom:role': 'user',
                 },
             },
         })
