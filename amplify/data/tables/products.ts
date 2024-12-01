@@ -13,7 +13,7 @@ export default a.model({
     updatedAt: a.datetime().required(),
 })
     .authorization(allow => [
-        allow.group('ADMINS'),
-        allow.group('USERS').to(['read']),
+        allow.group('ADMIN'),
+        allow.group('USER').to(['read']),
         allow.guest().to(['read']),
     ])
