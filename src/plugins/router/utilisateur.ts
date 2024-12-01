@@ -5,7 +5,7 @@ export default [
         component: () => import('@/layouts/UserLayout.vue'),
         children: [
             {
-                path: '/utilisateur',
+                path: '',
                 name: 'utilisateur.dashboard',
                 component: () => import('@/pages/utilisateur/index.vue'),
                 meta: {

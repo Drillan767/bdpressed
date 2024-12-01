@@ -73,7 +73,7 @@ async function logout() {
                     nav
                 />
                 <VListItem
-                    to="/administration/users"
+                    to="/administration/utilisateurs"
                     prepend-icon="mdi-account-group-outline"
                     title="Utilisateurs"
                     nav
