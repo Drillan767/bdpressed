@@ -15,7 +15,9 @@ const useProductsStore = defineStore('products', () => {
 
     async function getProducts() {
         productsLoading.value = true
-        const { data: productsData } = await client.models.Product.list()
+        const { data: productsData } = await client.models.Product.list({
+            authMode: 'userPool',
+        })
 
         if (productsData) {
             products.value = productsData as Product[]
@@ -37,6 +39,8 @@ const useProductsStore = defineStore('products', () => {
             images: [],
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
+        }, {
+            authMode: 'userPool',
         })
 
         if (!data) {
@@ -58,6 +62,8 @@ const useProductsStore = defineStore('products', () => {
             id: data.id,
             promotedImage: promotedImage ?? '',
             images,
+        }, {
+            authMode: 'userPool',
         })
 
         await getProducts()
@@ -67,7 +73,10 @@ const useProductsStore = defineStore('products', () => {
 
     const getSingleProduct = async (id: string) => {
         productsLoading.value = true
-        const { data } = await client.models.Product.get({ id })
+        const { data } = await client.models.Product.get(
+            { id },
+            { authMode: 'userPool' },
+        )
 
         productsLoading.value = false
 
@@ -91,6 +100,8 @@ const useProductsStore = defineStore('products', () => {
             ...newPromotedImage && {
                 promotedImage: newPromotedImage,
             },
+        }, {
+            authMode: 'userPool',
         })
 
         if (!data) {
@@ -101,7 +112,10 @@ const useProductsStore = defineStore('products', () => {
     async function updateProductImages(files: File[], productId: string) {
         const { data } = await client.models.Product.get(
             { id: productId },
-            { selectionSet: ['images'] },
+            {
+                selectionSet: ['images'],
+                authMode: 'userPool',
+            },
         )
 
         if (!data) {
@@ -123,6 +137,8 @@ const useProductsStore = defineStore('products', () => {
         const { data: updatedProduct } = await client.models.Product.update({
             id: productId,
             images: newImagesList,
+        }, {
+            authMode: 'userPool',
         })
 
         if (!updatedProduct) {
@@ -138,7 +154,10 @@ const useProductsStore = defineStore('products', () => {
     async function removeProductImages(paths: string, productId: string) {
         const { data } = await client.models.Product.get(
             { id: productId },
-            { selectionSet: ['images'] },
+            {
+                selectionSet: ['images'],
+                authMode: 'userPool',
+            },
         )
 
         if (!data) {
@@ -153,6 +172,8 @@ const useProductsStore = defineStore('products', () => {
         const { data: updatedProduct } = await client.models.Product.update({
             id: productId,
             images: newList,
+        }, {
+            authMode: 'userPool',
         })
 
         if (!updatedProduct) {
@@ -173,7 +194,10 @@ const useProductsStore = defineStore('products', () => {
             .concat(`products/${product.id}/${product.promotedImage}`)
 
         await deleteFiles(images)
-        await client.models.Product.delete({ id: product.id })
+        await client.models.Product.delete(
+            { id: product.id },
+            { authMode: 'userPool' },
+        )
         await getProducts()
 
         productsLoading.value = false

@@ -1,4 +1,4 @@
-import { AuthError, fetchUserAttributes } from 'aws-amplify/auth'
+import { AuthError, fetchAuthSession, fetchUserAttributes } from 'aws-amplify/auth'
 import { Hub } from 'aws-amplify/utils'
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
@@ -31,11 +31,26 @@ const useAuthStore = defineStore('auth', () => {
     async function retrieveUser() {
         loadingUser.value = true
         try {
-            const attributes = await fetchUserAttributes()
-            if (attributes) {
+            const session = await fetchAuthSession()
+
+            if (session) {
+                const email = session.tokens?.idToken?.payload.email as string
+                const rolesList = session.tokens?.accessToken?.payload['cognito:groups']
+
+                if (!rolesList || !Array.isArray(rolesList) || rolesList.length === 0) {
+                    currentUser.value = {
+                        email,
+                        role: 'user',
+                    }
+
+                    return
+                }
+
+                const role = rolesList.includes('ADMIN') ? 'admin' : 'user'
+
                 currentUser.value = {
-                    email: attributes.email as string,
-                    role: attributes['custom:role'] as 'admin' | 'user',
+                    email,
+                    role,
                 }
             }
         }
