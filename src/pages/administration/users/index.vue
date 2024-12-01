@@ -18,6 +18,7 @@ const { dayjs } = useDayjs()
 
 const users = ref<User[]>([])
 const loading = ref(false)
+const search = ref<string>()
 
 async function getUsers() {
     const { data: productsData } = await client.models.User.list({
@@ -63,8 +64,26 @@ onMounted(getUsers)
     <VDataTable
         :items="users"
         :headers="headers"
+        :search="search"
         :loading="loading ? 'primary' : false"
     >
+        <template #top>
+            <VContainer>
+                <VRow>
+                    <VCol
+                        cols="12"
+                        md="4"
+                        class="d-flex justify-end offset-md-8"
+                    >
+                        <VTextField
+                            v-model="search"
+                            append-inner-icon="mdi-magnify"
+                            label="Rechercher un utilisateur"
+                        />
+                    </VCol>
+                </VRow>
+            </VContainer>
+        </template>
         <template #item.createdAt="{ item }">
             {{ dayjs(item.createdAt).format('DD/MM/YYYY HH:mm') }}
         </template>

@@ -136,4 +136,17 @@ onMounted(getUser)
             </VRow>
         </template>
     </VCard>
+    <VRow class="mt-4">
+        <VCol>
+            <h1 class="mb-2">
+                <VIcon icon="mdi-shopping-outline" />
+                Commandes
+            </h1>
+        </VCol>
+    </VRow>
+    <VCard>
+        <template #text>
+            <VDataTable />
+        </template>
+    </VCard>
 </template>
