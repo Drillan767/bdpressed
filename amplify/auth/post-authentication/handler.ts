@@ -8,7 +8,7 @@ const client = new CognitoIdentityProviderClient()
 
 export const handler: PostConfirmationTriggerHandler = async (event) => {
     const command = new AdminAddUserToGroupCommand({
-        GroupName: 'USERS',
+        GroupName: 'USER',
         UserPoolId: event.userPoolId,
         Username: event.userName,
     })
