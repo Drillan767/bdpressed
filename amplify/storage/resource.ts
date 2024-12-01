@@ -4,10 +4,9 @@ export const storage = defineStorage({
     name: 'media',
     access: allow => ({
         'products/*': [
+            allow.groups(['ADMIN']).to(['read', 'write', 'delete']),
+            allow.groups(['USER']).to(['read']),
             allow.guest.to(['read']),
-            allow.authenticated.to(['read']),
-            allow.entity('identity').to(['read', 'write', 'delete']),
         ],
-
     }),
 })
