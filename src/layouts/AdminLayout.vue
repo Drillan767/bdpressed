@@ -80,7 +80,7 @@ async function logout() {
                 />
             </VList>
         </VNavigationDrawer>
-        <VMain class="bg-grey-lighten-2 h-screen">
+        <VMain class="bg-grey-lighten-2 h-min-screen">
             <VContainer>
                 <RouterView />
             </VContainer>
