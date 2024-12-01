@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { DataTableHeader } from '@/types'
 import type { Schema, SchemaType } from '@root/amplify/data/resource'
+import useDayjs from '@/composables/dayjs'
 import { useHead } from '@vueuse/head'
 import { generateClient } from 'aws-amplify/data'
 import { onMounted, ref } from 'vue'
@@ -13,11 +14,19 @@ useHead({
 
 const client = generateClient<Schema>()
 
+const { dayjs } = useDayjs()
+
 const users = ref<User[]>([])
 const loading = ref(false)
 
 async function getUsers() {
-    const { data: productsData } = await client.models.User.list()
+    const { data: productsData } = await client.models.User.list({
+        filter: {
+            role: {
+                eq: 'user',
+            },
+        },
+    })
 
     if (productsData) {
         users.value = productsData as User[]
@@ -26,13 +35,8 @@ async function getUsers() {
 
 const headers: DataTableHeader[] = [
     {
-        title: 'Nom',
-        key: 'name',
-        sortable: true,
-    },
-    {
-        title: 'Prix',
-        key: 'price',
+        title: 'Email',
+        key: 'email',
         sortable: true,
     },
     {
@@ -41,7 +45,7 @@ const headers: DataTableHeader[] = [
         sortable: true,
     },
     {
-        title: '',
+        title: 'Actions',
         key: 'actions',
         sortable: false,
         align: 'end',
@@ -60,5 +64,23 @@ onMounted(getUsers)
         :items="users"
         :headers="headers"
         :loading="loading ? 'primary' : false"
-    />
+    >
+        <template #item.createdAt="{ item }">
+            {{ dayjs(item.createdAt).format('DD/MM/YYYY HH:mm') }}
+        </template>
+        <template #item.actions="{ item }">
+            <div class="d-flex justify-end">
+                <RouterLink
+                    :to="`/administration/utilisateurs/${item.id}`"
+                    class="mx-2"
+                >
+                    <VBtn
+                        variant="text"
+                        color="primary"
+                        icon="mdi-eye"
+                    />
+                </RouterLink>
+            </div>
+        </template>
+    </VDataTable>
 </template>

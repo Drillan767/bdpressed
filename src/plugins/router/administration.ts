@@ -35,7 +35,7 @@ export default [
 
             // USERS
             {
-                path: '/administration/users',
+                path: '/administration/utilisateurs',
                 name: 'administration.users',
                 component: () => import('@/pages/administration/users/index.vue'),
                 meta: {
@@ -44,7 +44,7 @@ export default [
                 },
             },
             {
-                path: '/administration/users/:id',
+                path: '/administration/utilisateurs/:id',
                 name: 'administration.users.id',
                 component: () => import('@/pages/administration/users/[id].vue'),
                 meta: {
