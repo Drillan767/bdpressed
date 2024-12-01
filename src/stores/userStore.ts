@@ -16,7 +16,7 @@ const useUserStore = defineStore('user', () => {
         try {
             await client.models.User.create({
                 email: form.email,
-                role: 'admin', // TODO: change to user when ready
+                role: 'user',
                 createdAt: new Date().toISOString(),
                 updatedAt: new Date().toISOString(),
             })
