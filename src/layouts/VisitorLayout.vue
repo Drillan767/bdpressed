@@ -3,6 +3,19 @@ import { useHead } from '@vueuse/head'
 import { ref } from 'vue'
 import { RouterView } from 'vue-router'
 
+const links = [
+    { title: 'Accueil', to: '/' },
+    { title: 'Boutique', to: '/boutique' },
+    { title: 'Contact', to: '/contact' },
+]
+
+const icons = [
+    'mdi-facebook',
+    'mdi-twitter',
+    'mdi-linkedin',
+    'mdi-instagram',
+]
+
 useHead({
     titleTemplate: () => `%s | Bédéprimée`,
 })
@@ -146,6 +159,30 @@ const linksDrawer = ref(false)
                     </VCol>
                 </VRow>
             </VContainer>
+            <VFooter>
+                <VContainer>
+                    <VRow justify="center" no-gutters>
+                        <VBtn
+                            v-for="link in links"
+                            :key="link.title"
+                            :to="link.to"
+                            variant="text"
+                            class="mx-2"
+                        >
+                            {{ link.title }}
+                        </VBtn>
+                    </VRow>
+                    <VDivider class="my-4" />
+                    <VRow justify="center" no-gutters>
+                        <VIcon
+                            v-for="icon in icons"
+                            :key="icon"
+                            :icon="icon"
+                            class="mx-2"
+                        />
+                    </VRow>
+                </VContainer>
+            </VFooter>
         </VMain>
     </VLayout>
 </template>
