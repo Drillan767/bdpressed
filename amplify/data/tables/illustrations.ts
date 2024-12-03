@@ -2,16 +2,20 @@ import { a } from '@aws-amplify/backend'
 
 export default a.model({
     id: a.id(),
-    user: a.belongsTo('User', 'userId'),
-    type: a.enum(['bust', 'fullLength', 'animal']),
+    orderId: a.id(),
+    type: a.enum(['BUST', 'FULL_LENGTH', 'ANIMAL']),
     nbHumans: a.integer().required(),
     nbAnimals: a.integer().required(),
     nbItems: a.integer().required(),
-    pose: a.enum(['simple', 'complex']),
-    background: a.enum(['unified', 'gradient', 'simple', 'complex']),
+    pose: a.enum(['SIMPLE', 'COMPLEX']),
+    background: a.enum(['UNIFIED', 'GRADIENT', 'SIMPLE', 'COMPLEX']),
     price: a.float().required(),
-    status: a.enum(['pending', 'in-progress', 'completed']),
-    description: a.string(),
-    createdAt: a.datetime().required(),
-    updatedAt: a.datetime().required(),
+    status: a.enum(['PENDING', 'IN_PROGRESS', 'COMPLETED']),
+    description: a.string().required(),
+    order: a.belongsTo('Order', 'orderId'),
 })
+    .authorization(allow => [
+        allow.group('ADMIN'),
+        allow.group('USER').to(['read']),
+        allow.ownerDefinedIn('orderId'),
+    ])

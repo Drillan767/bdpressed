@@ -1,14 +1,19 @@
 import { a } from '@aws-amplify/backend'
 
 export default a.model({
-    id: a.id(),
-    order: a.belongsTo('Order', 'orderId'),
-    product: a.belongsTo('Product', 'productId'),
+    id: a.id().required(),
+    orderItemId: a.id().required(),
+    productId: a.id().required(),
     quantity: a.integer().required(),
     price: a.float().required(),
-    createdAt: a.datetime().required(),
-    updatedAt: a.datetime().required(),
+    product: a.belongsTo('Product', 'productId'),
+    orderItem: a.belongsTo('OrderItem', 'orderItemId'),
 })
+    .authorization(allow => [
+        allow.group('ADMIN'),
+        allow.group('USER').to(['read']),
+        allow.ownerDefinedIn('orderItemId'),
+    ])
 
 /*
 
