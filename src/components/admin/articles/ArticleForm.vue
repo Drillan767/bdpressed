@@ -38,30 +38,69 @@ const [price, priceProps] = defineField('price', validationConfig)
 
 const formValid = useIsFormValid()
 
+const video = ref<InstanceType<typeof HTMLVideoElement>>()
+const previewFile = ref<{ path: string, type: string }>()
 const displayPreview = ref(false)
-const previewUrl = ref('')
 const promotedPreview = ref('')
+const imagesPreviews = ref<string[]>([])
 
-const imagesPreviews = computed(() => {
-    if (!images.value)
-        return []
-
-    return Array.from(images.value).map(image => URL.createObjectURL(image))
-})
-
-function removeSingleImage(index: number) {
+function removeSingleFile(index: number) {
     images.value?.splice(index, 1)
+    imagesPreviews.value.splice(index, 1)
 }
 
-function openPreview(url: string) {
+function openPreview(file: File | null | undefined) {
+    if (!file)
+        return
+
+    previewFile.value = {
+        path: URL.createObjectURL(file),
+        type: file.type,
+    }
+
     displayPreview.value = true
-    previewUrl.value = url
+
+    if (file.type.includes('video')) {
+        setInterval(() => {
+            video.value?.play()
+        }, 200)
+    }
 }
 
-function generatePreviewUrl(file: File | File[]) {
+async function generatePreviewUrl(file: File | File[]) {
     if (Array.isArray(file))
         return
+
     promotedPreview.value = URL.createObjectURL(file)
+}
+
+async function generateVideoPreview(file: File): Promise<string> {
+    return new Promise<string>((resolve) => {
+        const video = document.createElement('video')
+        video.src = URL.createObjectURL(file)
+        video.addEventListener('loadeddata', () => {
+            const canvas = document.createElement('canvas')
+            video.currentTime = 1
+            canvas.width = video.videoWidth
+            canvas.height = video.videoHeight
+            canvas.getContext('2d')?.drawImage(video, 0, 0)
+            resolve(canvas.toDataURL())
+        }, { once: true })
+    })
+}
+
+async function generatePreviews(files: File[]) {
+    const previews = await Promise.all(
+        files.map(async (file) => {
+            if (file.type.includes('video')) {
+                return await generateVideoPreview(file)
+            }
+            else {
+                return URL.createObjectURL(file)
+            }
+        }),
+    )
+    imagesPreviews.value = previews
 }
 
 watch(() => props.form, (form) => {
@@ -73,6 +112,11 @@ watch(() => props.previewUrl, (url) => {
     if (props.edit && url) {
         promotedPreview.value = url
     }
+})
+
+watch(images, async (files) => {
+    if (files)
+        await generatePreviews(files)
 })
 
 watch(formValid, valid => emit('update:form-valid', valid), { immediate: true })
@@ -122,7 +166,7 @@ defineExpose({
                     <VAvatar
                         :image="promotedPreview"
                         class="cursor-pointer"
-                        @click.stop.prevent="openPreview(promotedPreview)"
+                        @click.stop.prevent="openPreview(promotedImage)"
                     />
                 </template>
             </VFileInput>
@@ -152,7 +196,7 @@ defineExpose({
                 v-bind="imagesProps"
                 v-model="images"
                 label="Illustrations"
-                accept="image/*"
+                accept="image/*,video/*"
                 prepend-icon="mdi-image-multiple"
                 chips
                 multiple
@@ -176,16 +220,9 @@ defineExpose({
                     :alt="`Illustration ${index + 1}`"
                     class="rounded-lg cursor-pointer"
                     width="100%"
-                    height="auto"
-                    @click="openPreview(preview)"
+                    max-height="160"
+                    @click="openPreview(images?.[index])"
                 />
-                <!-- <VBtn
-                    variant="text"
-                    icon="mdi-close"
-                    color="error"
-                    class="position-absolute top-0 right-0"
-                    @click.stop="removeSingleImage(index)"
-                /> -->
                 <VCardActions>
                     <VBtn
                         variant="outlined"
@@ -193,7 +230,7 @@ defineExpose({
                         color="error"
                         size="small"
                         block
-                        @click.stop="removeSingleImage(index)"
+                        @click.stop="removeSingleFile(index)"
                     >
                         Retirer
                     </VBtn>
@@ -205,6 +242,22 @@ defineExpose({
         v-model="displayPreview"
         :width="800"
     >
-        <VImg :src="previewUrl" />
+        <VImg
+            v-if="previewFile?.type.includes('image')"
+            :src="previewFile.path"
+            max-height="80vh"
+        />
+        <video
+            v-if="previewFile?.type.includes('video')"
+            ref="video"
+            :src="previewFile.path"
+            controls
+        />
     </VDialog>
 </template>
+
+<style lang="css" scoped>
+video {
+    max-height: 80vh;
+}
+</style>
