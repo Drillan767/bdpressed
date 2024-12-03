@@ -12,7 +12,11 @@ export default a.model({
     zipCode: a.string(),
     country: a.string(),
     phoneNumber: a.string(),
+    orders: a.hasMany('Order', 'userId'),
     createdAt: a.datetime().required(),
     updatedAt: a.datetime().required(),
 })
-    .authorization(allow => [allow.publicApiKey()])
+    .authorization(allow => [
+        allow.group('ADMIN'),
+        allow.ownerDefinedIn('email'),
+    ])

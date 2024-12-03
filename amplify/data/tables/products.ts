@@ -9,6 +9,7 @@ export default a.model({
     illustrations: a.string().required().array().required(),
     promotedImage: a.string().required(),
     tags: a.hasMany('ProductTag', 'productId'),
+    orderDetails: a.hasMany('OrderDetail', 'productId'),
     createdAt: a.datetime().required(),
     updatedAt: a.datetime().required(),
 })
