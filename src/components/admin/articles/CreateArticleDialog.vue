@@ -14,7 +14,7 @@ const form = ref<Required<ProductForm>>({
     description: '',
     price: 0,
     promotedImage: null,
-    images: [],
+    illustrations: [],
 })
 
 const displayDialog = defineModel<boolean>({ required: true })

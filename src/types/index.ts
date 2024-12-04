@@ -3,7 +3,7 @@ export interface ProductForm {
     quickDescription?: string
     description?: string
     price?: number
-    images?: File[]
+    illustrations?: File[]
     promotedImage?: File | null
 }
 

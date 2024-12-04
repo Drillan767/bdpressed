@@ -36,7 +36,7 @@ const useProductsStore = defineStore('products', () => {
             price: form.price,
             quickDescription: form.quickDescription,
             promotedImage: '',
-            images: [],
+            illustrations: [],
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
         }, {
@@ -50,9 +50,9 @@ const useProductsStore = defineStore('products', () => {
 
         // Save the images and the promoted image under the product id directory.
         const promotedImage = await storeSingleFile(form.promotedImage!, `products/${data.id}`)
-        const images = await storeFiles(form.images, `products/${data.id}`)
+        const illustrations = await storeFiles(form.illustrations, `products/${data.id}`)
 
-        if (!images || !promotedImage) {
+        if (!illustrations || !promotedImage) {
             console.error('Impossible de stocker les images')
             return
         }
@@ -61,7 +61,7 @@ const useProductsStore = defineStore('products', () => {
         await client.models.Product.update({
             id: data.id,
             promotedImage: promotedImage ?? '',
-            images,
+            illustrations,
         }, {
             authMode: 'userPool',
         })
@@ -109,11 +109,11 @@ const useProductsStore = defineStore('products', () => {
         }
     }
 
-    async function updateProductImages(files: File[], productId: string) {
+    async function updateProductMedia(files: File[], productId: string) {
         const { data } = await client.models.Product.get(
             { id: productId },
             {
-                selectionSet: ['images'],
+                selectionSet: ['illustrations'],
                 authMode: 'userPool',
             },
         )
@@ -123,7 +123,7 @@ const useProductsStore = defineStore('products', () => {
             return
         }
 
-        const currentImages = data.images
+        const currentImages = data.illustrations
 
         const newImages = await storeFiles(files, `products/${productId}`)
 
@@ -136,7 +136,7 @@ const useProductsStore = defineStore('products', () => {
 
         const { data: updatedProduct } = await client.models.Product.update({
             id: productId,
-            images: newImagesList,
+            illustrations: newImagesList,
         }, {
             authMode: 'userPool',
         })
@@ -151,11 +151,11 @@ const useProductsStore = defineStore('products', () => {
         return fullPaths
     }
 
-    async function removeProductImages(paths: string, productId: string) {
+    async function removeProductMedia(path: string, productId: string) {
         const { data } = await client.models.Product.get(
             { id: productId },
             {
-                selectionSet: ['images'],
+                selectionSet: ['illustrations'],
                 authMode: 'userPool',
             },
         )
@@ -165,13 +165,15 @@ const useProductsStore = defineStore('products', () => {
             return
         }
 
-        const currentImages = data.images
+        const currentImages = data.illustrations
 
-        const newList = currentImages.filter(image => !paths.includes(image))
+        const newList = currentImages.filter(illustrations => !path.includes(illustrations))
+
+        await deleteFiles([path])
 
         const { data: updatedProduct } = await client.models.Product.update({
             id: productId,
-            images: newList,
+            illustrations: newList,
         }, {
             authMode: 'userPool',
         })
@@ -187,10 +189,10 @@ const useProductsStore = defineStore('products', () => {
     }
 
     async function deleteProduct(product: Product) {
-        productsLoading.value = true
+        // productsLoading.value = true
 
-        const images = product.images
-            .map(image => `products/${product.id}/${image}`)
+        const images = product.illustrations
+            .map(illustration => `products/${product.id}/${illustration}`)
             .concat(`products/${product.id}/${product.promotedImage}`)
 
         await deleteFiles(images)
@@ -209,8 +211,8 @@ const useProductsStore = defineStore('products', () => {
         getProducts,
         getSingleProduct,
         storeProducts,
-        removeProductImages,
-        updateProductImages,
+        removeProductMedia,
+        updateProductMedia,
         updateProduct,
         deleteProduct,
     }

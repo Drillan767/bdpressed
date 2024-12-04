@@ -6,7 +6,7 @@ export default a.model({
     quickDescription: a.string().required(),
     description: a.string().required(),
     price: a.float().required(),
-    images: a.string().required().array().required(),
+    illustrations: a.string().required().array().required(),
     promotedImage: a.string().required(),
     tags: a.hasMany('ProductTag', 'productId'),
     createdAt: a.datetime().required(),

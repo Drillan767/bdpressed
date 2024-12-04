@@ -32,7 +32,7 @@ const { defineField, controlledValues, resetForm, setValues } = useForm<ProductF
 const [name, nameProps] = defineField('name', validationConfig)
 const [quickDescription, quickDescriptionProps] = defineField('quickDescription', validationConfig)
 const [description, descriptionProps] = defineField('description', validationConfig)
-const [images, imagesProps] = defineField('images', validationConfig)
+const [illustrations, illustrationsProps] = defineField('illustrations', validationConfig)
 const [promotedImage, promotedImageProps] = defineField('promotedImage', validationConfig)
 const [price, priceProps] = defineField('price', validationConfig)
 
@@ -45,7 +45,7 @@ const promotedPreview = ref('')
 const imagesPreviews = ref<string[]>([])
 
 function removeSingleFile(index: number) {
-    images.value?.splice(index, 1)
+    illustrations.value?.splice(index, 1)
     imagesPreviews.value.splice(index, 1)
 }
 
@@ -114,7 +114,7 @@ watch(() => props.previewUrl, (url) => {
     }
 })
 
-watch(images, async (files) => {
+watch(illustrations, async (files) => {
     if (files)
         await generatePreviews(files)
 })
@@ -193,8 +193,8 @@ defineExpose({
     <VRow v-if="!edit">
         <VCol>
             <VFileInput
-                v-bind="imagesProps"
-                v-model="images"
+                v-bind="illustrationsProps"
+                v-model="illustrations"
                 label="Illustrations"
                 accept="image/*,video/*"
                 prepend-icon="mdi-image-multiple"
@@ -221,7 +221,7 @@ defineExpose({
                     class="rounded-lg cursor-pointer"
                     width="100%"
                     max-height="160"
-                    @click="openPreview(images?.[index])"
+                    @click="openPreview(illustrations?.[index])"
                 />
                 <VCardActions>
                     <VBtn
