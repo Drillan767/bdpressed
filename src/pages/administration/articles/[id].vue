@@ -3,29 +3,29 @@ import type { SchemaType } from '@root/amplify/data/resource'
 import DeleteArticleDialog from '@/components/admin/articles/DeleteArticleDialog.vue'
 import EditArticleDialog from '@/components/admin/articles/EditArticleDialog.vue'
 import EditIllustrationsForm from '@/components/admin/articles/EditIllustrationsForm.vue'
+import useBuckets from '@/composables/buckets'
 import useNumbers from '@/composables/numbers'
 import useStrings from '@/composables/strings'
 import useToast from '@/composables/toast'
 import useProductsStore from '@/stores/productsStore'
 import { useHead } from '@vueuse/head'
-import { getUrl } from 'aws-amplify/storage'
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useDisplay } from 'vuetify'
 
 type Product = SchemaType<'Product'> & { id: string }
 
-const { params: { id: articleId } } = useRoute<'/administration/articles/[id]'>()
+const { params: { id: articleId } } = useRoute()
 const router = useRouter()
 
 const { getSingleProduct } = useProductsStore()
 const { showSuccess } = useToast()
 const { toParagraphs } = useStrings()
 const { formatPrice } = useNumbers()
+const { getSingleItem } = useBuckets()
 const { mobile } = useDisplay()
 
 const product = ref<Product>()
-const imgUrls = ref<string[]>([])
 const promotedImage = ref('')
 const displayPreview = ref(false)
 const previewUrl = ref('')
@@ -54,25 +54,8 @@ async function loadProduct() {
 async function loadPromotedImage() {
     if (!product.value)
         return
-    const result = await getUrl({
-        path: product.value.promotedImage,
-    })
 
-    promotedImage.value = result ? result.url.href : ''
-}
-
-async function loadImages() {
-    if (!product.value)
-        return
-    const promises = product.value.images.map(async (image) => {
-        const result = await getUrl({
-            path: image,
-        })
-
-        return result ? result.url.href : ''
-    })
-
-    imgUrls.value = await Promise.all(promises)
+    promotedImage.value = await getSingleItem(product.value.promotedImage)
 }
 
 function openPreview(url: string) {
@@ -95,10 +78,7 @@ useHead({
     title: () => `${product.value?.name} | Article`,
 })
 
-watch(product, () => {
-    loadImages()
-    loadPromotedImage()
-})
+watch(product, loadPromotedImage)
 </script>
 
 <template>
@@ -167,7 +147,7 @@ watch(product, () => {
                                 />
                             </vcol>
                         </VRow>
-                        <template v-if="product.images.length > 0">
+                        <template v-if="product.illustrations.length > 0">
                             <VDivider
                                 class="my-4"
                             />
@@ -181,7 +161,7 @@ watch(product, () => {
                             </VRow>
 
                             <EditIllustrationsForm
-                                v-model:images="product.images"
+                                v-model:illustrations="product.illustrations"
                                 :product-id="product.id"
                             />
                         </template>
