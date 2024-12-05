@@ -74,11 +74,6 @@ onMounted(async () => {
 </script>
 
 <template>
-    <!--     <VImg
-        v-for="(image, i) in thumbnails"
-        :key="i"
-        :src="image"
-    /> -->
     <VRow v-if="imagesPreviews.length > 0">
         <VCol
             v-for="(preview, index) in imagesPreviews"
@@ -86,34 +81,30 @@ onMounted(async () => {
             cols="12"
             md="3"
         >
-            <VCard
-                height="320"
-                class="pa-2"
-                variant="flat"
-            >
+            <div class="preview">
                 <div
-                    v-if="preview.type.includes('video')"
-                    class="video-container"
+
+                    class="media-container"
                 >
-                    <div class="responsive-sizer" />
                     <video
-                        class="preview-video"
-                        :src="preview.path"
+                        v-if="preview.type.includes('video')"
+                        class="media-item"
+                        :src="`${preview.path}`"
                         @click="openPreview(preview)"
                     />
+
+                    <img
+                        v-else
+                        :src="preview.path"
+                        :alt="`Illustration ${index + 1}`"
+                        class="media-item"
+                        width="100%"
+                        height="auto"
+                        @click="openPreview(preview)"
+                    >
                 </div>
 
-                <VImg
-                    v-else
-                    :src="preview.path"
-                    :alt="`Illustration ${index + 1}`"
-                    class="rounded-lg cursor-pointer preview"
-                    width="100%"
-                    height="auto"
-                    @click="openPreview(preview)"
-                />
-
-                <VCardActions>
+                <div class="action">
                     <VBtn
                         variant="outlined"
                         color="error"
@@ -123,8 +114,8 @@ onMounted(async () => {
                     >
                         Supprimer
                     </VBtn>
-                </VCardActions>
-            </VCard>
+                </div>
+            </div>
         </VCol>
         <VCol
             cols="12"
@@ -165,36 +156,45 @@ onMounted(async () => {
             v-if="previewFile && previewFile.type.includes('video')"
             ref="video"
             :src="previewFile.path"
+            class="video-preview"
             controls
         />
         <VImg
             v-if="previewFile && previewFile.type.includes('image')"
             :src="previewFile.path"
+            height="80vh"
         />
     </VDialog>
 </template>
 
-<style lang="css" scoped>
-.video-container {
-    height: auto;
-    width: 100%;
-
+<style lang="scss" scoped>
+.preview {
+    height: 350px;
     display: flex;
-    max-height: 100%;
-    max-width: 100%;
-    overflow: hidden;
-    position: relative;
+    flex-direction: column;
+    gap: 15px;
 
+    .media-container {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        border-radius: 10px;
+        cursor: pointer;
+
+        .media-item {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+        }
+    }
 }
 
-.preview-video {
-    max-width: 100%;
-    object-fit: cover;
-    border-radius: 8px;
-}
-
-.responsive-sizer {
-    padding-bottom: 75%;
-    flex: 1 0 0;
+.video-preview {
+    max-height: 80vh;
 }
 </style>

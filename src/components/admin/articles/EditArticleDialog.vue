@@ -29,7 +29,7 @@ const form = ref<Required<ProductForm>>({
     description: '',
     price: 0,
     promotedImage: null,
-    images: [],
+    illustrations: [],
 })
 
 async function submit() {
@@ -57,12 +57,12 @@ watch(displayDialog, async (value) => {
             description: editedProduct.value.description,
             price: editedProduct.value.price,
             promotedImage: null,
-            images: [],
+            illustrations: [],
         }
 
         previewUrl.value = await getSingleItem(editedProduct.value.promotedImage)
     }
-})
+}, { immediate: true })
 </script>
 
 <template>
