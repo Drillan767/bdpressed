@@ -169,8 +169,6 @@ const useProductsStore = defineStore('products', () => {
 
         const newList = currentImages.filter(illustrations => !path.includes(illustrations))
 
-        console.log(path)
-
         await deleteFiles([path])
 
         const { data: updatedProduct } = await client.models.Product.update({
@@ -195,9 +193,6 @@ const useProductsStore = defineStore('products', () => {
 
         const images = product.illustrations
             .concat(product.promotedImage)
-
-        // products/cd1c396f-c253-4406-9079-4b12ec2b54e3/wallpaper_0029.jpg
-        console.log(images)
 
         await deleteFiles(images)
         await client.models.Product.delete(
