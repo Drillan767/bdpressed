@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useHead } from '@vueuse/head'
-import { ref } from 'vue'
+import { provide, ref } from 'vue'
 import { RouterView } from 'vue-router'
 
 const links = [
@@ -22,6 +22,10 @@ useHead({
 
 const drawer = ref(false)
 const linksDrawer = ref(false)
+
+const openDrawer = () => drawer.value = true
+
+provide('openDrawer', openDrawer)
 </script>
 
 <template>

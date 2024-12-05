@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import BedeBlock from '@/components/visitors/BedeBlock.vue'
-import DescriptionBlock from '@/components/visitors/DescriptionBlock.vue'
 import { useHead } from '@vueuse/head'
 
 useHead({
@@ -10,18 +9,15 @@ useHead({
 
 <template>
     <VContainer>
-        <VRow class="mb-8">
-            <VCol class="d-flex justify-center">
-                <DescriptionBlock />
-            </VCol>
-        </VRow>
         <VRow>
             <VCol>
                 <BedeBlock>
-                    <h1 class="mb-2">
-                        <VIcon icon="mdi-store" />
-                        Boutique
+                    <h1 class="text-center text-h4 mb-4 bd">
+                        Mes petites créations à vendre :
                     </h1>
+                    <h2 text-h5 class="text-center my-12 bd">
+                        ¥ Tu reçois des payettes, je reçois de quoi payer ma psy ¥
+                    </h2>
                     <p>
                         I'm baby letterpress chia pabst waistcoat single-origin coffee deep v knausgaard. Subway tile microdosing roof party kitsch pitchfork jianbing cliche mlkshk flexitarian air plant man braid iceland before they sold out. Sus palo santo next level, tumeric retro authentic four dollar toast actually prism 3 wolf moon fingerstache vinyl hot chicken. Raw denim banjo mixtape organic, flannel hammock wolf street art subway tile vape. Beard gatekeep artisan retro squid asymmetrical.
                     </p>
