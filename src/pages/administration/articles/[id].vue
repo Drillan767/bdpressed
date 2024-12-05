@@ -141,8 +141,7 @@ watch(product, loadPromotedImage)
                                 <VImg
                                     :src="promotedImage"
                                     :height="globalImageHeight"
-                                    width="100%"
-                                    class="rounded cursor-pointer"
+                                    class="rounded-lg cursor-pointer"
                                     @click="openPreview(promotedImage)"
                                 />
                             </vcol>
