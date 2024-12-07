@@ -1,7 +1,7 @@
 import { a } from '@aws-amplify/backend'
 
 export default a.model({
-    id: a.id(),
+    id: a.id().required(),
     name: a.string().required(),
     slug: a.string().required().default(''),
     quickDescription: a.string().required(),
