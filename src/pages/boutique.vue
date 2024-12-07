@@ -1,10 +1,21 @@
 <script setup lang="ts">
+import type { SchemaType } from '@root/amplify/data/resource'
 import BedeBlock from '@/components/visitors/BedeBlock.vue'
+import useNumbers from '@/composables/numbers'
+import useProductsStore from '@/stores/productsStore'
 import { useHead } from '@vueuse/head'
+import { storeToRefs } from 'pinia'
+import { onMounted, ref } from 'vue'
+
+type Product = SchemaType<'Product'> & { id: string }
 
 useHead({
     title: 'Boutique',
 })
+
+const { products, productsLoading } = storeToRefs(useProductsStore())
+const { getProducts } = useProductsStore()
+const { formatPrice } = useNumbers()
 </script>
 
 <template>
