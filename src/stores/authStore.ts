@@ -1,5 +1,6 @@
-import { AuthError, fetchAuthSession, fetchUserAttributes } from 'aws-amplify/auth'
+import { AuthError, fetchAuthSession } from 'aws-amplify/auth'
 import { Hub } from 'aws-amplify/utils'
+import dayjs from 'dayjs'
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 
@@ -10,6 +11,7 @@ interface AuthUser {
 
 const useAuthStore = defineStore('auth', () => {
     const loadingUser = ref(false)
+    const lastChecked = ref<string>()
     const currentUser = ref<AuthUser | undefined>()
 
     const isAuthenticated = computed(() => !!currentUser.value)
@@ -24,6 +26,7 @@ const useAuthStore = defineStore('auth', () => {
 
             if (payload.event === 'signedOut') {
                 currentUser.value = undefined
+                lastChecked.value = undefined
             }
         })
     }
@@ -53,11 +56,15 @@ const useAuthStore = defineStore('auth', () => {
                     role,
                 }
             }
+
+            // Add last checked in any case
+            lastChecked.value = dayjs().toISOString()
         }
         catch (error) {
             if (error instanceof AuthError) {
                 if (error.name === 'UserUnAuthenticatedException') {
                     currentUser.value = undefined
+                    lastChecked.value = undefined
                 }
             }
         }
@@ -67,12 +74,12 @@ const useAuthStore = defineStore('auth', () => {
     }
 
     async function ensureLoggedIn() {
-        if (currentUser.value) {
+        if (lastChecked.value && dayjs().isBefore(dayjs(lastChecked.value).add(5, 'minutes'))) {
             return true
         }
 
         try {
-            await fetchUserAttributes()
+            await retrieveUser()
             return true
         }
         catch {
@@ -89,7 +96,7 @@ const useAuthStore = defineStore('auth', () => {
     }
 }, {
     persist: {
-        pick: ['currentUser'],
+        pick: ['currentUser', 'lastChecked'],
     },
 })
 
