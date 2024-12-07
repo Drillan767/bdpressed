@@ -15,7 +15,15 @@ export default [
             {
                 path: '/boutique',
                 name: 'visitors.boutique',
-                component: () => import('@/pages/boutique.vue'),
+                component: () => import('@/pages/boutique/index.vue'),
+                meta: {
+                    requiresAuth: false,
+                },
+            },
+            {
+                path: '/boutique[slug]',
+                name: 'visitors.article_detail',
+                component: () => import('@/pages/boutique/[slug].vue'),
                 meta: {
                     requiresAuth: false,
                 },
