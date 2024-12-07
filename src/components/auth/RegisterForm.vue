@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import useToast from '@/composables/toast'
 import validationConfig from '@/plugins/validationConfig'
+import { onKeyStroke } from '@vueuse/core'
 import { AuthError, signUp } from 'aws-amplify/auth'
 import { useForm, useIsFormValid } from 'vee-validate'
 import { ref, watch } from 'vue'
@@ -73,6 +74,8 @@ const submit = handleSubmit(async (form) => {
         loading.value = false
     }
 })
+
+onKeyStroke('Enter', submit)
 
 watch([email, formValid], ([email, valid]) => {
     if (valid && email.length > 0) {

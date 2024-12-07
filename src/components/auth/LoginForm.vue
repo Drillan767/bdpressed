@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import validationConfig from '@/plugins/validationConfig'
 import useAuthStore from '@/stores/authStore'
+import { onKeyStroke } from '@vueuse/core'
 import { AuthError, resendSignUpCode, signIn } from 'aws-amplify/auth'
 import { storeToRefs } from 'pinia'
 import { useForm, useIsFormValid } from 'vee-validate'
@@ -72,6 +73,8 @@ const submit = handleSubmit(async (form) => {
 
     loading.value = false
 })
+
+onKeyStroke('Enter', submit)
 
 watch([loginSuccess, currentUser], ([success, user]) => {
     if (success && user) {
