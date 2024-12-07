@@ -48,7 +48,7 @@ function closeDialog() {
         scrollable
     >
         <VCard
-            :loading
+            :loading="loading ? 'primary' : false"
             prepend-icon="mdi-package-variant-plus"
             title="Créer un article"
         >
