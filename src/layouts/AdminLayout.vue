@@ -35,14 +35,19 @@ async function logout() {
             <template #append>
                 <VMenu>
                     <template #activator="{ props }">
-                        <VBtn>
-                            <VIcon
-                                v-bind="props"
-                                icon="mdi-account-circle"
-                            />
-                        </VBtn>
+                        <VBtn
+                            v-bind="props"
+                            color="primary"
+                            icon="mdi-account-circle"
+                        />
                     </template>
                     <VList>
+                        <VListItem
+                            prepend-icon="mdi-home"
+                            title="Retour au site"
+                            to="/"
+                        />
+                        <VDivider class="my-2" />
                         <VListItem
                             prepend-icon="mdi-logout"
                             title="Déconnexion"
