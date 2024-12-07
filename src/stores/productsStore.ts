@@ -1,6 +1,7 @@
 import type { EditProductForm, ProductForm } from '@/types'
 import type { Schema, SchemaType } from '@root/amplify/data/resource'
 import useBuckets from '@/composables/buckets'
+import useStrings from '@/composables/strings'
 import { generateClient } from 'aws-amplify/data'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
@@ -9,6 +10,7 @@ type Product = SchemaType<'Product'> & { id: string }
 
 const useProductsStore = defineStore('products', () => {
     const { getItems, storeFiles, storeSingleFile, deleteFiles } = useBuckets()
+    const { toSlug } = useStrings()
     const products = ref<Product[]>([])
     const productsLoading = ref(false)
     const client = generateClient<Schema>()
@@ -32,6 +34,7 @@ const useProductsStore = defineStore('products', () => {
         // Save the product a first time to get the id.
         const { data } = await client.models.Product.create({
             name: form.name,
+            slug: toSlug(form.name),
             description: form.description,
             price: form.price,
             quickDescription: form.quickDescription,
@@ -93,6 +96,9 @@ const useProductsStore = defineStore('products', () => {
         const { data } = await client.models.Product.update({
             id: form.id,
             name: form.name,
+            ...form.name && {
+                slug: toSlug(form.name),
+            },
             description: form.description,
             price: form.price,
             quickDescription: form.quickDescription,
