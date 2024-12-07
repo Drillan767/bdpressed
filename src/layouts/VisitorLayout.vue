@@ -155,8 +155,11 @@ provide('openDrawer', openDrawer)
             </template>
         </VAppBar>
 
-        <VMain class="h-screen">
-            <VContainer class="mt-16">
+        <VMain min-height="100vh">
+            <VContainer
+                class="mt-16"
+                min-height="100vh"
+            >
                 <VRow>
                     <VCol>
                         <RouterView />
