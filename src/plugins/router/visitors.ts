@@ -21,7 +21,7 @@ export default [
                 },
             },
             {
-                path: '/boutique[slug]',
+                path: '/boutique/:slug',
                 name: 'visitors.article_detail',
                 component: () => import('@/pages/boutique/[slug].vue'),
                 meta: {
