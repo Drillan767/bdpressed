@@ -115,7 +115,7 @@ provide('openDrawer', openDrawer)
                 </VContainer>
             </template>
             <template #append>
-                <div class="mt-16 mr-16 d-flex ga-2">
+                <div class="mt-16 mr-8 mr-md-16 d-flex ga-2">
                     <VTooltip location="bottom">
                         <template #activator="{ props }">
                             <RouterLink
