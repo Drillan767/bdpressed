@@ -36,7 +36,7 @@ const useAuthStore = defineStore('auth', () => {
         try {
             const session = await fetchAuthSession()
 
-            if (session) {
+            if (session.tokens) {
                 const email = session.tokens?.idToken?.payload.email as string
                 const rolesList = session.tokens?.accessToken?.payload['cognito:groups']
 
