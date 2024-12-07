@@ -45,12 +45,92 @@ onMounted(getProducts)
                     <VContainer>
                         <VRow>
                             <VCol
+                                cols="12"
+                                md="4"
+                            >
+                                <VCard
+                                    variant="flat"
+                                    to="/boutique/illustration"
+                                >
+                                    <VContainer class="pa-0 text-secondary">
+                                        <VRow no-gutters>
+                                            <VCol>
+                                                <VImg
+                                                    src="https://cdn.vuetifyjs.com/images/cards/sunshine.jpg"
+                                                    alt="Illustration"
+                                                    class="rounded-lg"
+                                                    aspect-ratio="9/16"
+                                                    width="100%"
+                                                />
+                                            </VCol>
+                                        </VRow>
+                                        <VRow>
+                                            <VCol cols="10">
+                                                <h3>Illustration</h3>
+                                                <p>À partir de 25€</p>
+                                            </VCol>
+                                            <VCol cols="2">
+                                                <VBtn
+                                                    variant="text"
+                                                    color="secondary"
+                                                    icon="mdi-cart"
+                                                />
+                                            </VCol>
+                                        </VRow>
+                                        <VRow no-gutters>
+                                            <VCol>
+                                                <p>
+                                                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Quidem, doloremque.
+                                                </p>
+                                            </VCol>
+                                        </VRow>
+                                    </VContainer>
+                                </VCard>
+                            </VCol>
+                            <VCol
                                 v-for="(product, i) in products"
                                 :key="i"
                                 cols="12"
                                 md="4"
                             >
-                                <p>{{ product.name }}</p>
+                                <VCard
+                                    :to="`/boutique/${product.slug}`"
+                                    variant="flat"
+                                >
+                                    <VContainer class="pa-0 text-secondary">
+                                        <VRow no-gutters>
+                                            <VCol>
+                                                <VImg
+                                                    :src="product.promotedImage"
+                                                    :alt="product.name"
+                                                    class="rounded-lg"
+                                                    aspect-ratio="9/16"
+                                                    width="100%"
+                                                />
+                                            </VCol>
+                                        </VRow>
+                                        <VRow>
+                                            <VCol cols="10">
+                                                <h3>{{ product.name }}</h3>
+                                                <p>{{ formatPrice(product.price) }}</p>
+                                            </VCol>
+                                            <VCol cols="2">
+                                                <VBtn
+                                                    variant="text"
+                                                    color="secondary"
+                                                    icon="mdi-cart"
+                                                />
+                                            </VCol>
+                                        </VRow>
+                                        <VRow no-gutters>
+                                            <VCol>
+                                                <p>
+                                                    {{ product.quickDescription }}
+                                                </p>
+                                            </VCol>
+                                        </VRow>
+                                    </VContainer>
+                                </VCard>
                             </VCol>
                         </VRow>
                     </VContainer>
