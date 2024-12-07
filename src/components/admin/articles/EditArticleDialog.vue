@@ -73,7 +73,7 @@ watch(displayDialog, async (value) => {
         scrollable
     >
         <VCard
-            :loading
+            :loading="loading ? 'primary' : false"
             :title="`Éditer ${editedProduct.name}`"
             prepend-icon="mdi-package-variant"
         >
