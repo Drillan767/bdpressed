@@ -9,11 +9,36 @@ import { ref } from 'vue'
 type Product = SchemaType<'Product'> & { id: string }
 
 const useProductsStore = defineStore('products', () => {
-    const { getItems, storeFiles, storeSingleFile, deleteFiles } = useBuckets()
+    const { getItems, getSingleItem, storeFiles, storeSingleFile, deleteFiles } = useBuckets()
     const { toSlug } = useStrings()
     const products = ref<Product[]>([])
     const productsLoading = ref(false)
     const client = generateClient<Schema>()
+
+    async function getCatalog() {
+        const { data } = await client.models.Product.list({
+            authMode: 'userPool',
+            selectionSet: [
+                'id',
+                'name',
+                'slug',
+                'price',
+                'promotedImage',
+                'quickDescription',
+            ],
+        })
+
+        if (data) {
+            const products = data.map(async (product) => {
+                const illustration = await getSingleItem(product.promotedImage)
+                return { ...product, promotedImage: illustration }
+            })
+
+            return Promise.all(products)
+        }
+
+        return []
+    }
 
     async function getProducts() {
         productsLoading.value = true
@@ -214,6 +239,7 @@ const useProductsStore = defineStore('products', () => {
         productsLoading,
         products,
         getProducts,
+        getCatalog,
         getSingleProduct,
         storeProducts,
         removeProductMedia,
