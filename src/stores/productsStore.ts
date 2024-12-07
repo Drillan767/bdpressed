@@ -111,6 +111,34 @@ const useProductsStore = defineStore('products', () => {
         return data
     }
 
+    const productBySlug = async (slug: string) => {
+        productsLoading.value = true
+        const { data } = await client.models.Product.list(
+            {
+                filter: {
+                    slug: {
+                        eq: slug,
+                    },
+                },
+                limit: 1,
+                authMode: 'userPool',
+            },
+        )
+
+        if (!data || data.length === 0) {
+            return null
+        }
+
+        const product = data[0]
+
+        const promotedImage = await getSingleItem(product.promotedImage)
+        const illustrations = await getItems(product.illustrations)
+
+        productsLoading.value = false
+
+        return { ...product, promotedImage, illustrations }
+    }
+
     async function updateProduct(form: EditProductForm) {
         let newPromotedImage: string | undefined
 
@@ -241,6 +269,7 @@ const useProductsStore = defineStore('products', () => {
         getProducts,
         getCatalog,
         getSingleProduct,
+        productBySlug,
         storeProducts,
         removeProductMedia,
         updateProductMedia,
