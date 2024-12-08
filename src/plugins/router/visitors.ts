@@ -19,11 +19,38 @@ export default [
                 meta: {
                     requiresAuth: false,
                 },
+                children: [
+                    {
+                        path: '',
+                        name: 'visitors.boutique.landing',
+                        component: () => import('@/pages/boutique/index.vue'),
+                        meta: {
+                            requiresAuth: false,
+                        },
+                    },
+                    {
+                        path: '/:slug',
+                        name: 'visitors.boutique.article',
+                        component: () => import('@/pages/boutique/[slug].vue'),
+                        meta: {
+                            requiresAuth: false,
+                        },
+                        props: true,
+                    },
+                ],
             },
             {
                 path: '/boutique/:slug',
                 name: 'visitors.article_detail',
                 component: () => import('@/pages/boutique/[slug].vue'),
+                meta: {
+                    requiresAuth: false,
+                },
+            },
+            {
+                path: '/boutique/illustration',
+                name: 'visitors.illustration',
+                component: () => import('@/pages/boutique/illustration.vue'),
                 meta: {
                     requiresAuth: false,
                 },
