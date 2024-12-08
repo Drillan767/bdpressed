@@ -17,7 +17,7 @@ useHead({
     title: 'Articles',
 })
 
-type Product = SchemaType<'Product'> & { id: string }
+type Product = SchemaType<'Product'>
 
 const headers: DataTableHeader[] = [
     {

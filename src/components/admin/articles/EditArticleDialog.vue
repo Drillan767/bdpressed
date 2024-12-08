@@ -6,7 +6,7 @@ import useProductsStore from '@/stores/productsStore'
 import { ref, watch } from 'vue'
 import ArticleForm from './ArticleForm.vue'
 
-type Product = SchemaType<'Product'> & { id: string }
+type Product = SchemaType<'Product'>
 
 const emit = defineEmits<{
     (e: 'success'): void
