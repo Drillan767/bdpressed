@@ -13,7 +13,7 @@ import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useDisplay } from 'vuetify'
 
-type Product = SchemaType<'Product'> & { id: string }
+type Product = SchemaType<'Product'>
 
 const { params: { id: articleId } } = useRoute()
 const router = useRouter()
