@@ -3,7 +3,7 @@ import { a } from '@aws-amplify/backend'
 export default a.model({
     id: a.id().required(),
     name: a.string().required(),
-    slug: a.string().required().default(''),
+    slug: a.string().required(),
     quickDescription: a.string().required(),
     description: a.string().required(),
     price: a.float().required(),
@@ -14,8 +14,14 @@ export default a.model({
     createdAt: a.datetime().required(),
     updatedAt: a.datetime().required(),
 })
+    .secondaryIndexes(index => [
+        index('slug'),
+    ])
     .authorization(allow => [
         allow.group('ADMIN'),
-        allow.group('USER').to(['read']),
-        allow.guest().to(['read']),
+        allow.guest(),
+        // allow.group('ADMIN'),
+        // allow.group('USER').to(['read']),
+        // allow.authenticated.to(['read']),
+        // allow.().to(['read', 'list']),
     ])
