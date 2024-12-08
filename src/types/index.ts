@@ -1,3 +1,5 @@
+import type { SchemaType } from '@root/amplify/data/resource'
+
 export interface ProductForm {
     name?: string
     quickDescription?: string
@@ -21,4 +23,20 @@ export interface DataTableHeader {
     cellProps?: {
         class: string
     }
+}
+
+export interface Catalog {
+    id: string
+    name: string
+    slug: string
+    price: number
+    promotedImage: string
+    quickDescription: string
+}
+
+export type VisitorProduct = SchemaType<'Product'> & {
+    illustrations: {
+        path: string
+        type: string
+    }[]
 }
