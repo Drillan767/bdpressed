@@ -99,14 +99,11 @@ onMounted(getProducts)
                                 >
                                     <VContainer class="pa-0 text-secondary">
                                         <VRow no-gutters>
-                                            <VCol>
-                                                <VImg
+                                            <VCol class="image-container">
+                                                <img
                                                     :src="product.promotedImage"
                                                     :alt="product.name"
-                                                    class="rounded-lg"
-                                                    aspect-ratio="9/16"
-                                                    width="100%"
-                                                />
+                                                >
                                             </VCol>
                                         </VRow>
                                         <VRow>
@@ -139,3 +136,21 @@ onMounted(getProducts)
         </VRow>
     </VContainer>
 </template>
+
+<style lang="scss" scoped>
+.image-container {
+    position: relative;
+    height: 500px;
+    overflow: hidden;
+
+    img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center;
+    }
+}
+</style>
