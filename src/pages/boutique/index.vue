@@ -1,20 +1,12 @@
 <script setup lang="ts">
+import type { Catalog } from '@/types'
 import BedeBlock from '@/components/visitors/BedeBlock.vue'
 import useNumbers from '@/composables/numbers'
 import useProductsStore from '@/stores/productsStore'
 import { useHead } from '@vueuse/head'
 import { onMounted, ref } from 'vue'
 
-interface Product {
-    id: string | null
-    name: string
-    slug: string
-    price: number
-    promotedImage: string
-    quickDescription: string
-}
-
-const products = ref<Product[]>([])
+const products = ref<Catalog[]>([])
 
 useHead({
     title: 'Boutique',
@@ -136,21 +128,3 @@ onMounted(getProducts)
         </VRow>
     </VContainer>
 </template>
-
-<style lang="scss" scoped>
-.image-container {
-    position: relative;
-    height: 500px;
-    overflow: hidden;
-
-    img {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        object-position: center;
-    }
-}
-</style>
