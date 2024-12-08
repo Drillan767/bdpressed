@@ -69,13 +69,17 @@ useHead({
             </VRow>
             <VRow>
                 <VCol>
-                    <h2>Informations</h2>
+                    <h2 class="mb-2">
+                        Informations
+                    </h2>
                     <div v-html="toParagraphs(product.description)" />
                 </VCol>
             </VRow>
             <VRow v-if="product.illustrations.length > 0">
                 <VCol>
-                    <h2>Illustrations</h2>
+                    <h2 class="mb-2">
+                        Illustrations
+                    </h2>
 
                     <VRow>
                         <VCol
