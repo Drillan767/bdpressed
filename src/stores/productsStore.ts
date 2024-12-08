@@ -3,13 +3,15 @@ import type { Schema, SchemaType } from '@root/amplify/data/resource'
 import useBuckets from '@/composables/buckets'
 import useStrings from '@/composables/strings'
 import { generateClient } from 'aws-amplify/data'
-import { defineStore } from 'pinia'
+import { defineStore, storeToRefs } from 'pinia'
 import { ref } from 'vue'
+import useAuthStore from './authStore'
 
-type Product = SchemaType<'Product'> & { id: string }
+type Product = SchemaType<'Product'>
 
 const useProductsStore = defineStore('products', () => {
     const { getItems, getSingleItem, storeFiles, storeSingleFile, deleteFiles } = useBuckets()
+    const { currentUser } = storeToRefs(useAuthStore())
     const { toSlug } = useStrings()
     const products = ref<Product[]>([])
     const productsLoading = ref(false)
@@ -17,7 +19,7 @@ const useProductsStore = defineStore('products', () => {
 
     async function getCatalog() {
         const { data } = await client.models.Product.list({
-            authMode: 'userPool',
+            authMode: currentUser.value ? 'userPool' : 'identityPool',
             selectionSet: [
                 'id',
                 'name',
@@ -103,7 +105,7 @@ const useProductsStore = defineStore('products', () => {
         productsLoading.value = true
         const { data } = await client.models.Product.get(
             { id },
-            { authMode: 'userPool' },
+            { authMode: 'identityPool' },
         )
 
         productsLoading.value = false
@@ -113,16 +115,10 @@ const useProductsStore = defineStore('products', () => {
 
     const productBySlug = async (slug: string) => {
         productsLoading.value = true
-        const { data } = await client.models.Product.list(
-            {
-                filter: {
-                    slug: {
-                        eq: slug,
-                    },
-                },
-                limit: 1,
-                authMode: 'userPool',
-            },
+
+        const { data } = await client.models.Product.listProductBySlug(
+            { slug },
+            { limit: 1, authMode: currentUser.value ? 'userPool' : 'identityPool' },
         )
 
         if (!data || data.length === 0) {
