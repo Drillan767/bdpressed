@@ -5,6 +5,7 @@ import useNumbers from '@/composables/numbers'
 import useProductsStore from '@/stores/productsStore'
 import { useHead } from '@vueuse/head'
 import { onMounted, ref } from 'vue'
+import { useDisplay } from 'vuetify'
 
 const products = ref<Catalog[]>([])
 
@@ -14,6 +15,7 @@ useHead({
 
 const { getCatalog } = useProductsStore()
 const { formatPrice } = useNumbers()
+const { smAndDown } = useDisplay()
 
 async function getProducts() {
     products.value = await getCatalog()
@@ -91,7 +93,10 @@ onMounted(getProducts)
                                 >
                                     <VContainer class="pa-0 text-secondary">
                                         <VRow no-gutters>
-                                            <VCol class="image-container">
+                                            <VCol
+                                                :style="`height: ${smAndDown ? '200px' : '500px'}`"
+                                                class="image-container"
+                                            >
                                                 <img
                                                     :src="product.promotedImage"
                                                     :alt="product.name"
