@@ -174,7 +174,9 @@ provide('openDrawer', openDrawer)
                             :key="link.title"
                             :to="link.to"
                             variant="text"
+                            color="secondary"
                             class="mx-2"
+                            exact
                         >
                             {{ link.title }}
                         </VBtn>
