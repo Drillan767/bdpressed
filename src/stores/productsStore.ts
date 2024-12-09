@@ -1,4 +1,4 @@
-import type { EditProductForm, ProductForm } from '@/types'
+import type { EditProductForm, ProductForm, VisitorProduct } from '@/types'
 import type { Schema, SchemaType } from '@root/amplify/data/resource'
 import useBuckets from '@/composables/buckets'
 import useStrings from '@/composables/strings'
@@ -113,7 +113,7 @@ const useProductsStore = defineStore('products', () => {
         return data
     }
 
-    const productBySlug = async (slug: string) => {
+    const productBySlug = async (slug: string): Promise<VisitorProduct | null> => {
         productsLoading.value = true
 
         const { data } = await client.models.Product.listProductBySlug(

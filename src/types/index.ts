@@ -34,7 +34,7 @@ export interface Catalog {
     quickDescription: string
 }
 
-export type VisitorProduct = SchemaType<'Product'> & {
+export type VisitorProduct = Omit<SchemaType<'Product'>, 'illustrations'> & {
     illustrations: {
         path: string
         type: string
