@@ -105,7 +105,7 @@ const useProductsStore = defineStore('products', () => {
         productsLoading.value = true
         const { data } = await client.models.Product.get(
             { id },
-            { authMode: 'identityPool' },
+            { authMode: 'userPool' },
         )
 
         productsLoading.value = false
