@@ -1,10 +1,11 @@
 <script setup lang="ts">
+import type { VisitorProduct } from '@/types'
+import ProductIllustration from '@/components/shop/ProductIllustration.vue'
 import BedeBlock from '@/components/visitors/BedeBlock.vue'
 import useNumbers from '@/composables/numbers'
 import useStrings from '@/composables/strings'
 import useProductsStore from '@/stores/productsStore'
 import { useHead } from '@vueuse/head'
-import { storeToRefs } from 'pinia'
 import { onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
@@ -13,10 +14,9 @@ const router = useRouter()
 
 const { params: { slug } } = route
 const { productBySlug } = useProductsStore()
-const { productsLoading } = storeToRefs(useProductsStore())
 const { formatPrice } = useNumbers()
 const { toParagraphs } = useStrings()
-const product = ref<any>()
+const product = ref<VisitorProduct>()
 
 onMounted(async () => {
     const result = await productBySlug(slug.toString())
@@ -46,7 +46,7 @@ useHead({
                 <VCol
                     cols="12"
                     md="6"
-                    class="image-container"
+                    class="image-container borde-xl pa-4"
                 >
                     <img :src="product.promotedImage" alt="Illustration">
                 </VCol>
@@ -54,17 +54,30 @@ useHead({
                     cols="12"
                     md="6"
                 >
-                    <h1>{{ product.name }}</h1>
-                    <p>{{ product.quickDescription }}</p>
-                    <p>Prix: {{ formatPrice(product.price) }}</p>
-                    <VBtn
-                        variant="outlined"
-                        color="secondary"
-                        prepend-icon="mdi-cart"
-                        block
-                    >
-                        Ajouter au panier
-                    </VBtn>
+                    <VRow no-gutters>
+                        <VCol cols="12" md="8">
+                            <h1>{{ product.name }}</h1>
+                            <p>Prix: {{ formatPrice(product.price) }}</p>
+                        </VCol>
+                        <VCol cols="12" md="4">
+                            <VBtn
+                                variant="outlined"
+                                color="secondary"
+                                stacked
+                            >
+                                <VIcon
+                                    class="mb-2"
+                                    icon="mdi-cart-arrow-down"
+                                />
+                                Ajouter
+                            </VBtn>
+                        </VCol>
+                    </VRow>
+                    <VRow no-gutters>
+                        <VCol>
+                            <p>{{ product.quickDescription }}</p>
+                        </VCol>
+                    </VRow>
                 </VCol>
             </VRow>
             <VRow>
@@ -88,7 +101,7 @@ useHead({
                             cols="12"
                             md="4"
                         >
-                            <VCard
+                            <!--  <VCard
                                 variant="flat"
                                 class="pa-0"
                             >
@@ -98,7 +111,8 @@ useHead({
                                         :alt="product.name"
                                     >
                                 </VCardText>
-                            </VCard>
+                            </VCard> -->
+                            <ProductIllustration :illustration />
                         </VCol>
                     </VRow>
                 </VCol>
