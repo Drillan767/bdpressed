@@ -40,32 +40,6 @@ p {
         }
     }
 
-    .bede-block {
-        border-radius: 48px !important;
-        box-shadow: 0 10px 10px 0 #891e00;
-
-        :deep(.v-card-text) {
-            background-color: red;
-        }
-
-        .bede-text {
-            padding: 3rem;
-            color: rgb(var(--v-theme-secondary));
-
-            @media screen and (max-width: 512px) {
-                padding: 1.5rem;
-            }
-
-            h1 {
-                line-height: 1.7;
-            }
-
-            h2 {
-                line-height: 2;
-            }
-        }
-    }
-
     .image-container {
         position: relative;
         overflow: hidden;
