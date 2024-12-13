@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { useHead } from '@vueuse/head'
-import { provide, ref, watch } from 'vue'
+import { provide, ref } from 'vue'
 import { RouterView } from 'vue-router'
-import { useDisplay } from 'vuetify'
 
 const links = [
     { title: 'Accueil', to: '/' },
@@ -21,49 +20,38 @@ useHead({
     titleTemplate: () => `%s | Bédéprimée`,
 })
 
-const { smAndDown } = useDisplay()
-
 const drawer = ref(false)
 const linksDrawer = ref(false)
 
 const openDrawer = () => drawer.value = true
-
-watch(smAndDown, (val) => {
-    linksDrawer.value = val
-})
 
 provide('openDrawer', openDrawer)
 </script>
 
 <template>
     <VLayout class="visitors-layout">
-        <VNavigationDrawer
-            v-model="linksDrawer"
-            :mobile="smAndDown"
-            :persistent="false"
-            :temporary="true"
-        >
-            <VList>
-                <VListItem
-                    prepend-icon="mdi-home"
-                    title="Accueil"
-                    density="comfortable"
-                    to="/"
-                    exact
-                />
-                <VListItem
-                    prepend-icon="mdi-store"
-                    title="Boutique"
-                    to="/boutique"
-                    exact
-                />
-                <VListItem
-                    prepend-icon="mdi-email-fast"
-                    title="Contact"
-                    to="/contact"
-                    exact
-                />
-            </VList>
+        <VNavigationDrawer v-model="linksDrawer">
+            <VListItem
+                prepend-icon="mdi-home"
+                title="Accueil"
+                nav
+                exact
+            />
+            <VListItem
+                prepend-icon="mdi-package-variant"
+                title="Bédés"
+                nav
+            />
+            <VListItem
+                prepend-icon="mdi-store"
+                title="Boutique"
+                nav
+            />
+            <VListItem
+                prepend-icon="mdi-email-fast"
+                title="Contact"
+                nav
+            />
         </VNavigationDrawer>
         <VNavigationDrawer
             v-model="drawer"
