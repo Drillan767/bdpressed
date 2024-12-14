@@ -48,7 +48,7 @@ onMounted(getProducts)
                         <h1 class="text-center text-h4 mb-4 bd">
                             Mes petites créations à vendre :
                         </h1>
-                        <h2 text-h5 class="text-center my-12 bd">
+                        <h2 class="text-center my-12 bd">
                             ¥ Tu reçois des payettes, je reçois de quoi payer ma psy ¥
                         </h2>
 
