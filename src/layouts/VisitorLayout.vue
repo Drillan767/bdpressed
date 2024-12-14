@@ -27,7 +27,7 @@ useHead({
 const { smAndDown } = useDisplay()
 const { cart } = storeToRefs(useCartStore())
 
-const { handleQuantity, handleRemove } = useCartStore()
+const { handleQuantity, removeItem } = useCartStore()
 
 const drawer = ref(false)
 const linksDrawer = ref(false)
@@ -75,6 +75,7 @@ provide('openDrawer', openDrawer)
             v-model="drawer"
             :temporary="true"
             location="right"
+            width="400"
         >
             <VListItem
                 title="Panier"
@@ -105,7 +106,7 @@ provide('openDrawer', openDrawer)
                     :key="item.id"
                     :item
                     @quantity="handleQuantity(i, $event)"
-                    @remove="handleRemove(item)"
+                    @remove="removeItem(item)"
                 />
             </VList>
         </VNavigationDrawer>

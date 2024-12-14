@@ -52,6 +52,7 @@ const { formatPrice } = useNumbers()
                     icon="mdi-trash-can-outline"
                     variant="text"
                     size="small"
+                    @click.prevent="emit('remove')"
                 />
                 <span class="price">
                     {{ formatPrice(item.price * item.quantity) }}
