@@ -1,12 +1,15 @@
 <script setup lang="ts">
-import type { VisitorProduct } from '@/types'
+import type { Catalog, VisitorProduct } from '@/types'
 import ProductIllustration from '@/components/shop/ProductIllustration.vue'
 import useNumbers from '@/composables/numbers'
 import useStrings from '@/composables/strings'
+import useCartStore from '@/stores/cartStore'
 import useProductsStore from '@/stores/productsStore'
 import { useHead } from '@vueuse/head'
-import { onMounted, ref } from 'vue'
+import { inject, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+
+const openDrawer = inject<() => void>('openDrawer')
 
 const route = useRoute()
 const router = useRouter()
@@ -15,6 +18,8 @@ const { params: { slug } } = route
 const { productBySlug } = useProductsStore()
 const { formatPrice } = useNumbers()
 const { toParagraphs } = useStrings()
+const { addItem } = useCartStore()
+
 const product = ref<VisitorProduct>()
 
 onMounted(async () => {
@@ -32,6 +37,18 @@ onMounted(async () => {
         })
     }
 })
+
+function handleAddToCart(product: Catalog) {
+    openDrawer?.()
+    setTimeout(() => {
+        addItem({
+            id: product.id,
+            name: product.name,
+            price: product.price,
+            illustration: product.promotedImage,
+        })
+    }, 200)
+}
 
 useHead({
     title: () => `Boutique | ${product.value?.name}`,
@@ -71,6 +88,7 @@ useHead({
                                     variant="outlined"
                                     color="secondary"
                                     stacked
+                                    @click="handleAddToCart(product)"
                                 >
                                     <VIcon
                                         class="mb-2"
