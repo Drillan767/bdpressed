@@ -34,6 +34,14 @@ export interface Catalog {
     quickDescription: string
 }
 
+export interface CartItem {
+    id: string
+    name: string
+    price: number
+    quantity: number
+    illustration: string
+}
+
 export type VisitorProduct = Omit<SchemaType<'Product'>, 'illustrations'> & {
     illustrations: {
         path: string

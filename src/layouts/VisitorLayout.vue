@@ -1,5 +1,8 @@
 <script setup lang="ts">
+import CartItem from '@/components/shop/CartItem.vue'
+import useCartStore from '@/stores/cartStore'
 import { useHead } from '@vueuse/head'
+import { storeToRefs } from 'pinia'
 import { provide, ref, watch } from 'vue'
 import { RouterView } from 'vue-router'
 import { useDisplay } from 'vuetify'
@@ -22,6 +25,9 @@ useHead({
 })
 
 const { smAndDown } = useDisplay()
+const { cart } = storeToRefs(useCartStore())
+
+const { handleQuantity, handleRemove } = useCartStore()
 
 const drawer = ref(false)
 const linksDrawer = ref(false)
@@ -85,9 +91,23 @@ provide('openDrawer', openDrawer)
                 </template>
             </VListItem>
 
-            <p class="placeholder">
-                Lorsque toudincou, un panier vide. 👁️👄👁️
-            </p>
+            <div
+                v-if="cart.length === 0"
+                class="h-75 d-flex align-center justify-center"
+            >
+                <p class="placeholder text-center">
+                    Lorsque toudincou,<br> un panier vide. 👁️👄👁️
+                </p>
+            </div>
+            <VList v-else>
+                <CartItem
+                    v-for="(item, i) in cart"
+                    :key="item.id"
+                    :item
+                    @quantity="handleQuantity(i, $event)"
+                    @remove="handleRemove(item)"
+                />
+            </VList>
         </VNavigationDrawer>
         <VAppBar
             class="navigation rounded-b-xl pr-8"
@@ -149,8 +169,9 @@ provide('openDrawer', openDrawer)
                         <template #activator="{ props }">
                             <VBadge
                                 v-bind="props"
+                                :model-value="cart.length > 0"
+                                :content="cart.length"
                                 color="primary"
-                                content="45"
                                 max="9"
                             >
                                 <VAvatar
@@ -209,6 +230,10 @@ provide('openDrawer', openDrawer)
 </template>
 
 <style lang="scss" scoped>
+:deep(.v-navigation-drawer__scrim) {
+    position: fixed;
+}
+
 :deep(.v-toolbar) {
     .v-toolbar__content {
         overflow: initial;
