@@ -1,12 +1,11 @@
 <script setup lang="ts">
 import type { Catalog } from '@/types'
 import useNumbers from '@/composables/numbers'
+import useCartStore from '@/stores/cartStore'
 import useProductsStore from '@/stores/productsStore'
 import { useHead } from '@vueuse/head'
-import { onMounted, ref } from 'vue'
+import { inject, onMounted, ref } from 'vue'
 import { useDisplay } from 'vuetify'
-
-const products = ref<Catalog[]>([])
 
 useHead({
     title: 'Boutique',
@@ -15,9 +14,26 @@ useHead({
 const { getCatalog } = useProductsStore()
 const { formatPrice } = useNumbers()
 const { smAndDown } = useDisplay()
+const { addItem } = useCartStore()
+
+const openDrawer = inject<() => void>('openDrawer')
+
+const products = ref<Catalog[]>([])
 
 async function getProducts() {
     products.value = await getCatalog()
+}
+
+function handleAddToCart(product: Catalog) {
+    openDrawer?.()
+    setTimeout(() => {
+        addItem({
+            id: product.id,
+            name: product.name,
+            price: product.price,
+            illustration: product.promotedImage,
+        })
+    }, 200)
 }
 
 onMounted(getProducts)
@@ -91,39 +107,42 @@ onMounted(getProducts)
                                         :to="`/boutique/${product.slug}`"
                                         variant="flat"
                                     >
-                                        <VContainer class="pa-0 text-secondary">
-                                            <VRow no-gutters>
-                                                <VCol
-                                                    :style="`height: ${smAndDown ? '200px' : '500px'}`"
-                                                    class="image-container"
-                                                >
-                                                    <img
-                                                        :src="product.promotedImage"
-                                                        :alt="product.name"
+                                        <VCardText>
+                                            <VContainer class="pa-0 text-secondary">
+                                                <VRow no-gutters>
+                                                    <VCol
+                                                        :style="`height: ${smAndDown ? '200px' : '500px'}`"
+                                                        class="image-container"
                                                     >
-                                                </VCol>
-                                            </VRow>
-                                            <VRow>
-                                                <VCol cols="10">
-                                                    <h3>{{ product.name }}</h3>
-                                                    <p>{{ formatPrice(product.price) }}</p>
-                                                </VCol>
-                                                <VCol cols="2">
-                                                    <VBtn
-                                                        variant="text"
-                                                        color="secondary"
-                                                        icon="mdi-cart"
-                                                    />
-                                                </VCol>
-                                            </VRow>
-                                            <VRow no-gutters>
-                                                <VCol>
-                                                    <p>
-                                                        {{ product.quickDescription }}
-                                                    </p>
-                                                </VCol>
-                                            </VRow>
-                                        </VContainer>
+                                                        <img
+                                                            :src="product.promotedImage"
+                                                            :alt="product.name"
+                                                        >
+                                                    </VCol>
+                                                </VRow>
+                                                <VRow>
+                                                    <VCol cols="10">
+                                                        <h3>{{ product.name }}</h3>
+                                                        <p>{{ formatPrice(product.price) }}</p>
+                                                    </VCol>
+                                                    <VCol cols="2">
+                                                        <VBtn
+                                                            variant="text"
+                                                            color="secondary"
+                                                            icon="mdi-cart"
+                                                            @click.prevent="handleAddToCart(product)"
+                                                        />
+                                                    </VCol>
+                                                </VRow>
+                                                <VRow no-gutters>
+                                                    <VCol>
+                                                        <p>
+                                                            {{ product.quickDescription }}
+                                                        </p>
+                                                    </VCol>
+                                                </VRow>
+                                            </VContainer>
+                                        </VCardText>
                                     </VCard>
                                 </VCol>
                             </VRow>
