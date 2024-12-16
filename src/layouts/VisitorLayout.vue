@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import CartItem from '@/components/shop/CartItem.vue'
+import Cart from '@/components/shop/Cart.vue'
 import useCartStore from '@/stores/cartStore'
 import { useHead } from '@vueuse/head'
 import { storeToRefs } from 'pinia'
@@ -27,8 +27,6 @@ useHead({
 const { smAndDown } = useDisplay()
 const { cart } = storeToRefs(useCartStore())
 
-const { handleQuantity, removeItem } = useCartStore()
-
 const drawer = ref(false)
 const linksDrawer = ref(false)
 
@@ -36,6 +34,16 @@ const openDrawer = () => drawer.value = true
 
 watch(smAndDown, (val) => {
     linksDrawer.value = val
+})
+
+watch(drawer, (val) => {
+    const html = document.querySelector('html')
+    if (val) {
+        html?.classList.add('overflow-hidden')
+    }
+    else {
+        html?.classList.remove('overflow-hidden')
+    }
 })
 
 provide('openDrawer', openDrawer)
@@ -71,45 +79,7 @@ provide('openDrawer', openDrawer)
                 />
             </VList>
         </VNavigationDrawer>
-        <VNavigationDrawer
-            v-model="drawer"
-            :temporary="true"
-            location="right"
-            width="400"
-        >
-            <VListItem
-                title="Panier"
-                color="primary"
-                class="basket-title bg-primary"
-            >
-                <template #append>
-                    <VBtn
-                        icon="mdi-close"
-                        variant="text"
-                        color="white"
-                        @click="drawer = false"
-                    />
-                </template>
-            </VListItem>
-
-            <div
-                v-if="cart.length === 0"
-                class="h-75 d-flex align-center justify-center"
-            >
-                <p class="placeholder text-center">
-                    Lorsque toudincou,<br> un panier vide. 👁️👄👁️
-                </p>
-            </div>
-            <VList v-else>
-                <CartItem
-                    v-for="(item, i) in cart"
-                    :key="item.id"
-                    :item
-                    @quantity="handleQuantity(i, $event)"
-                    @remove="removeItem(item)"
-                />
-            </VList>
-        </VNavigationDrawer>
+        <Cart v-model="drawer" />
         <VAppBar
             class="navigation rounded-b-xl pr-8"
             elevation="4"
