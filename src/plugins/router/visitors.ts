@@ -56,6 +56,14 @@ export default [
                 },
             },
             {
+                path: '/checkout',
+                name: 'visitors.checkout',
+                component: () => import('@/pages/checkout.vue'),
+                meta: {
+                    requiresAuth: false,
+                },
+            },
+            {
                 path: '/contact',
                 name: 'visitors.contact',
                 component: () => import('@/pages/contact.vue'),
