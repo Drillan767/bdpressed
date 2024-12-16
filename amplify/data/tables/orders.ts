@@ -3,6 +3,7 @@ import { a } from '@aws-amplify/backend'
 export default a.model({
     id: a.id().required(),
     userId: a.id().required(),
+    useSameAddress: a.boolean(),
     title: a.string().required(),
     type: a.enum(['ILLUSTRATION', 'PRODUCT']),
     status: a.enum([
@@ -22,6 +23,8 @@ export default a.model({
     user: a.belongsTo('User', 'userId'),
     illustation: a.hasOne('Illustration', 'orderId'),
     orderItem: a.hasOne('OrderItem', 'orderId'),
+    shippingAddress: a.hasOne('Address', 'shippingAddressId'),
+    billingAddress: a.hasOne('Address', 'billingAddressId'),
     additionalInfos: a.string(),
     updatedAt: a.datetime().required(),
     createdAt: a.datetime().required(),
@@ -34,13 +37,3 @@ export default a.model({
         // allow.group('USER').to(['read']),
         // allow.guest().to(['read']),
     ])
-
-/*
-CREATE TABLE orders (
-    id SERIAL PRIMARY KEY,
-    customer_id INTEGER NOT NULL,
-    total_price DECIMAL(10,2),
-    order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (customer_id) REFERENCES customers(id)
-);
-*/

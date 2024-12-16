@@ -1,4 +1,5 @@
 import { a, type ClientSchema, defineData } from '@aws-amplify/backend'
+import addresses from './tables/addresses'
 import contact from './tables/contact'
 import illustrations from './tables/illustrations'
 import order_details from './tables/order_details'
@@ -10,6 +11,7 @@ import tags from './tables/tags'
 import users from './tables/users'
 
 const schema = a.schema({
+    Address: addresses,
     User: users,
     Product: products,
     Tag: tags,
