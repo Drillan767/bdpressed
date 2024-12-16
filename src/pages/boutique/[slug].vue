@@ -91,7 +91,7 @@ useHead({
                                     @click="handleAddToCart(product)"
                                 >
                                     <VIcon
-                                        class="mb-2"
+                                        size="x-small"
                                         icon="mdi-cart-arrow-down"
                                     />
                                     Ajouter

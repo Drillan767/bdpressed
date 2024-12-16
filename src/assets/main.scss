@@ -4,24 +4,25 @@
         local('bdprimee'),
         url('../../public/fonts/bedeprimee.ttf') format("truetype"),
         url('../../public/fonts/bedeprimee.otf') format("opentype");
-    size-adjust: 200%;
+    // size-adjust: 200%;
     font-weight: 400;
     font-style: normal;
     font-display: auto;
 }
 
-p {
-    margin-bottom: 1rem;
-    line-height: 2;
+html {
+    font-size: 28px;
 }
 
-.bd {
-    font-family: 'bedeprimee', sans-serif;
+p {
+    margin-bottom: 0.5rem;
+}
+
+.v-card .v-card-text {
+    line-height: 1.1 !important;
 }
 
 .visitors-layout {
-    font-family: 'bedeprimee', sans-serif;
-
     .v-main {
         z-index: 2;
         position: relative;
@@ -60,9 +61,9 @@ p {
                 line-height: 1.7;
             }
 
-            h2 {
+            /* h2 {
                 line-height: 2;
-            }
+            } */
         }
     }
 
