@@ -135,7 +135,7 @@ onMounted(getProducts)
                                                     </VCol>
                                                 </VRow>
                                                 <VRow no-gutters>
-                                                    <VCol>
+                                                    <VCol class="description">
                                                         <p>
                                                             {{ product.quickDescription }}
                                                         </p>
@@ -153,3 +153,9 @@ onMounted(getProducts)
         </VRow>
     </VContainer>
 </template>
+
+<style scoped>
+.description {
+    height: 72px;
+}
+</style>
