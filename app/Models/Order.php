@@ -11,6 +11,4 @@ class Order extends Model
     {
         return $this->hasOne(Illustration::class);
     }
-
-    public function
 }
