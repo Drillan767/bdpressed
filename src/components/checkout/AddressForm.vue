@@ -48,7 +48,7 @@ defineExpose({
 <template>
     <VForm>
         <VContainer>
-            <h2 class="text-h5 mb-4 bd">
+            <h2 class="text-h5 mb-4">
                 {{ title }}
             </h2>
             <VRow no-gutter>

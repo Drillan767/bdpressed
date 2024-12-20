@@ -2,7 +2,7 @@
     $card-text-line-height: 1.1,
 );
  */
-@use 'vuetify' with (
+@use 'vuetify/settings' with (
     $body-font-family: 'bedeprimee',
     $heading-font-family: 'bedeprimee',
     $font-size-root: 32px,

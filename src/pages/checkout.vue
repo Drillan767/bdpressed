@@ -54,17 +54,12 @@ useHead({
                                     <h1 class="text-secondary">
                                         Informations de commande
                                     </h1>
-                                    <VCard
+                                    <VAlert
                                         variant="outlined"
                                         color="secondary"
-                                        class="mt-4"
-                                    >
-                                        <VCardText>
-                                            <VIcon icon="mdi-information-outline" />
-                                            Le paiement ne se fera que lorsque la commande sera prête à partir, <br>
-                                            Vous n'avez rien à payer tout de suite ¥
-                                        </VCardText>
-                                    </VCard>
+                                        icon="mdi-information-outline"
+                                        text="Le paiement ne se fera que lorsque la commande sera prête à partir, vous n'avez rien à payer tout de suite ¥"
+                                    />
 
                                     <AddressForm
                                         v-model:address="shippingAddress"
@@ -119,6 +114,16 @@ useHead({
                                             <template #append>
                                                 <span>
                                                     {{ formatPrice(tax) }}
+                                                </span>
+                                            </template>
+                                        </VListItem>
+
+                                        <VListItem
+                                            title="Frais de livraison (estimation)"
+                                        >
+                                            <template #append>
+                                                <span>
+                                                    {{ formatPrice(4) }}
                                                 </span>
                                             </template>
                                         </VListItem>
