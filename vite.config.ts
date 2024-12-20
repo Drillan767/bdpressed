@@ -1,26 +1,11 @@
-import vue from '@vitejs/plugin-vue'
-import { defineConfig } from 'vite'
-import vueDevTools from 'vite-plugin-vue-devtools'
-import vuetify from 'vite-plugin-vuetify'
+import { defineConfig } from 'vite';
+import laravel from 'laravel-vite-plugin';
 
-// https://vite.dev/config/
 export default defineConfig({
     plugins: [
-        vue(),
-        vuetify(),
-        vueDevTools(),
+        laravel({
+            input: ['resources/css/app.css', 'resources/js/app.js'],
+            refresh: true,
+        }),
     ],
-    resolve: {
-        alias: {
-            '@': '/src',
-            '@root': '/',
-        },
-    },
-    css: {
-        preprocessorOptions: {
-            scss: {
-                api: 'modern',
-            },
-        },
-    },
-})
+});
