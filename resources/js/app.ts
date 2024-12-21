@@ -3,10 +3,14 @@ import type { DefineComponent } from 'vue'
 import { createInertiaApp } from '@inertiajs/vue3'
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers'
 import { createApp, h } from 'vue'
+import { createHead } from '@vueuse/head'
 import vuetify from '@/plugins/vuetify'
 import { ZiggyVue } from '../../vendor/tightenco/ziggy'
+import '@/plugins/vee-validate'
 
 import '../styles/main.scss'
+
+const head = createHead()
 
 createInertiaApp({
     resolve: name =>
@@ -19,9 +23,10 @@ createInertiaApp({
             .use(plugin)
             .use(ZiggyVue)
             .use(vuetify)
+            .use(head)
             .mount(el)
     },
     progress: {
-        color: '#4B5563',
+        color: '#ff802b',
     },
 })

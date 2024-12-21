@@ -122,17 +122,16 @@ provide('openDrawer', openDrawer)
                 <div class="mt-16 mr-8 mr-md-16 d-flex ga-2">
                     <VTooltip location="bottom">
                         <template #activator="{ props }">
-<!--                            <RouterLink
+                            <Link
                                 v-bind="props"
-                                to="/connexion"
+                                href="/connexion"
                             >
-
-                            </RouterLink>-->
-                            <VAvatar
-                                size="48"
-                                image="/assets/images/account.png"
-                                class="elevation-4"
-                            />
+                                <VAvatar
+                                    size="48"
+                                    image="/assets/images/account.png"
+                                    class="elevation-4"
+                                />
+                            </Link>
                         </template>
 
                         Accéder à votre compte
