@@ -28,11 +28,14 @@
     "packageManager": "yarn@1.22.22+sha1.ac34549e6aa8e7ead463a7407e1c7390f61a6610",
     "dependencies": {
         "@antfu/eslint-config": "^3.12.0",
+        "@mdi/font": "^7.4.47",
         "@vee-validate/i18n": "^4.14.7",
         "@vee-validate/rules": "^4.14.7",
         "@vueuse/core": "^12.0.0",
         "@vueuse/head": "^2.0.0",
         "dayjs": "^1.11.13",
+        "pinia": "^2.3.0",
+        "pinia-plugin-persistedstate": "^4.2.0",
         "vee-validate": "^4.14.7",
         "vue3-toastify": "^0.2.8",
         "vuetify": "^3.7.6"
