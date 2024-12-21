@@ -1,17 +1,24 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\VisitorsController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-Route::get('/', function () {
+/*Route::get('/', function () {
     return Inertia::render('Welcome', [
         'canLogin' => Route::has('login'),
         'canRegister' => Route::has('register'),
         'laravelVersion' => Application::VERSION,
         'phpVersion' => PHP_VERSION,
     ]);
+});*/
+
+Route::controller(VisitorsController::class)->group(function() {
+    Route::get('/', 'landing')->name('landing');
+    Route::get('/boutique', 'shop')->name('shop');
+    Route::get('/contact', 'contact')->name('contact');
 });
 
 Route::get('/dashboard', function () {
