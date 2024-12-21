@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import VisitorsLayout from '@/Layouts/VisitorsLayout.vue'
-import { Link } from '@inertiajs/vue3'
+import { Link, router } from '@inertiajs/vue3'
 import { useHead } from '@vueuse/head'
 import { useForm, useIsFormValid } from 'vee-validate'
 import { useDisplay } from 'vuetify'
+import { ref, watch } from 'vue'
 import validationConfig from '@/plugins/validationConfig'
 
 interface LoginForm {
@@ -36,6 +37,15 @@ const { defineField, handleSubmit, setErrors } = useForm<LoginForm>({
 const [email, emailProps] = defineField('email', validationConfig)
 const [password, passwordProps] = defineField('password', validationConfig)
 const [remember, rememberProps] = defineField('remember')
+
+const formValid = useIsFormValid()
+
+const passwordVisible = ref(false)
+const loading = ref(false)
+
+const submit = handleSubmit((form) => {
+    router.post('/login', form)
+})
 
 /*function submit() {
     form.post(route('login'), {
@@ -84,6 +94,15 @@ const [remember, rememberProps] = defineField('remember')
                                         />
                                     </template>
                                 </VTextField>
+                            </VCol>
+                        </VRow>
+                        <VRow>
+                            <VCol>
+                                <VCheckbox
+                                    v-bind="rememberProps"
+                                    v-model="remember"
+                                    label="Se souvenir de moi"
+                                />
                             </VCol>
                         </VRow>
                         <VRow no-gutters>
