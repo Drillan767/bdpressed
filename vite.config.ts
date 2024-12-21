@@ -1,5 +1,7 @@
-import { defineConfig } from 'vite';
-import laravel from 'laravel-vite-plugin';
+import laravel from 'laravel-vite-plugin'
+import { defineConfig } from 'vite'
+import vueDevTools from 'vite-plugin-vue-devtools'
+import vuetify from 'vite-plugin-vuetify'
 
 export default defineConfig({
     plugins: [
@@ -7,5 +9,7 @@ export default defineConfig({
             input: ['resources/css/app.css', 'resources/js/app.js'],
             refresh: true,
         }),
+        vueDevTools(),
+        vuetify(),
     ],
-});
+})

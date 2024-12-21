@@ -1,43 +1,43 @@
 <script setup lang="ts">
-import DangerButton from '@/Components/DangerButton.vue';
-import InputError from '@/Components/InputError.vue';
-import InputLabel from '@/Components/InputLabel.vue';
-import Modal from '@/Components/Modal.vue';
-import SecondaryButton from '@/Components/SecondaryButton.vue';
-import TextInput from '@/Components/TextInput.vue';
-import { useForm } from '@inertiajs/vue3';
-import { nextTick, ref } from 'vue';
+import DangerButton from '@/Components/DangerButton.vue'
+import InputError from '@/Components/InputError.vue'
+import InputLabel from '@/Components/InputLabel.vue'
+import Modal from '@/Components/Modal.vue'
+import SecondaryButton from '@/Components/SecondaryButton.vue'
+import TextInput from '@/Components/TextInput.vue'
+import { useForm } from '@inertiajs/vue3'
+import { nextTick, ref } from 'vue'
 
-const confirmingUserDeletion = ref(false);
-const passwordInput = ref<HTMLInputElement | null>(null);
+const confirmingUserDeletion = ref(false)
+const passwordInput = ref<HTMLInputElement | null>(null)
 
 const form = useForm({
     password: '',
-});
+})
 
-const confirmUserDeletion = () => {
-    confirmingUserDeletion.value = true;
+function confirmUserDeletion() {
+    confirmingUserDeletion.value = true
 
-    nextTick(() => passwordInput.value?.focus());
-};
+    nextTick(() => passwordInput.value?.focus())
+}
 
-const deleteUser = () => {
+function deleteUser() {
     form.delete(route('profile.destroy'), {
         preserveScroll: true,
         onSuccess: () => closeModal(),
         onError: () => passwordInput.value?.focus(),
         onFinish: () => {
-            form.reset();
+            form.reset()
         },
-    });
-};
+    })
+}
 
-const closeModal = () => {
-    confirmingUserDeletion.value = false;
+function closeModal() {
+    confirmingUserDeletion.value = false
 
-    form.clearErrors();
-    form.reset();
-};
+    form.clearErrors()
+    form.reset()
+}
 </script>
 
 <template>
@@ -54,7 +54,9 @@ const closeModal = () => {
             </p>
         </header>
 
-        <DangerButton @click="confirmUserDeletion">Delete Account</DangerButton>
+        <DangerButton @click="confirmUserDeletion">
+            Delete Account
+        </DangerButton>
 
         <Modal :show="confirmingUserDeletion" @close="closeModal">
             <div class="p-6">

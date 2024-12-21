@@ -1,18 +1,18 @@
 <script setup lang="ts">
-import { Head, Link } from '@inertiajs/vue3';
+import { Head, Link } from '@inertiajs/vue3'
 
 defineProps<{
-    canLogin?: boolean;
-    canRegister?: boolean;
-    laravelVersion: string;
-    phpVersion: string;
-}>();
+    canLogin?: boolean
+    canRegister?: boolean
+    laravelVersion: string
+    phpVersion: string
+}>()
 
 function handleImageError() {
-    document.getElementById('screenshot-container')?.classList.add('!hidden');
-    document.getElementById('docs-card')?.classList.add('!row-span-1');
-    document.getElementById('docs-card-content')?.classList.add('!flex-row');
-    document.getElementById('background')?.classList.add('!hidden');
+    document.getElementById('screenshot-container')?.classList.add('!hidden')
+    document.getElementById('docs-card')?.classList.add('!row-span-1')
+    document.getElementById('docs-card-content')?.classList.add('!flex-row')
+    document.getElementById('background')?.classList.add('!hidden')
 }
 </script>
 
@@ -23,7 +23,7 @@ function handleImageError() {
             id="background"
             class="absolute -left-20 top-0 max-w-[877px]"
             src="https://laravel.com/assets/img/welcome/background.svg"
-        />
+        >
         <div
             class="relative flex min-h-screen flex-col items-center justify-center selection:bg-[#FF2D20] selection:text-white"
         >
@@ -75,8 +75,8 @@ function handleImageError() {
                 <main class="mt-6">
                     <div class="grid gap-6 lg:grid-cols-2 lg:gap-8">
                         <a
-                            href="https://laravel.com/docs"
                             id="docs-card"
+                            href="https://laravel.com/docs"
                             class="flex flex-col items-start gap-6 overflow-hidden rounded-lg bg-white p-6 shadow-[0px_14px_34px_0px_rgba(0,0,0,0.08)] ring-1 ring-white/[0.05] transition duration-300 hover:text-black/70 hover:ring-black/20 focus:outline-none focus-visible:ring-[#FF2D20] md:row-span-3 lg:p-10 lg:pb-10 dark:bg-zinc-900 dark:ring-zinc-800 dark:hover:text-white/70 dark:hover:ring-zinc-700 dark:focus-visible:ring-[#FF2D20]"
                         >
                             <div
@@ -88,15 +88,15 @@ function handleImageError() {
                                     alt="Laravel documentation screenshot"
                                     class="aspect-video h-full w-full flex-1 rounded-[10px] object-cover object-top drop-shadow-[0px_4px_34px_rgba(0,0,0,0.06)] dark:hidden"
                                     @error="handleImageError"
-                                />
+                                >
                                 <img
                                     src="https://laravel.com/assets/img/welcome/docs-dark.svg"
                                     alt="Laravel documentation screenshot"
                                     class="hidden aspect-video h-full w-full flex-1 rounded-[10px] object-cover object-top drop-shadow-[0px_4px_34px_rgba(0,0,0,0.25)] dark:block"
-                                />
+                                >
                                 <div
                                     class="absolute -bottom-16 -left-16 h-40 w-[calc(100%+8rem)] bg-gradient-to-b from-transparent via-white to-white dark:via-zinc-900 dark:to-zinc-900"
-                                ></div>
+                                />
                             </div>
 
                             <div
@@ -304,61 +304,50 @@ function handleImageError() {
                                     <a
                                         href="https://forge.laravel.com"
                                         class="rounded-sm underline hover:text-black focus:outline-none focus-visible:ring-1 focus-visible:ring-[#FF2D20] dark:hover:text-white dark:focus-visible:ring-[#FF2D20]"
-                                        >Forge</a
-                                    >,
+                                    >Forge</a>,
                                     <a
                                         href="https://vapor.laravel.com"
                                         class="rounded-sm underline hover:text-black focus:outline-none focus-visible:ring-1 focus-visible:ring-[#FF2D20] dark:hover:text-white"
-                                        >Vapor</a
-                                    >,
+                                    >Vapor</a>,
                                     <a
                                         href="https://nova.laravel.com"
                                         class="rounded-sm underline hover:text-black focus:outline-none focus-visible:ring-1 focus-visible:ring-[#FF2D20] dark:hover:text-white"
-                                        >Nova</a
-                                    >,
+                                    >Nova</a>,
                                     <a
                                         href="https://envoyer.io"
                                         class="rounded-sm underline hover:text-black focus:outline-none focus-visible:ring-1 focus-visible:ring-[#FF2D20] dark:hover:text-white"
-                                        >Envoyer</a
-                                    >, and
+                                    >Envoyer</a>, and
                                     <a
                                         href="https://herd.laravel.com"
                                         class="rounded-sm underline hover:text-black focus:outline-none focus-visible:ring-1 focus-visible:ring-[#FF2D20] dark:hover:text-white"
-                                        >Herd</a
-                                    >
+                                    >Herd</a>
                                     help you take your projects to the next
                                     level. Pair them with powerful open source
                                     libraries like
                                     <a
                                         href="https://laravel.com/docs/billing"
                                         class="rounded-sm underline hover:text-black focus:outline-none focus-visible:ring-1 focus-visible:ring-[#FF2D20] dark:hover:text-white"
-                                        >Cashier</a
-                                    >,
+                                    >Cashier</a>,
                                     <a
                                         href="https://laravel.com/docs/dusk"
                                         class="rounded-sm underline hover:text-black focus:outline-none focus-visible:ring-1 focus-visible:ring-[#FF2D20] dark:hover:text-white"
-                                        >Dusk</a
-                                    >,
+                                    >Dusk</a>,
                                     <a
                                         href="https://laravel.com/docs/broadcasting"
                                         class="rounded-sm underline hover:text-black focus:outline-none focus-visible:ring-1 focus-visible:ring-[#FF2D20] dark:hover:text-white"
-                                        >Echo</a
-                                    >,
+                                    >Echo</a>,
                                     <a
                                         href="https://laravel.com/docs/horizon"
                                         class="rounded-sm underline hover:text-black focus:outline-none focus-visible:ring-1 focus-visible:ring-[#FF2D20] dark:hover:text-white"
-                                        >Horizon</a
-                                    >,
+                                    >Horizon</a>,
                                     <a
                                         href="https://laravel.com/docs/sanctum"
                                         class="rounded-sm underline hover:text-black focus:outline-none focus-visible:ring-1 focus-visible:ring-[#FF2D20] dark:hover:text-white"
-                                        >Sanctum</a
-                                    >,
+                                    >Sanctum</a>,
                                     <a
                                         href="https://laravel.com/docs/telescope"
                                         class="rounded-sm underline hover:text-black focus:outline-none focus-visible:ring-1 focus-visible:ring-[#FF2D20] dark:hover:text-white"
-                                        >Telescope</a
-                                    >, and more.
+                                    >Telescope</a>, and more.
                                 </p>
                             </div>
                         </div>
