@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import ApplicationLogo from '@/Components/ApplicationLogo.vue';
-import Dropdown from '@/Components/Dropdown.vue';
-import DropdownLink from '@/Components/DropdownLink.vue';
-import NavLink from '@/Components/NavLink.vue';
-import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
-import { Link } from '@inertiajs/vue3';
+import ApplicationLogo from '@/Components/ApplicationLogo.vue'
+import Dropdown from '@/Components/Dropdown.vue'
+import DropdownLink from '@/Components/DropdownLink.vue'
+import NavLink from '@/Components/NavLink.vue'
+import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue'
+import { Link } from '@inertiajs/vue3'
+import { ref } from 'vue'
 
-const showingNavigationDropdown = ref(false);
+const showingNavigationDropdown = ref(false)
 </script>
 
 <template>
@@ -91,11 +91,11 @@ const showingNavigationDropdown = ref(false);
                         <!-- Hamburger -->
                         <div class="-me-2 flex items-center sm:hidden">
                             <button
-                                @click="
-                                    showingNavigationDropdown =
-                                        !showingNavigationDropdown
-                                "
                                 class="inline-flex items-center justify-center rounded-md p-2 text-gray-400 transition duration-150 ease-in-out hover:bg-gray-100 hover:text-gray-500 focus:bg-gray-100 focus:text-gray-500 focus:outline-none"
+                                @click="
+                                    showingNavigationDropdown
+                                        = !showingNavigationDropdown
+                                "
                             >
                                 <svg
                                     class="h-6 w-6"
@@ -105,7 +105,7 @@ const showingNavigationDropdown = ref(false);
                                 >
                                     <path
                                         :class="{
-                                            hidden: showingNavigationDropdown,
+                                            'hidden': showingNavigationDropdown,
                                             'inline-flex':
                                                 !showingNavigationDropdown,
                                         }"
@@ -116,7 +116,7 @@ const showingNavigationDropdown = ref(false);
                                     />
                                     <path
                                         :class="{
-                                            hidden: !showingNavigationDropdown,
+                                            'hidden': !showingNavigationDropdown,
                                             'inline-flex':
                                                 showingNavigationDropdown,
                                         }"
@@ -181,8 +181,8 @@ const showingNavigationDropdown = ref(false);
 
             <!-- Page Heading -->
             <header
-                class="bg-white shadow"
                 v-if="$slots.header"
+                class="bg-white shadow"
             >
                 <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
                     <slot name="header" />

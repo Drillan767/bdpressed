@@ -1,30 +1,30 @@
 <script setup lang="ts">
-import Checkbox from '@/Components/Checkbox.vue';
-import GuestLayout from '@/Layouts/GuestLayout.vue';
-import InputError from '@/Components/InputError.vue';
-import InputLabel from '@/Components/InputLabel.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
-import TextInput from '@/Components/TextInput.vue';
-import { Head, Link, useForm } from '@inertiajs/vue3';
+import Checkbox from '@/Components/Checkbox.vue'
+import InputError from '@/Components/InputError.vue'
+import InputLabel from '@/Components/InputLabel.vue'
+import PrimaryButton from '@/Components/PrimaryButton.vue'
+import TextInput from '@/Components/TextInput.vue'
+import GuestLayout from '@/Layouts/GuestLayout.vue'
+import { Head, Link, useForm } from '@inertiajs/vue3'
 
 defineProps<{
-    canResetPassword?: boolean;
-    status?: string;
-}>();
+    canResetPassword?: boolean
+    status?: string
+}>()
 
 const form = useForm({
     email: '',
     password: '',
     remember: false,
-});
+})
 
-const submit = () => {
+function submit() {
     form.post(route('login'), {
         onFinish: () => {
-            form.reset('password');
+            form.reset('password')
         },
-    });
-};
+    })
+}
 </script>
 
 <template>
@@ -41,9 +41,9 @@ const submit = () => {
 
                 <TextInput
                     id="email"
+                    v-model="form.email"
                     type="email"
                     class="mt-1 block w-full"
-                    v-model="form.email"
                     required
                     autofocus
                     autocomplete="username"
@@ -57,9 +57,9 @@ const submit = () => {
 
                 <TextInput
                     id="password"
+                    v-model="form.password"
                     type="password"
                     class="mt-1 block w-full"
-                    v-model="form.password"
                     required
                     autocomplete="current-password"
                 />
@@ -69,10 +69,8 @@ const submit = () => {
 
             <div class="mt-4 block">
                 <label class="flex items-center">
-                    <Checkbox name="remember" v-model:checked="form.remember" />
-                    <span class="ms-2 text-sm text-gray-600"
-                        >Remember me</span
-                    >
+                    <Checkbox v-model:checked="form.remember" name="remember" />
+                    <span class="ms-2 text-sm text-gray-600">Remember me</span>
                 </label>
             </div>
 

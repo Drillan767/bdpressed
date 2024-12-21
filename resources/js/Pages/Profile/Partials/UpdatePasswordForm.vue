@@ -1,38 +1,38 @@
 <script setup lang="ts">
-import InputError from '@/Components/InputError.vue';
-import InputLabel from '@/Components/InputLabel.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
-import TextInput from '@/Components/TextInput.vue';
-import { useForm } from '@inertiajs/vue3';
-import { ref } from 'vue';
+import InputError from '@/Components/InputError.vue'
+import InputLabel from '@/Components/InputLabel.vue'
+import PrimaryButton from '@/Components/PrimaryButton.vue'
+import TextInput from '@/Components/TextInput.vue'
+import { useForm } from '@inertiajs/vue3'
+import { ref } from 'vue'
 
-const passwordInput = ref<HTMLInputElement | null>(null);
-const currentPasswordInput = ref<HTMLInputElement | null>(null);
+const passwordInput = ref<HTMLInputElement | null>(null)
+const currentPasswordInput = ref<HTMLInputElement | null>(null)
 
 const form = useForm({
     current_password: '',
     password: '',
     password_confirmation: '',
-});
+})
 
-const updatePassword = () => {
+function updatePassword() {
     form.put(route('password.update'), {
         preserveScroll: true,
         onSuccess: () => {
-            form.reset();
+            form.reset()
         },
         onError: () => {
             if (form.errors.password) {
-                form.reset('password', 'password_confirmation');
-                passwordInput.value?.focus();
+                form.reset('password', 'password_confirmation')
+                passwordInput.value?.focus()
             }
             if (form.errors.current_password) {
-                form.reset('current_password');
-                currentPasswordInput.value?.focus();
+                form.reset('current_password')
+                currentPasswordInput.value?.focus()
             }
         },
-    });
-};
+    })
+}
 </script>
 
 <template>
@@ -48,7 +48,7 @@ const updatePassword = () => {
             </p>
         </header>
 
-        <form @submit.prevent="updatePassword" class="mt-6 space-y-6">
+        <form class="mt-6 space-y-6" @submit.prevent="updatePassword">
             <div>
                 <InputLabel for="current_password" value="Current Password" />
 
@@ -103,7 +103,9 @@ const updatePassword = () => {
             </div>
 
             <div class="flex items-center gap-4">
-                <PrimaryButton :disabled="form.processing">Save</PrimaryButton>
+                <PrimaryButton :disabled="form.processing">
+                    Save
+                </PrimaryButton>
 
                 <Transition
                     enter-active-class="transition ease-in-out"
