@@ -4,7 +4,7 @@ import createServer from '@inertiajs/vue3/server'
 import { renderToString } from '@vue/server-renderer'
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers'
 import { createSSRApp, h } from 'vue'
-import { Ziggy } from './ziggy'
+import { ZiggyVue } from 'ziggy-js'
 import vuetify from '@/plugins/vuetify'
 import { createHead } from '@vueuse/head'
 import '@/plugins/vee-validate'
@@ -27,7 +27,7 @@ createServer(page =>
                 .use(plugin)
                 .use(vuetify)
                 .use(head)
-                .use(Ziggy, {
+                .use(ZiggyVue, {
                     ...page.props.ziggy,
                     location: new URL(page.props.ziggy.location),
                 })
