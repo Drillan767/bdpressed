@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import VisitorsLayout from '@/Layouts/VisitorsLayout.vue'
-import { Link, router } from '@inertiajs/vue3'
+import { Link, router, useForm } from '@inertiajs/vue3'
 import { useHead } from '@vueuse/head'
-import { useForm, useIsFormValid } from 'vee-validate'
+// import { useForm, useIsFormValid } from 'vee-validate'
 import { useDisplay } from 'vuetify'
 import { ref, watch } from 'vue'
 import validationConfig from '@/plugins/validationConfig'
@@ -26,8 +26,16 @@ useHead({
 
 const { smAndDown } = useDisplay()
 
+const form = useForm<LoginForm>({
+    email: '',
+    password: '',
+    remember: false,
+})
 
-const { defineField, handleSubmit, setErrors } = useForm<LoginForm>({
+const formValid = ref(true)
+
+
+/*const { defineField, handleSubmit, setErrors } = useForm<LoginForm>({
     validationSchema: {
         email: 'email|required',
         password: 'required',
@@ -36,16 +44,22 @@ const { defineField, handleSubmit, setErrors } = useForm<LoginForm>({
 
 const [email, emailProps] = defineField('email', validationConfig)
 const [password, passwordProps] = defineField('password', validationConfig)
-const [remember, rememberProps] = defineField('remember')
+const [remember, rememberProps] = defineField('remember')*/
 
-const formValid = useIsFormValid()
+// const formValid = useIsFormValid()
 
 const passwordVisible = ref(false)
 const loading = ref(false)
 
+/*
 const submit = handleSubmit((form) => {
     router.post('/login', form)
 })
+*/
+
+async function submit() {
+    form.post('/login')
+}
 
 </script>
 
@@ -62,8 +76,7 @@ const submit = handleSubmit((form) => {
                         <VRow>
                             <VCol>
                                 <VTextField
-                                    v-model="email"
-                                    v-bind="emailProps"
+                                    v-model="form.email"
                                     prepend-inner-icon="mdi-at"
                                     label="Email"
                                     type="email"
@@ -73,8 +86,7 @@ const submit = handleSubmit((form) => {
                         <VRow>
                             <VCol>
                                 <VTextField
-                                    v-model="password"
-                                    v-bind="passwordProps"
+                                    v-model="form.password"
                                     :type="passwordVisible ? 'text' : 'password'"
                                     prepend-inner-icon="mdi-lock-outline"
                                     label="Mot de passe"
@@ -92,8 +104,7 @@ const submit = handleSubmit((form) => {
                         <VRow>
                             <VCol>
                                 <VCheckbox
-                                    v-bind="rememberProps"
-                                    v-model="remember"
+                                    v-model="form.remember"
                                     label="Se souvenir de moi"
                                 />
                             </VCol>
@@ -123,8 +134,8 @@ const submit = handleSubmit((form) => {
                         <VRow no-gutters>
                             <VCol class="d-flex justify-end">
                                 <VBtn
-                                    :disabled="!formValid || loading || loadingUser"
-                                    :loading="loading || loadingUser"
+                                    :disabled="!formValid || loading"
+                                    :loading="loading"
                                     variant="flat"
                                     @click="submit"
                                 >
