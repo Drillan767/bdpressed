@@ -5,7 +5,7 @@ import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers'
 import { createApp, h } from 'vue'
 import { createHead } from '@vueuse/head'
 import vuetify from '@/plugins/vuetify'
-import { ZiggyVue } from '../../vendor/tightenco/ziggy'
+import { Ziggy } from './ziggy'
 import '@/plugins/vee-validate'
 
 import '../styles/main.scss'
@@ -21,7 +21,7 @@ createInertiaApp({
     setup({ el, App, props, plugin }) {
         createApp({ render: () => h(App, props) })
             .use(plugin)
-            .use(ZiggyVue)
+            .use(Ziggy)
             .use(vuetify)
             .use(head)
             .mount(el)
