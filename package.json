@@ -38,6 +38,7 @@
         "pinia-plugin-persistedstate": "^4.2.0",
         "vee-validate": "^4.14.7",
         "vue3-toastify": "^0.2.8",
-        "vuetify": "^3.7.6"
+        "vuetify": "^3.7.6",
+        "ziggy-js": "^2.4.1"
     }
 }
