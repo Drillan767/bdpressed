@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import VisitorsLayout from '@/Layouts/VisitorsLayout.vue'
 import { useHead } from '@vueuse/head'
-import { Link, router  } from '@inertiajs/vue3'
+import { Link, router, useForm  } from '@inertiajs/vue3'
 import { useDisplay } from 'vuetify'
 import validationConfig from '@/plugins/validationConfig'
-import { useForm, useIsFormValid } from 'vee-validate'
+// import { useForm, useIsFormValid } from 'vee-validate'
 import { ref, watch } from 'vue'
 
 interface RegisterForm {
@@ -15,7 +15,13 @@ interface RegisterForm {
 
 const { smAndDown } = useDisplay()
 
-const { defineField, handleSubmit, setErrors } = useForm<RegisterForm>({
+const form = useForm<RegisterForm>({
+    email: '',
+    password: '',
+    password_confirmation: '',
+})
+
+/*const { defineField, handleSubmit, setErrors } = useForm<RegisterForm>({
     validationSchema: {
         email: 'email|required',
         password: {
@@ -24,30 +30,27 @@ const { defineField, handleSubmit, setErrors } = useForm<RegisterForm>({
         },
         password_confirmation: 'required|confirmed:@password',
     },
-})
+})*/
 
-const [email, emailProps] = defineField('email', validationConfig)
+/*const [email, emailProps] = defineField('email', validationConfig)
 const [password, passwordProps] = defineField('password', validationConfig)
 const [confirmPassword, confirmPasswordProps] = defineField('password_confirmation', validationConfig)
 
 const formValid = useIsFormValid()
+*/
 
 const passwordVisible = ref(false)
 const confirmPasswordVisible = ref(false)
 const loading = ref(false)
+const formValid = ref(true)
 
-const submit = handleSubmit((form) => {
-    router.post('/register', form)
-})
-
-
-/*function submit() {
-    form.post(route('register'), {
+function submit() {
+    form.post(route('/register'), {
         onFinish: () => {
             form.reset('password', 'password_confirmation')
         },
     })
-}*/
+}
 
 defineOptions({ layout: VisitorsLayout })
 useHead({
@@ -69,8 +72,7 @@ useHead({
                             <VRow>
                                 <VCol>
                                     <VTextField
-                                        v-bind="emailProps"
-                                        v-model="email"
+                                        v-model="form.email"
                                         prepend-inner-icon="mdi-at"
                                         label="Email"
                                         type="email"
@@ -80,8 +82,7 @@ useHead({
                             <VRow>
                                 <VCol>
                                     <VTextField
-                                        v-bind="passwordProps"
-                                        v-model="password"
+                                        v-model="form.password"
                                         :type="passwordVisible ? 'text' : 'password'"
                                         prepend-inner-icon="mdi-lock-outline"
                                         hint="8 caractères minimum, 1 majuscule, 1 minuscule, 1 chiffre et 1 caractère spécial"
@@ -100,8 +101,7 @@ useHead({
                             <VRow>
                                 <VCol>
                                     <VTextField
-                                        v-bind="confirmPasswordProps"
-                                        v-model="confirmPassword"
+                                        v-model="form.password_confirmation"
                                         :type="confirmPasswordVisible ? 'text' : 'password'"
                                         prepend-inner-icon="mdi-lock-outline"
                                         label="Confirmer le mot de passe"
