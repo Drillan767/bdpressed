@@ -47,13 +47,6 @@ const submit = handleSubmit((form) => {
     router.post('/login', form)
 })
 
-/*function submit() {
-    form.post(route('login'), {
-        onFinish: () => {
-            form.reset('password')
-        },
-    })
-}*/
 </script>
 
 <template>
