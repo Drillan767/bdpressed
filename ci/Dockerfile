@@ -1,102 +1,64 @@
-# FROM php:8.4-fpm-alpine
+FROM php:8.4-fpm-alpine AS build
 
-# ENV USER=appuser
-# ENV GROUPNAME=$USER
-# ENV UID=12345
-# ENV GID=23456
+RUN apk add --no-cache \
+    zip \
+    libzip-dev \
+    libjpeg-turbo \
+    libpng \
+    libjpeg-turbo-dev \
+    libpng-dev \
+    nodejs \
+    yarn \
+    && docker-php-ext-configure zip \
+    && docker-php-ext-install zip pdo pdo_mysql \
+    && docker-php-ext-configure gd --with-jpeg=/usr/include/ \
+    && docker-php-ext-install -j$(nproc) gd \
+    && docker-php-ext-enable gd
 
-# RUN addgroup \
-#     --gid "$GID" \
-#     "$GROUPNAME" \
-# &&  adduser \
-#     --disabled-password \
-#     --gecos "" \
-#     --home "$(pwd)" \
-#     --ingroup "$GROUPNAME" \
-#     --no-create-home \
-#     --uid "$UID" \
-#     $USER
-
-# RUN apk add --no-cache \
-#     nodejs \
-#     yarn \
-#     oniguruma-dev \
-#     jpeg-dev \
-#     libpng-dev \
-#     zlib-dev \
-#     caddy \
-#     && docker-php-ext-install bcmath ctype fileinfo mbstring pdo_mysql gd \
-#     && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-
-# COPY ./ci/entrypoint.sh /etc/entrypoint.sh
-# RUN chmod +x /etc/entrypoint.sh
-
-# WORKDIR /srv
-
-# COPY --chown=appuser:appuser . .
-
-# RUN composer install --no-interaction --optimize-autoloader --no-dev --prefer-dist \
-#     && php artisan config:cache \
-#    && php artisan route:cache \
-#     && php artisan view:cache \
-#     && chown appuser:appuser storage bootstrap/cache \
-#     && yarn install --frozen-lockfile \
-#     && yarn run build
-
-# Expose port 8080
-
-FROM php:8.4-alpine AS php-builder
-
-RUN apk update --no-cache \
-    && apk upgrade --no-cache \
-    && apk add --no-cache \
-        nodejs \
-        yarn \
-        oniguruma-dev \
-        jpeg-dev \
-        libpng-dev \
-        zlib-dev \
-        icu-dev \
-        caddy \
-    && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-
-#####################################
-# PHP Extensions
-#####################################
-
-RUN docker-php-ext-configure gd --with-jpeg
-
-RUN docker-php-ext-install bcmath ctype fileinfo mbstring pdo_mysql gd intl
-
-WORKDIR /app
-
-COPY . ./
-RUN composer install --no-interaction --optimize-autoloader --no-dev --prefer-dist
-
-
-FROM node:lts-alpine AS node-builder
-
-RUN apk add --no-cache yarn
-WORKDIR /app
-COPY . ./
-RUN yarn install --frozen-lockfile && yarn build
-
-
-#####################################
-# Copy extensions from build stage
-#####################################
-
-FROM php:8.4-fpm-alpine
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /srv
 
-COPY . ./
+COPY . .
 
-COPY --from=node-builder /app/public/build/ /srv/public
+RUN composer install --no-dev --prefer-dist \
+    && yarn install \
+    && yarn build
 
-COPY --from=php-builder /usr/local/lib/php/extensions/no-debug-non-zts-20240924/* /usr/local/lib/php/extensions/no-debug-non-zts-20240924
-COPY --from=php-builder /usr/local/etc/php/conf.d/* /usr/local/etc/php/conf.d
-COPY --from=php-builder /app/vendor /srv
+RUN chown -R www-data:www-data /srv \
+    && chmod -R 775 /srv/storage \
+    && chmod -R 775 /srv/bootstrap/cache \
+    && chown -R www-data:www-data /srv/vendor \
+    && chmod -R 775 /srv/vendor
+
+FROM php:8.4-fpm-alpine
+
+RUN apk add --no-cache \
+    zip \
+    libzip-dev \
+    libjpeg-turbo \
+    libpng \
+    libjpeg-turbo-dev \
+    libpng-dev \
+    oniguruma-dev \
+    caddy \
+    && docker-php-ext-configure zip \
+    && docker-php-ext-install zip pdo pdo_mysql \
+    && docker-php-ext-configure gd --with-jpeg=/usr/include/ \
+    && docker-php-ext-install -j$(nproc) gd \
+    && docker-php-ext-enable gd \
+    && docker-php-ext-install bcmath \
+    && docker-php-ext-enable bcmath \
+    && docker-php-ext-install exif \
+    && docker-php-ext-enable exif \
+    && docker-php-ext-install opcache \
+    && docker-php-ext-enable opcache \
+    && rm -rf /var/cache/apk/*
+
+COPY --from=build /srv /srv
+COPY ./ci/php.ini "$PHP_INI_DIR/conf.d/app.ini"
+
+WORKDIR /srv
 
 COPY ./ci/entrypoint.sh /etc/entrypoint.sh
 RUN chmod +x /etc/entrypoint.sh

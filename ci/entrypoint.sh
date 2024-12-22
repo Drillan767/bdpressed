@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 php-fpm -D
-caddy run --config /var/www/html/ci/Caddyfile
+caddy run --config /srv/ci/Caddyfile
