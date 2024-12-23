@@ -42,10 +42,6 @@ class RegisteredUserController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
-        foreach (['admin', 'user'] as $role) {
-            Role::findOrCreate($role);
-        }
-
         $user->assignRole('admin');
 
         event(new Registered($user));
