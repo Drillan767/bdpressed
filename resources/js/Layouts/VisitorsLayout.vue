@@ -105,7 +105,10 @@ provide('openDrawer', openDrawer)
                 <VContainer class="hidden-sm-and-down">
                     <VRow>
                         <VCol class="links d-flex justify-center ga-4">
-                            <Link href="/">
+                            <Link
+                                :class="{ 'active': $page.url === '/' }"
+                                href="/"
+                            >
                                 Accueil
                             </Link>
                             <Link href="/boutique">
@@ -216,7 +219,7 @@ provide('openDrawer', openDrawer)
         text-decoration: none;
         color: rgb(var(--v-theme-secondary));
 
-        &.router-link-exact-active {
+        &.active {
             color: rgb(var(--v-theme-primary));
         }
 
