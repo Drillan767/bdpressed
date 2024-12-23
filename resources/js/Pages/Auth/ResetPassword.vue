@@ -1,14 +1,13 @@
 <script setup lang="ts">
-import InputError from '@/Components/InputError.vue'
-import InputLabel from '@/Components/InputLabel.vue'
-import PrimaryButton from '@/Components/PrimaryButton.vue'
-import TextInput from '@/Components/TextInput.vue'
-import GuestLayout from '@/Layouts/GuestLayout.vue'
-import { Head, useForm } from '@inertiajs/vue3'
+import VisitorsLayout from '@/Layouts/VisitorsLayout.vue'
+import { useForm } from '@inertiajs/vue3'
+import { useDisplay } from 'vuetify'
+import { ref } from 'vue'
 
 const props = defineProps<{
     email: string
     token: string
+    errors?: Record<string, string>
 }>()
 
 const form = useForm({
@@ -18,6 +17,11 @@ const form = useForm({
     password_confirmation: '',
 })
 
+const { smAndDown } = useDisplay()
+
+const passwordVisible = ref(false)
+const confirmPasswordVisible = ref(false)
+
 function submit() {
     form.post(route('password.store'), {
         onFinish: () => {
@@ -25,73 +29,89 @@ function submit() {
         },
     })
 }
+
+defineOptions({ layout: VisitorsLayout })
 </script>
 
 <template>
-    <GuestLayout>
-        <Head title="Reset Password" />
-
-        <form @submit.prevent="submit">
-            <div>
-                <InputLabel for="email" value="Email" />
-
-                <TextInput
-                    id="email"
-                    v-model="form.email"
-                    type="email"
-                    class="mt-1 block w-full"
-                    required
-                    autofocus
-                    autocomplete="username"
-                />
-
-                <InputError class="mt-2" :message="form.errors.email" />
-            </div>
-
-            <div class="mt-4">
-                <InputLabel for="password" value="Password" />
-
-                <TextInput
-                    id="password"
-                    v-model="form.password"
-                    type="password"
-                    class="mt-1 block w-full"
-                    required
-                    autocomplete="new-password"
-                />
-
-                <InputError class="mt-2" :message="form.errors.password" />
-            </div>
-
-            <div class="mt-4">
-                <InputLabel
-                    for="password_confirmation"
-                    value="Confirm Password"
-                />
-
-                <TextInput
-                    id="password_confirmation"
-                    v-model="form.password_confirmation"
-                    type="password"
-                    class="mt-1 block w-full"
-                    required
-                    autocomplete="new-password"
-                />
-
-                <InputError
-                    class="mt-2"
-                    :message="form.errors.password_confirmation"
-                />
-            </div>
-
-            <div class="mt-4 flex items-center justify-end">
-                <PrimaryButton
-                    :class="{ 'opacity-25': form.processing }"
-                    :disabled="form.processing"
-                >
-                    Reset Password
-                </PrimaryButton>
-            </div>
-        </form>
-    </GuestLayout>
+    <VContainer>
+        <VRow>
+            <VCol class="d-flex justify-center">
+                <VForm>
+                    <VCard
+                        :width="smAndDown ? '100%' : '560'"
+                        :loading="form.processing"
+                        prepend-icon="mdi-login"
+                        title="Connexion"
+                    >
+                        <template #text>
+                            <VRow>
+                                <VCol>
+                                    <VTextField
+                                        v-model="form.email"
+                                        :error-messages="errors.email"
+                                        prepend-inner-icon="mdi-at"
+                                        label="Email"
+                                        type="email"
+                                        disabled
+                                    />
+                                </VCol>
+                            </VRow>
+                            <VRow>
+                                <VCol>
+                                    <VTextField
+                                        v-model="form.password"
+                                        :error-messages="errors.password"
+                                        :type="passwordVisible ? 'text' : 'password'"
+                                        prepend-inner-icon="mdi-at"
+                                        label="Mot de passe"
+                                    >
+                                        <template #append-inner>
+                                            <VBtn
+                                                :icon="passwordVisible ? 'mdi-eye-off-outline' : 'mdi-eye-outline'"
+                                                variant="text"
+                                                @click="passwordVisible = !passwordVisible"
+                                            />
+                                        </template>
+                                    </VTextField>
+                                </VCol>
+                            </VRow>
+                            <VRow>
+                                <VCol>
+                                    <VTextField
+                                        v-model="form.password_confirmation"
+                                        :error-messages="errors.password_confirmation"
+                                        :type="confirmPasswordVisible ? 'text' : 'password'"
+                                        prepend-inner-icon="mdi-at"
+                                        label="Confirmer le mot de passe"
+                                    >
+                                        <template #append-inner>
+                                            <VBtn
+                                                :icon="confirmPasswordVisible ? 'mdi-eye-off-outline' : 'mdi-eye-outline'"
+                                                variant="text"
+                                                @click="confirmPasswordVisible = !confirmPasswordVisible"
+                                            />
+                                        </template>
+                                    </VTextField>
+                                </VCol>
+                            </VRow>
+                        </template>
+                        <template #actions>
+                            <VRow>
+                                <VCol class="d-flex justify-end">
+                                    <VBtn
+                                        :loading="form.processing"
+                                        variant="flat"
+                                        @click="submit"
+                                    >
+                                        Réinitialiser le mot de passe
+                                    </VBtn>
+                                </VCol>
+                            </VRow>
+                        </template>
+                    </VCard>
+                </VForm>
+            </VCol>
+        </VRow>
+    </VContainer>
 </template>
