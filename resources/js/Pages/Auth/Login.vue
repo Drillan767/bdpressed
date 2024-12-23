@@ -5,7 +5,13 @@ import { useHead } from '@vueuse/head'
 // import { useForm, useIsFormValid } from 'vee-validate'
 import { useDisplay } from 'vuetify'
 import { ref, watch } from 'vue'
-import validationConfig from '@/plugins/validationConfig'
+
+interface Props {
+    auth: {
+        user: any | null
+    }
+    errors?: Record<string, string>
+}
 
 interface LoginForm {
     email: string
@@ -13,10 +19,7 @@ interface LoginForm {
     remember: boolean
 }
 
-defineProps<{
-    canResetPassword?: boolean
-    status?: string
-}>()
+const props = defineProps<Props>()
 
 defineOptions({ layout: VisitorsLayout })
 
@@ -80,6 +83,7 @@ async function submit() {
                                     prepend-inner-icon="mdi-at"
                                     label="Email"
                                     type="email"
+                                    :error-messages="errors.email"
                                 />
                             </VCol>
                         </VRow>
