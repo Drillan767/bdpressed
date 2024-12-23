@@ -61,7 +61,7 @@ const submit = handleSubmit((form) => {
 */
 
 async function submit() {
-    form.post('/login')
+    form.post(route('auth.login'))
 }
 
 </script>

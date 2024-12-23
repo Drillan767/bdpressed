@@ -3,9 +3,16 @@ import VisitorsLayout from '@/Layouts/VisitorsLayout.vue'
 import { useHead } from '@vueuse/head'
 import { Link, router, useForm  } from '@inertiajs/vue3'
 import { useDisplay } from 'vuetify'
-import validationConfig from '@/plugins/validationConfig'
-// import { useForm, useIsFormValid } from 'vee-validate'
+import useToast from '@/Composables/toast'
 import { ref, watch } from 'vue'
+
+interface Props {
+    status: string | null
+    auth: {
+        user: any | null
+    }
+    errors?: Record<string, string>
+}
 
 interface RegisterForm {
     email: string
@@ -13,7 +20,10 @@ interface RegisterForm {
     password_confirmation: string
 }
 
+const props = defineProps<Props>()
+
 const { smAndDown } = useDisplay()
+const { showSuccess } = useToast()
 
 const form = useForm<RegisterForm>({
     email: '',
@@ -21,31 +31,13 @@ const form = useForm<RegisterForm>({
     password_confirmation: '',
 })
 
-/*const { defineField, handleSubmit, setErrors } = useForm<RegisterForm>({
-    validationSchema: {
-        email: 'email|required',
-        password: {
-            required: true,
-            regex: /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_\-+=~`|\\{}[\]:;"'<>,.?/]).{8,}$/,
-        },
-        password_confirmation: 'required|confirmed:@password',
-    },
-})*/
-
-/*const [email, emailProps] = defineField('email', validationConfig)
-const [password, passwordProps] = defineField('password', validationConfig)
-const [confirmPassword, confirmPasswordProps] = defineField('password_confirmation', validationConfig)
-
-const formValid = useIsFormValid()
-*/
-
 const passwordVisible = ref(false)
 const confirmPasswordVisible = ref(false)
 const loading = ref(false)
 const formValid = ref(true)
 
 function submit() {
-    form.post(route('/register'), {
+    form.post(route('auth.register'), {
         onFinish: () => {
             form.reset('password', 'password_confirmation')
         },
@@ -55,6 +47,10 @@ function submit() {
 defineOptions({ layout: VisitorsLayout })
 useHead({
     title: 'Inscription'
+})
+
+watch(() => props.status, (value) => {
+    if (value) showSuccess(value)
 })
 </script>
 
@@ -73,6 +69,7 @@ useHead({
                                 <VCol>
                                     <VTextField
                                         v-model="form.email"
+                                        :error-messages="errors.email"
                                         prepend-inner-icon="mdi-at"
                                         label="Email"
                                         type="email"
@@ -84,6 +81,7 @@ useHead({
                                     <VTextField
                                         v-model="form.password"
                                         :type="passwordVisible ? 'text' : 'password'"
+                                        :error-messages="errors.password"
                                         prepend-inner-icon="mdi-lock-outline"
                                         hint="8 caractères minimum, 1 majuscule, 1 minuscule, 1 chiffre et 1 caractère spécial"
                                         label="Mot de passe"
@@ -102,6 +100,7 @@ useHead({
                                 <VCol>
                                     <VTextField
                                         v-model="form.password_confirmation"
+                                        :error-messages="errors.password_confirmation"
                                         :type="confirmPasswordVisible ? 'text' : 'password'"
                                         prepend-inner-icon="mdi-lock-outline"
                                         label="Confirmer le mot de passe"
