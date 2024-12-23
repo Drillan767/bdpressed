@@ -1,14 +1,19 @@
 <script setup lang="ts">
-import InputError from '@/Components/InputError.vue'
-import InputLabel from '@/Components/InputLabel.vue'
-import PrimaryButton from '@/Components/PrimaryButton.vue'
-import TextInput from '@/Components/TextInput.vue'
-import GuestLayout from '@/Layouts/GuestLayout.vue'
-import { Head, useForm } from '@inertiajs/vue3'
+import VisitorsLayout from '@/Layouts/VisitorsLayout.vue'
+import { useHead } from '@vueuse/head'
+import { useForm } from '@inertiajs/vue3'
+import useToast from '@/Composables/toast'
+import { watch } from 'vue'
 
-defineProps<{
+const props = defineProps<{
     status?: string
+    auth: {
+        user: any | null
+    }
+    errors?: Record<string, string>
 }>()
+
+const { showSuccess } = useToast()
 
 const form = useForm({
     email: '',
@@ -17,50 +22,63 @@ const form = useForm({
 function submit() {
     form.post(route('password.email'))
 }
+
+useHead({
+    title: 'Mot de passe oublié',
+})
+
+defineOptions({ layout: VisitorsLayout })
+
+watch(() => props.status, (value) => {
+    if (value) showSuccess(value)
+})
 </script>
 
 <template>
-    <GuestLayout>
-        <Head title="Forgot Password" />
-
-        <div class="mb-4 text-sm text-gray-600">
-            Forgot your password? No problem. Just let us know your email
-            address and we will email you a password reset link that will allow
-            you to choose a new one.
-        </div>
-
-        <div
-            v-if="status"
-            class="mb-4 text-sm font-medium text-green-600"
-        >
-            {{ status }}
-        </div>
-
-        <form @submit.prevent="submit">
-            <div>
-                <InputLabel for="email" value="Email" />
-
-                <TextInput
-                    id="email"
-                    v-model="form.email"
-                    type="email"
-                    class="mt-1 block w-full"
-                    required
-                    autofocus
-                    autocomplete="username"
-                />
-
-                <InputError class="mt-2" :message="form.errors.email" />
-            </div>
-
-            <div class="mt-4 flex items-center justify-end">
-                <PrimaryButton
-                    :class="{ 'opacity-25': form.processing }"
-                    :disabled="form.processing"
+    <VContainer>
+        <VRow>
+            <VCol class="d-flex justify-center">
+                <VCard
+                    :width="smAndDown ? '100%' : '560'"
+                    prepend-icon="mdi-email-outline"
+                    title="Mot de passe oublié"
                 >
-                    Email Password Reset Link
-                </PrimaryButton>
-            </div>
-        </form>
-    </GuestLayout>
+                    <template #text>
+                        <VRow>
+                            <VCol>
+                                <VTextField
+                                    v-model="form.email"
+                                    :error-messages="errors.email"
+                                    prepend-inner-icon="mdi-at"
+                                    label="Email"
+                                    type="email"
+                                />
+                            </VCol>
+                        </VRow>
+                    </template>
+                    <template #actions>
+                        <VRow>
+                            <VCol>
+                                <VBtn
+                                    to="/connexion"
+                                    variant="text"
+                                >
+                                    Retour
+                                </VBtn>
+                            </VCol>
+                            <VCol class="d-flex justify-end">
+                                <VBtn
+                                    :loading
+                                    variant="flat"
+                                    @click="submit"
+                                >
+                                    Envoyer
+                                </VBtn>
+                            </VCol>
+                        </VRow>
+                    </template>
+                </VCard>
+            </VCol>
+        </VRow>
+    </VContainer>
 </template>

@@ -1,3 +1,0 @@
-# Uncommenting the following lines fixes the build:
-[phases.setup]
-    nixPkgs = ["...", "(lib.hiPrio php83Packages.composer)"]
