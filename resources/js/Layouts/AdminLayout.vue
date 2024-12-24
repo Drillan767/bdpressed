@@ -60,10 +60,10 @@ const openDrawer = ref(true)
         >
             <VList nav>
                 <VListItem
-                    href="/administration"
                     prepend-icon="mdi-home"
                     title="Accueil"
                     nav
+                    @click="router.visit('/administration')"
                 />
                 <VDivider class="my-2" />
                 <VListItem

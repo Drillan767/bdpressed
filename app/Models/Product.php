@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Casts\FileProperty;
+use Illuminate\Database\Eloquent\Casts\Json;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -21,6 +23,8 @@ class Product extends Model
 {
     protected $casts = [
         'created_at' => 'datetime:d/m/Y H:i',
+        'updated_at' => 'datetime:d/m/Y H:i',
         'price' => 'float',
+        'illustrations' => FileProperty::class,
     ];
 }

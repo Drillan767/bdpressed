@@ -34,7 +34,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::prefix('/administration')->group(function () {
             Route::controller(ProductController::class)->group(function () {
                 Route::get('/articles', 'index')->name('products.index');
+                Route::get('/article/{slug}', 'show')->name('products.show');
                 Route::post('/article', 'store')->name('products.store');
+                Route::post('/article/update-illustration/{product}', 'addMedia')->name('products.add-media');
 
             });
         });
