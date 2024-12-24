@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('slug');
             $table->string('quickDescription');
             $table->text('description');
+            $table->integer('weight');
             $table->text('illustrations');
             $table->string('promotedImage');
             $table->float('price', 2);
