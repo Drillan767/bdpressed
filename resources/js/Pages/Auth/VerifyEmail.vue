@@ -1,26 +1,78 @@
 <script setup lang="ts">
-import PrimaryButton from '@/Components/PrimaryButton.vue'
-import GuestLayout from '@/Layouts/GuestLayout.vue'
-import { Head, Link, useForm } from '@inertiajs/vue3'
-import { computed } from 'vue'
+import VisitorsLayout from '@/Layouts/VisitorsLayout.vue'
+import { useDisplay } from 'vuetify'
+import { useForm, router } from '@inertiajs/vue3'
+import { computed, watch } from 'vue'
+import useToast from '@/Composables/toast'
+import { useHead } from '@vueuse/head'
 
 const props = defineProps<{
     status?: string
 }>()
 
+const { smAndDown } = useDisplay()
+const { showSuccess } = useToast()
 const form = useForm({})
 
 function submit() {
     form.post(route('verification.send'))
 }
 
-const verificationLinkSent = computed(
-    () => props.status === 'verification-link-sent',
-)
+watch(() => props.status, (value) => {
+    if (value === 'verification-link-sent') {
+        showSuccess('Un nouvel email vous a été envoyé à l\'adresse que vous avez indiqué !')
+    }
+})
+
+defineOptions({ layout: VisitorsLayout })
+useHead({
+    title: 'Vérifiez votre email',
+})
 </script>
 
 <template>
-    <GuestLayout>
+    <VContainer>
+        <VRow>
+            <VCol class="d-flex justify-center">
+                <VForm>
+                    <VCard
+                        :width="smAndDown ? '100%' : '560'"
+                        prepend-icon="mdi-login"
+                        title="Vérifiez votre email"
+                    >
+                        <template #text>
+                           <p>
+                               Merci de votre inscription ! Avant de continuer, est-ce que je peux vous demander
+                               de vérifier votre adresse email en cliquant sur le lien que je vous ai envoyé ? 👉👈
+                           </p>
+                            <p>
+                                SI vous n'avez rien reçu, je peux vous en renvoyer un autre sans problème ! ✨
+                            </p>
+
+                        </template>
+                        <template #actions>
+                            <VRow no-gutters>
+                                <VCol class="d-flex justify-space-between">
+                                    <VBtn
+                                        @click="router.post(route('logout'))"
+                                    >
+                                        Déconnexion
+                                    </VBtn>
+                                    <VBtn
+                                        variant="flat"
+                                        @click="submit"
+                                    >
+                                        Renvoyer un mail
+                                    </VBtn>
+                                </VCol>
+                            </VRow>
+                        </template>
+                    </VCard>
+                </VForm>
+            </VCol>
+        </VRow>
+    </VContainer>
+<!--    <GuestLayout>
         <Head title="Email Verification" />
 
         <div class="mb-4 text-sm text-gray-600">
@@ -56,5 +108,5 @@ const verificationLinkSent = computed(
                 </Link>
             </div>
         </form>
-    </GuestLayout>
+    </GuestLayout>-->
 </template>

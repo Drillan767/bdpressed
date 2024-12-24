@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\VisitorsController;
 use Illuminate\Foundation\Application;
@@ -29,6 +30,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::middleware('role:admin')->group(function () {
         Route::get('/administration', [DashboardController::class, 'index'])->name('admin.dashboard');
+
+        Route::prefix('/administration')->group(function () {
+            Route::controller(ProductController::class)->group(function () {
+                Route::get('/articles', 'index')->name('products.index');
+                Route::post('/article', 'store')->name('products.store');
+
+            });
+        });
     });
 });
 
