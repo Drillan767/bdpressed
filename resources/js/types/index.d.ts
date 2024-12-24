@@ -25,6 +25,13 @@ export interface AdminProductList {
     updated_at: string
 }
 
+export interface AdminProduct extends AdminProductList {
+    quickDescription: string
+    description: string
+    promotedImage: string
+    illustrations: string[]
+}
+
 export interface DataTableHeader {
     title: string
     align?: 'start' | 'center' | 'end'
