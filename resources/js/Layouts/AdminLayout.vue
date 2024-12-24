@@ -1,14 +1,17 @@
 <script setup lang="ts">
 import { useHead } from '@vueuse/head'
-import { ref, useAttrs } from 'vue'
+import { ref, provide } from 'vue'
 import { useDisplay } from 'vuetify'
-import { Link, router } from "@inertiajs/vue3";
+import { router, usePage } from "@inertiajs/vue3";
 
 useHead({
     titleTemplate: () => `%s | BédéAdmin ☝️🤓`,
 })
 
 const { mobile } = useDisplay()
+const page = usePage()
+
+provide('csrfToken', page.props.csrf_token)
 
 const openDrawer = ref(true)
 </script>
@@ -57,15 +60,14 @@ const openDrawer = ref(true)
         >
             <VList nav>
                 <VListItem
-                    to="/administration"
+                    href="/administration"
                     prepend-icon="mdi-home"
                     title="Accueil"
                     nav
-                    exact
                 />
                 <VDivider class="my-2" />
                 <VListItem
-                    to="/administration/articles"
+                    href="/administration/articles"
                     prepend-icon="mdi-package-variant"
                     title="Articles"
                     nav
