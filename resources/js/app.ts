@@ -4,11 +4,16 @@ import vuetify from '@/plugins/vuetify'
 import { createInertiaApp } from '@inertiajs/vue3'
 import { createHead } from '@vueuse/head'
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers'
+import { createPinia } from 'pinia'
+import piniaPersistedState from 'pinia-plugin-persistedstate'
 import { createApp, h } from 'vue'
 import { ZiggyVue } from 'ziggy-js'
 import '@/plugins/vee-validate'
 
 import '../styles/main.scss'
+
+const pinia = createPinia()
+pinia.use(piniaPersistedState)
 
 const head = createHead()
 
@@ -23,6 +28,7 @@ createInertiaApp({
             .use(plugin)
             .use(ZiggyVue)
             .use(vuetify)
+            .use(pinia)
             .use(head)
             .mount(el)
     },

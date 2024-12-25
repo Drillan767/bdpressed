@@ -52,6 +52,25 @@ export interface DataTableHeader {
     }
 }
 
+export interface Catalog {
+    id: number
+    name: string
+    slug: string
+    price: number
+    weight: number
+    promotedImage: string
+    quickDescription: string
+}
+
+export interface CartItem {
+    id: number
+    name: string
+    price: number
+    quantity: number
+    weight: number
+    illustration: string
+}
+
 export type PageProps<
     T extends Record<string, unknown> = Record<string, unknown>,
 > = T & {
