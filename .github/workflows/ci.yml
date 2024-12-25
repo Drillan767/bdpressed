@@ -27,3 +27,9 @@ jobs:
           push: true
           file: ./ci/Dockerfile
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/bdpressed:latest
+
+      - name: Triggering website update 📣🏗️
+        uses: joelwmale/webhook-action@master
+        with:
+          url: ${{ secrets.COOLIFY_WEBHOOK }}
+          headers: '{"Authorization": "Bearer ${{ secrets.COOLIFY_BEARER_TOKEN  }}"}'
