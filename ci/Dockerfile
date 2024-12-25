@@ -10,7 +10,7 @@ RUN apk add --no-cache \
     nodejs \
     yarn \
     && docker-php-ext-configure zip \
-    && docker-php-ext-install zip pdo pdo_mysql \
+    && docker-php-ext-install zip pdo pdo_mysql bcmath \
     && docker-php-ext-configure gd --with-jpeg=/usr/include/ \
     && docker-php-ext-install -j$(nproc) gd \
     && docker-php-ext-enable gd

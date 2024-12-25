@@ -1,10 +1,10 @@
 import type { DefineComponent } from 'vue'
 
+import vuetify from '@/plugins/vuetify'
 import { createInertiaApp } from '@inertiajs/vue3'
+import { createHead } from '@vueuse/head'
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers'
 import { createApp, h } from 'vue'
-import { createHead } from '@vueuse/head'
-import vuetify from '@/plugins/vuetify'
 import { ZiggyVue } from 'ziggy-js'
 import '@/plugins/vee-validate'
 

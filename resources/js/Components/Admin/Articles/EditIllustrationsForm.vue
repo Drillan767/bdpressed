@@ -1,24 +1,17 @@
 <script setup lang="ts">
-import { inject } from 'vue'
+import type { FileProperty } from '@/types'
 import type { VFileInput } from 'vuetify/components'
 import useToast from '@/Composables/toast'
-import { router } from '@inertiajs/vue3'
-// import useProductsStore from '@/stores/productsStore'
-import { onMounted, ref, useTemplateRef } from 'vue'
-
-interface FileProperty {
-    path: string
-    type: string
-}
+import { inject, onMounted, ref, useTemplateRef } from 'vue'
 
 interface Props {
-    illustrations: string[]
-    productId: string
+    illustrations: FileProperty[]
+    productId: number
 }
 
-const csrfToken = inject<string>('csrfToken')
-
 const props = defineProps<Props>()
+
+const csrfToken = inject<string>('csrfToken')
 
 // const { updateProductMedia, removeProductMedia } = useProductsStore()
 const { showSuccess } = useToast()
@@ -46,6 +39,8 @@ function handleSelectImage() {
 }
 
 async function handleUploadedImages(files: File | File[]) {
+    if (!csrfToken)
+        return
     const formData = new FormData()
 
     if (Array.isArray(files)) {
@@ -72,7 +67,8 @@ async function handleUploadedImages(files: File | File[]) {
 }
 
 async function removeSingleImage(index: number) {
-    // const newList = await removeProductMedia(props.illustrations[index], props.productId)
+    if (!csrfToken)
+        return
 
     const formData = new FormData()
 
@@ -95,7 +91,6 @@ async function removeSingleImage(index: number) {
 onMounted(() => {
     imagesPreviews.value = props.illustrations
 })
-
 </script>
 
 <template>

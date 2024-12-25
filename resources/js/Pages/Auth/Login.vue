@@ -2,8 +2,8 @@
 import VisitorsLayout from '@/Layouts/VisitorsLayout.vue'
 import { Link, useForm } from '@inertiajs/vue3'
 import { useHead } from '@vueuse/head'
-import { useDisplay } from 'vuetify'
 import { ref } from 'vue'
+import { useDisplay } from 'vuetify'
 
 interface Props {
     auth: {
@@ -18,9 +18,9 @@ interface LoginForm {
     remember: boolean
 }
 
-const props = defineProps<Props>()
-
 defineOptions({ layout: VisitorsLayout })
+
+defineProps<Props>()
 
 useHead({
     title: 'Connexion',
@@ -41,7 +41,6 @@ const loading = ref(false)
 async function submit() {
     form.post(route('auth.login'))
 }
-
 </script>
 
 <template>
@@ -62,7 +61,7 @@ async function submit() {
                                         prepend-inner-icon="mdi-at"
                                         label="Email"
                                         type="email"
-                                        :error-messages="errors.email"
+                                        :error-messages="errors?.email"
                                     />
                                 </VCol>
                             </VRow>

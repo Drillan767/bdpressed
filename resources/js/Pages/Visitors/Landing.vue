@@ -2,7 +2,6 @@
 import VisitorsLayout from '@/Layouts/VisitorsLayout.vue'
 import { useHead } from '@vueuse/head'
 
-
 defineOptions({ layout: VisitorsLayout })
 
 useHead({

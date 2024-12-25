@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ProductForm, AdminProduct } from '@/types'
+import type { AdminProduct, ProductForm } from '@/types'
 import { inject, ref, watch } from 'vue'
 import ArticleForm from './ArticleForm.vue'
 
