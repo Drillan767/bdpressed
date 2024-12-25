@@ -157,7 +157,10 @@ provide('openDrawer', openDrawer)
                             >
                                 Boutique
                             </Link>
-                            <Link href="/contact">
+                            <Link
+                                :class="{ active: $page.url === '/contact' }"
+                                href="/contact"
+                            >
                                 Contact
                             </Link>
                         </VCol>
