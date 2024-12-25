@@ -57,7 +57,7 @@ function handleAddToCart(product: Catalog) {
                                 >
                                     <VCard
                                         variant="flat"
-                                        to="/boutique/illustration"
+                                        href="/boutique/illustration"
                                     >
                                         <VContainer class="pa-0 text-secondary">
                                             <VRow no-gutters>
