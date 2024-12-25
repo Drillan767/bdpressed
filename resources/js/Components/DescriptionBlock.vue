@@ -16,7 +16,7 @@ const { smAndUp } = useDisplay()
                     <VCol cols="12" md="6">
                         <VImg
                             class="rounded-xl"
-                            src="/yell.png"
+                            src="/assets/images/yell.png"
                             :aspect-ratio="1"
                             max-width="250"
                             max-height="250"
