@@ -77,17 +77,11 @@ useHead({
         </template>
         <template #item.actions="{ item }">
             <div class="d-flex justify-end">
-                <Link :href="route('products.show', { slug: item.slug })">
-                    <VIcon
-                        icon="mdi-eyes"
-                        color="blue"
-                    />
-                </Link>
                 <VBtn
                     variant="text"
                     color="blue"
                     icon="mdi-eye"
-
+                    @click="router.visit(route('products.show', { slug: item.slug }))"
                 />
 
                 <VBtn

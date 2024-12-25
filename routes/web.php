@@ -37,7 +37,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
                 Route::get('/article/{slug}', 'show')->name('products.show');
                 Route::post('/article', 'store')->name('products.store');
                 Route::post('/article/update-illustration/{product}', 'addMedia')->name('products.add-media');
-
+                Route::delete('/article/remove-illustration/{product}', 'removeMedia')->name('products.remove-media');
             });
         });
     });

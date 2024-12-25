@@ -1,6 +1,8 @@
 <script setup lang="ts">
+import { inject } from 'vue'
 import type { VFileInput } from 'vuetify/components'
 import useToast from '@/Composables/toast'
+import { router } from '@inertiajs/vue3'
 // import useProductsStore from '@/stores/productsStore'
 import { onMounted, ref, useTemplateRef } from 'vue'
 
@@ -14,9 +16,10 @@ interface Props {
     productId: string
 }
 
+const csrfToken = inject<string>('csrfToken')
+
 const props = defineProps<Props>()
 
-// const { getItems } = useBuckets()
 // const { updateProductMedia, removeProductMedia } = useProductsStore()
 const { showSuccess } = useToast()
 
@@ -43,28 +46,50 @@ function handleSelectImage() {
 }
 
 async function handleUploadedImages(files: File | File[]) {
+    const formData = new FormData()
+
     if (Array.isArray(files)) {
-        /*const newList = await updateProductMedia(files, props.productId)
-        if (newList && newList.length > 0) {
-            imagesPreviews.value = newList
-        }*/
+        files.forEach((file) => {
+            formData.append('illustrations[]', file)
+        })
     }
     else {
-        /*const newList = await updateProductMedia([files], props.productId)
-        if (newList && newList.length > 0) {
-            imagesPreviews.value = newList
-        }*/
+        formData.append('illustrations[]', files)
     }
+
+    formData.append('_token', csrfToken)
+
+    const { illustrations } = await fetch(route('products.add-media', { product: props.productId }), {
+        method: 'POST',
+        body: formData,
+    })
+        .then(response => response.json())
+        .then(data => data)
+
+    imagesPreviews.value = illustrations
 
     showSuccess('Les nouvelles images ont été ajoutées avec succès.')
 }
 
 async function removeSingleImage(index: number) {
-    const newList = await removeProductMedia(props.illustrations[index], props.productId)
+    // const newList = await removeProductMedia(props.illustrations[index], props.productId)
 
-    if (newList && newList.length > 0) {
-        imagesPreviews.value = newList
-    }
+    const formData = new FormData()
+
+    formData.append('_method', 'DELETE')
+    formData.append('_token', csrfToken)
+    formData.append('illustration', props.illustrations[index].path)
+
+    const { illustrations } = await fetch(route('products.remove-media', { product: props.productId }), {
+        method: 'POST',
+        body: formData,
+    })
+        .then(response => response.json())
+        .then(data => data)
+
+    imagesPreviews.value = illustrations
+
+    showSuccess('Média retiré avec succès')
 }
 
 onMounted(() => {
