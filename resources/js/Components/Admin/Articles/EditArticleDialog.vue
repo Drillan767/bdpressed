@@ -14,7 +14,7 @@ const emit = defineEmits<{
 }>()
 
 const displayDialog = defineModel<boolean>({ required: true })
-const editedProduct = defineModel<Product>('product', { required: true })
+const editedProduct = defineModel<AdminProduct>('product', { required: true })
 
 const csrfToken = inject<string>('csrfToken')
 
@@ -34,6 +34,8 @@ const form = ref<Required<ProductForm>>({
 })
 
 async function submit() {
+    if (!csrfToken)
+        return
     loading.value = true
     const formData = new FormData()
     formData.append('_method', 'PUT')
@@ -41,8 +43,8 @@ async function submit() {
     formData.append('name', form.value.name)
     formData.append('quickDescription', form.value.quickDescription)
     formData.append('description', form.value.description)
-    formData.append('weight', form.value.weight)
-    formData.append('price', form.value.price)
+    formData.append('weight', String(form.value.weight))
+    formData.append('price', String(form.value.price))
 
     if (form.value.promotedImage) {
         formData.append('promotedImage', form.value.promotedImage)

@@ -71,7 +71,7 @@ watch(() => props.status, (value) => {
                                 <VCol>
                                     <VTextField
                                         v-model="form.email"
-                                        :error-messages="errors.email"
+                                        :error-messages="errors?.email"
                                         prepend-inner-icon="mdi-at"
                                         label="Email"
                                         type="email"
@@ -83,7 +83,7 @@ watch(() => props.status, (value) => {
                                     <VTextField
                                         v-model="form.password"
                                         :type="passwordVisible ? 'text' : 'password'"
-                                        :error-messages="errors.password"
+                                        :error-messages="errors?.password"
                                         prepend-inner-icon="mdi-lock-outline"
                                         hint="8 caractères minimum, 1 majuscule, 1 minuscule, 1 chiffre et 1 caractère spécial"
                                         label="Mot de passe"
@@ -102,7 +102,7 @@ watch(() => props.status, (value) => {
                                 <VCol>
                                     <VTextField
                                         v-model="form.password_confirmation"
-                                        :error-messages="errors.password_confirmation"
+                                        :error-messages="errors?.password_confirmation"
                                         :type="confirmPasswordVisible ? 'text' : 'password'"
                                         prepend-inner-icon="mdi-lock-outline"
                                         label="Confirmer le mot de passe"

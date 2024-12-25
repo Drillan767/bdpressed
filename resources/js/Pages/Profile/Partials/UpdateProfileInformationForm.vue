@@ -1,9 +1,6 @@
 <script setup lang="ts">
-import InputError from '@/Components/InputError.vue'
-import InputLabel from '@/Components/InputLabel.vue'
-import PrimaryButton from '@/Components/PrimaryButton.vue'
-import TextInput from '@/Components/TextInput.vue'
 import { Link, useForm, usePage } from '@inertiajs/vue3'
+import { route } from 'ziggy-js'
 
 defineProps<{
     mustVerifyEmail?: boolean
@@ -34,6 +31,7 @@ const form = useForm({
             class="mt-6 space-y-6"
             @submit.prevent="form.patch(route('profile.update'))"
         >
+            <!--
             <div>
                 <InputLabel for="name" value="Name" />
 
@@ -105,6 +103,7 @@ const form = useForm({
                     </p>
                 </Transition>
             </div>
+        -->
         </form>
     </section>
 </template>

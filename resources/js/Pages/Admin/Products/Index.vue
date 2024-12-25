@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { AdminProductList, DataTableHeader } from '@/types'
+import type { AdminProduct, AdminProductList, DataTableHeader } from '@/types'
 import CreateArticleDialog from '@/Components/Admin/Articles/CreateArticleDialog.vue'
 import EditArticleDialog from '@/Components/Admin/Articles/EditArticleDialog.vue'
 import useNumbers from '@/Composables/numbers'
@@ -60,7 +60,7 @@ const headers: DataTableHeader[] = [
 const { formatPrice } = useNumbers()
 const { showSuccess } = useToast()
 
-const selectedProduct = ref<AdminProductList>()
+const selectedProduct = ref<AdminProduct>()
 const displayCreateDialog = ref(false)
 const displayEditDialog = ref(false)
 // const displayDeleteDialog = ref(false)
@@ -150,63 +150,7 @@ useHead({
         v-model:product="selectedProduct"
         @success="handleSuccess('edit')"
     />
-<!--    <VDataTable
-        :headers
-        :items="products"
-        :loading="productsLoading ? 'primary' : false"
-    >
-        <template #top>
-            <div class="d-flex justify-end mt-4 mr-4">
-                <VBtn
-                    variant="outlined"
-                    color="primary"
-                    append-icon="mdi-package-variant-plus"
-                    @click="displayCreateDialog = true"
-                >
-                    Créer un article
-                </VBtn>
-            </div>
-        </template>
-        <template #item.price="{ item }">
-            {{ formatPrice(item.price) }}
-        </template>
-        <template #item.actions="{ item }">
-            <div class="d-flex justify-end">
-                <VBtn
-                    variant="text"
-                    color="blue"
-                    icon="mdi-eye"
-                    @click="showProduct(item)"
-                />
-
-                <VBtn
-                    variant="text"
-                    color="primary"
-                    icon="mdi-pencil"
-                    class="mx-2"
-                    @click="handleEditProduct(item)"
-                />
-
-                <VBtn
-                    variant="text"
-                    color="error"
-                    icon="mdi-delete"
-                    @click="handleDeleteProduct(item)"
-                />
-            </div>
-        </template>
-    </VDataTable> -->
-<!--    <CreateArticleDialog
-        v-model="displayCreateDialog"
-        @success="getProducts"
-    />
-    <EditArticleDialog
-        v-if="selectedProduct"
-        v-model="displayEditDialog"
-        v-model:product="selectedProduct"
-        @success="handleSuccess('edit')"
-    />
-    <DeleteArticleDialog
+<!--       <DeleteArticleDialog
         v-if="selectedProduct"
         v-model="displayDeleteDialog"
         :product="selectedProduct"

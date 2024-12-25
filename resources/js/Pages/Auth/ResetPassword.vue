@@ -49,7 +49,7 @@ function submit() {
                                 <VCol>
                                     <VTextField
                                         v-model="form.email"
-                                        :error-messages="errors.email"
+                                        :error-messages="errors?.email"
                                         prepend-inner-icon="mdi-at"
                                         label="Email"
                                         type="email"
@@ -61,7 +61,7 @@ function submit() {
                                 <VCol>
                                     <VTextField
                                         v-model="form.password"
-                                        :error-messages="errors.password"
+                                        :error-messages="errors?.password"
                                         :type="passwordVisible ? 'text' : 'password'"
                                         prepend-inner-icon="mdi-at"
                                         label="Mot de passe"
@@ -80,7 +80,7 @@ function submit() {
                                 <VCol>
                                     <VTextField
                                         v-model="form.password_confirmation"
-                                        :error-messages="errors.password_confirmation"
+                                        :error-messages="errors?.password_confirmation"
                                         :type="confirmPasswordVisible ? 'text' : 'password'"
                                         prepend-inner-icon="mdi-at"
                                         label="Confirmer le mot de passe"

@@ -3,6 +3,7 @@ import { router, usePage } from '@inertiajs/vue3'
 import { useHead } from '@vueuse/head'
 import { provide, ref } from 'vue'
 import { useDisplay } from 'vuetify'
+import { route } from 'ziggy-js'
 
 useHead({
     titleTemplate: () => `%s | BédéAdmin ☝️🤓`,
