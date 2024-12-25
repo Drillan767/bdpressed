@@ -7,6 +7,11 @@ export interface User {
     email_verified_at?: string
 }
 
+export interface FileProperty {
+    path: string
+    type: string
+}
+
 export interface ProductForm {
     name?: string
     quickDescription?: string
@@ -18,9 +23,11 @@ export interface ProductForm {
 }
 
 export interface AdminProductList {
-    id: number,
+    id: number
     name: string
-    price: number,
+    slug: string
+    weight: number
+    price: number
     created_at: string
     updated_at: string
 }
@@ -30,7 +37,7 @@ export interface AdminProduct extends AdminProductList {
     quickDescription: string
     description: string
     promotedImage: string
-    illustrations: string[]
+    illustrations: FileProperty[]
 }
 
 export interface DataTableHeader {
@@ -44,7 +51,6 @@ export interface DataTableHeader {
         class: string
     }
 }
-
 
 export type PageProps<
     T extends Record<string, unknown> = Record<string, unknown>,

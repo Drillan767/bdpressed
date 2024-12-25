@@ -1,19 +1,21 @@
 <script setup lang="ts">
 import type { AdminProduct } from '@/types'
-import EditIllustrationsForm from '@/Components/Admin/Articles/EditIllustrationsForm.vue'
 import EditArticleDialog from '@/Components/Admin/Articles/EditArticleDialog.vue'
+import EditIllustrationsForm from '@/Components/Admin/Articles/EditIllustrationsForm.vue'
 import useNumbers from '@/Composables/numbers'
 import useStrings from '@/Composables/strings'
 import AdminLayout from '@/Layouts/AdminLayout.vue'
-import { useDisplay } from 'vuetify'
-import { ref } from 'vue'
 import { router } from '@inertiajs/vue3'
 import { useHead } from '@vueuse/head'
+import { computed, ref } from 'vue'
+import { useDisplay } from 'vuetify'
 
 interface Props {
     product: AdminProduct
 }
 
+defineOptions({ layout: AdminLayout })
+const props = defineProps<Props>()
 const { formatPrice } = useNumbers()
 const { toParagraphs } = useStrings()
 
@@ -23,15 +25,14 @@ const previewUrl = ref('')
 const displayEditDialog = ref(false)
 const displayDeleteDialog = ref(false)
 
-const props = defineProps<Props>()
-
 const { mobile } = useDisplay()
+
+const globalImageHeight = computed(() => mobile.value ? 150 : 300)
 
 function openPreview(url: string) {
     displayPreview.value = true
     previewUrl.value = url
 }
-defineOptions({ layout: AdminLayout })
 useHead({
     title: () => props.product.name,
 })
@@ -127,7 +128,7 @@ useHead({
                             </VRow>
 
                             <EditIllustrationsForm
-                                v-model:illustrations="product.illustrations"
+                                :illustrations="product.illustrations"
                                 :product-id="product.id"
                             />
                         </template>

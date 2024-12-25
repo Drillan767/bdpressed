@@ -1,8 +1,8 @@
 <script setup lang="ts">
+import { router, usePage } from '@inertiajs/vue3'
 import { useHead } from '@vueuse/head'
-import { ref, provide } from 'vue'
+import { provide, ref } from 'vue'
 import { useDisplay } from 'vuetify'
-import { router, usePage } from "@inertiajs/vue3";
 
 useHead({
     titleTemplate: () => `%s | BédéAdmin ☝️🤓`,

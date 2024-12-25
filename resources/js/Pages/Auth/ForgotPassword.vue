@@ -1,9 +1,11 @@
 <script setup lang="ts">
-import VisitorsLayout from '@/Layouts/VisitorsLayout.vue'
-import { useHead } from '@vueuse/head'
-import { useForm } from '@inertiajs/vue3'
 import useToast from '@/Composables/toast'
+import VisitorsLayout from '@/Layouts/VisitorsLayout.vue'
+import { useForm } from '@inertiajs/vue3'
+import { useHead } from '@vueuse/head'
 import { watch } from 'vue'
+
+defineOptions({ layout: VisitorsLayout })
 
 const props = defineProps<{
     status?: string
@@ -27,10 +29,9 @@ useHead({
     title: 'Mot de passe oublié',
 })
 
-defineOptions({ layout: VisitorsLayout })
-
 watch(() => props.status, (value) => {
-    if (value) showSuccess(value)
+    if (value)
+        showSuccess(value)
 })
 </script>
 

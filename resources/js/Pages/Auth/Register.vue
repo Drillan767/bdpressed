@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import VisitorsLayout from '@/Layouts/VisitorsLayout.vue'
-import { useHead } from '@vueuse/head'
-import { Link, router, useForm  } from '@inertiajs/vue3'
-import { useDisplay } from 'vuetify'
 import useToast from '@/Composables/toast'
+import VisitorsLayout from '@/Layouts/VisitorsLayout.vue'
+import { Link, useForm } from '@inertiajs/vue3'
+import { useHead } from '@vueuse/head'
 import { ref, watch } from 'vue'
+import { useDisplay } from 'vuetify'
 
 interface Props {
     status: string | null
@@ -19,6 +19,8 @@ interface RegisterForm {
     password: string
     password_confirmation: string
 }
+
+defineOptions({ layout: VisitorsLayout })
 
 const props = defineProps<Props>()
 
@@ -44,13 +46,13 @@ function submit() {
     })
 }
 
-defineOptions({ layout: VisitorsLayout })
 useHead({
-    title: 'Inscription'
+    title: 'Inscription',
 })
 
 watch(() => props.status, (value) => {
-    if (value) showSuccess(value)
+    if (value)
+        showSuccess(value)
 })
 </script>
 

@@ -1,16 +1,22 @@
 <script setup lang="ts">
-import type { DataTableHeader, AdminProductList } from '@/types'
-import { ref } from 'vue'
-import useNumbers from '@/Composables/numbers'
-import { router } from '@inertiajs/vue3'
-import AdminLayout from '@/Layouts/AdminLayout.vue'
+import type { AdminProductList, DataTableHeader } from '@/types'
 import CreateArticleDialog from '@/Components/Admin/Articles/CreateArticleDialog.vue'
 import EditArticleDialog from '@/Components/Admin/Articles/EditArticleDialog.vue'
+import useNumbers from '@/Composables/numbers'
+import useToast from '@/Composables/toast'
+import AdminLayout from '@/Layouts/AdminLayout.vue'
+import { router } from '@inertiajs/vue3'
 import { useHead } from '@vueuse/head'
+import { ref } from 'vue'
+import { route } from 'ziggy-js'
 
 interface Props {
     products: AdminProductList[]
 }
+
+defineOptions({ layout: AdminLayout })
+
+defineProps<Props>()
 
 const headers: DataTableHeader[] = [
     {
@@ -24,9 +30,9 @@ const headers: DataTableHeader[] = [
         sortable: true,
     },
     {
-      title: 'Poids',
-      key: 'weight',
-      sortable: true
+        title: 'Poids',
+        key: 'weight',
+        sortable: true,
     },
     {
         title: 'Description',
@@ -51,14 +57,13 @@ const headers: DataTableHeader[] = [
     },
 ]
 
-const props = defineProps<Props>()
-
 const { formatPrice } = useNumbers()
+const { showSuccess } = useToast()
 
-const selectedProduct = ref<Product>()
+const selectedProduct = ref<AdminProductList>()
 const displayCreateDialog = ref(false)
 const displayEditDialog = ref(false)
-const displayDeleteDialog = ref(false)
+// const displayDeleteDialog = ref(false)
 
 function handleSuccess(action: 'edit' | 'delete') {
     showSuccess(
@@ -77,9 +82,8 @@ async function handleEditProduct(item: AdminProductList) {
     displayEditDialog.value = true
 }
 
-defineOptions({ layout: AdminLayout })
 useHead({
-    title: 'Articles'
+    title: 'Articles',
 })
 </script>
 
@@ -131,8 +135,8 @@ useHead({
                     variant="text"
                     color="error"
                     icon="mdi-delete"
-                    @click="handleDeleteProduct(item)"
                 />
+                <!-- @click="handleDeleteProduct(item)" -->
             </div>
         </template>
     </VDataTable>
@@ -191,7 +195,7 @@ useHead({
                 />
             </div>
         </template>
-    </VDataTable>-->
+    </VDataTable> -->
 <!--    <CreateArticleDialog
         v-model="displayCreateDialog"
         @success="getProducts"
@@ -207,5 +211,5 @@ useHead({
         v-model="displayDeleteDialog"
         :product="selectedProduct"
         @success="handleSuccess('delete')"
-    />-->
+    /> -->
 </template>

@@ -1,10 +1,12 @@
 <script setup lang="ts">
-import VisitorsLayout from '@/Layouts/VisitorsLayout.vue'
-import { useDisplay } from 'vuetify'
-import { useForm, router } from '@inertiajs/vue3'
-import { computed, watch } from 'vue'
 import useToast from '@/Composables/toast'
+import VisitorsLayout from '@/Layouts/VisitorsLayout.vue'
+import { router, useForm } from '@inertiajs/vue3'
 import { useHead } from '@vueuse/head'
+import { watch } from 'vue'
+import { useDisplay } from 'vuetify'
+
+defineOptions({ layout: VisitorsLayout })
 
 const props = defineProps<{
     status?: string
@@ -24,7 +26,6 @@ watch(() => props.status, (value) => {
     }
 })
 
-defineOptions({ layout: VisitorsLayout })
 useHead({
     title: 'Vérifiez votre email',
 })
@@ -41,14 +42,13 @@ useHead({
                         title="Vérifiez votre email"
                     >
                         <template #text>
-                           <p>
-                               Merci de votre inscription ! Avant de continuer, est-ce que je peux vous demander
-                               de vérifier votre adresse email en cliquant sur le lien que je vous ai envoyé ? 👉👈
-                           </p>
+                            <p>
+                                Merci de votre inscription ! Avant de continuer, est-ce que je peux vous demander
+                                de vérifier votre adresse email en cliquant sur le lien que je vous ai envoyé ? 👉👈
+                            </p>
                             <p>
                                 SI vous n'avez rien reçu, je peux vous en renvoyer un autre sans problème ! ✨
                             </p>
-
                         </template>
                         <template #actions>
                             <VRow no-gutters>
@@ -108,5 +108,5 @@ useHead({
                 </Link>
             </div>
         </form>
-    </GuestLayout>-->
+    </GuestLayout> -->
 </template>

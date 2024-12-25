@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import VisitorsLayout from '@/Layouts/VisitorsLayout.vue'
 import { useForm } from '@inertiajs/vue3'
-import { useDisplay } from 'vuetify'
 import { ref } from 'vue'
+import { useDisplay } from 'vuetify'
+
+defineOptions({ layout: VisitorsLayout })
 
 const props = defineProps<{
     email: string
@@ -29,8 +31,6 @@ function submit() {
         },
     })
 }
-
-defineOptions({ layout: VisitorsLayout })
 </script>
 
 <template>

@@ -1,13 +1,12 @@
 <script setup lang="ts">
-import { Link } from '@inertiajs/vue3'
 import AdminLayout from '@/Layouts/AdminLayout.vue'
 import { useHead } from '@vueuse/head'
+
+defineOptions({ layout: AdminLayout })
 
 useHead({
     title: 'Accueil',
 })
-
-defineOptions({ layout: AdminLayout })
 </script>
 
 <template>

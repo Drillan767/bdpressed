@@ -12,6 +12,7 @@ const csrfToken = inject<string>('csrfToken')
 const form = ref<Required<ProductForm>>({
     name: '',
     quickDescription: '',
+    weight: 0,
     description: '',
     price: 0,
     promotedImage: null,
@@ -25,18 +26,20 @@ const loading = ref(false)
 const articleForm = ref<InstanceType<typeof ArticleForm>>()
 
 async function submit() {
+    if (!csrfToken)
+        return
     loading.value = true
     const formData = new FormData()
 
-    for (const field of Object.keys(form.value)) {
-        if (field === 'illustrations') {
-            form.value.illustrations.forEach((illustration) => {
-                formData.append('illustrations[]', illustration)
-            })
-        } else {
-            formData.append(field, form.value[field])
-        }
-    }
+    formData.append('name', form.value.name)
+    formData.append('quickDescription', form.value.quickDescription)
+    formData.append('description', form.value.description)
+    formData.append('weight', String(form.value.weight))
+    formData.append('price', String(form.value.price))
+
+    form.value.illustrations.forEach((illustration) => {
+        formData.append('illustrations[]', illustration)
+    })
 
     formData.append('_token', csrfToken)
 

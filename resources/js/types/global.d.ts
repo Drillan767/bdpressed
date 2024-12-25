@@ -8,7 +8,6 @@ declare global {
         axios: AxiosInstance
     }
 
-    /* eslint-disable no-var */
     const route: typeof ziggyRoute
 }
 
