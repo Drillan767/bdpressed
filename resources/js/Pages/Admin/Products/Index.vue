@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import type { DataTableHeader, AdminProductList } from '@/types'
 import { ref } from 'vue'
-import { router, Link } from '@inertiajs/vue3'
+import useNumbers from '@/Composables/numbers'
+import { router } from '@inertiajs/vue3'
 import AdminLayout from '@/Layouts/AdminLayout.vue'
 import CreateArticleDialog from '@/Components/Admin/Articles/CreateArticleDialog.vue'
+import EditArticleDialog from '@/Components/Admin/Articles/EditArticleDialog.vue'
 import { useHead } from '@vueuse/head'
 
 interface Props {
@@ -20,6 +22,11 @@ const headers: DataTableHeader[] = [
         title: 'Prix',
         key: 'price',
         sortable: true,
+    },
+    {
+      title: 'Poids',
+      key: 'weight',
+      sortable: true
     },
     {
         title: 'Description',
@@ -46,7 +53,29 @@ const headers: DataTableHeader[] = [
 
 const props = defineProps<Props>()
 
+const { formatPrice } = useNumbers()
+
+const selectedProduct = ref<Product>()
 const displayCreateDialog = ref(false)
+const displayEditDialog = ref(false)
+const displayDeleteDialog = ref(false)
+
+function handleSuccess(action: 'edit' | 'delete') {
+    showSuccess(
+        action === 'edit'
+            ? 'L\'article a été modifié avec succès.'
+            : 'L\'article a été supprimé avec succès.',
+    )
+
+    router.reload()
+}
+async function handleEditProduct(item: AdminProductList) {
+    selectedProduct.value = await fetch(route('products.showApi', { product: item.id }))
+        .then(response => response.json())
+        .then(data => data)
+
+    displayEditDialog.value = true
+}
 
 defineOptions({ layout: AdminLayout })
 useHead({
@@ -74,6 +103,12 @@ useHead({
                     Créer un article
                 </VBtn>
             </div>
+        </template>
+        <template #item.price="{ item }">
+            {{ formatPrice(item.price) }}
+        </template>
+        <template #item.weight="{ item }">
+            {{ item.weight }} g.
         </template>
         <template #item.actions="{ item }">
             <div class="d-flex justify-end">
@@ -105,6 +140,12 @@ useHead({
         v-model="displayCreateDialog"
         @success="router.reload()"
     />
+    <EditArticleDialog
+        v-if="selectedProduct"
+        v-model="displayEditDialog"
+        v-model:product="selectedProduct"
+        @success="handleSuccess('edit')"
+    />
 <!--    <VDataTable
         :headers
         :items="products"
@@ -121,12 +162,6 @@ useHead({
                     Créer un article
                 </VBtn>
             </div>
-        </template>
-        <template #item.createdAt="{ item }">
-            {{ dayjs(item.createdAt).format('DD/MM/YYYY HH:mm') }}
-        </template>
-        <template #item.updatedAt="{ item }">
-            {{ dayjs(item.updatedAt).format('DD/MM/YYYY HH:mm') }}
         </template>
         <template #item.price="{ item }">
             {{ formatPrice(item.price) }}

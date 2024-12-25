@@ -113,7 +113,7 @@ watch(() => props.previewUrl, (url) => {
     if (props.edit && url) {
         promotedPreview.value = url
     }
-})
+}, { immediate: true })
 
 watch(illustrations, async (files) => {
     if (files)

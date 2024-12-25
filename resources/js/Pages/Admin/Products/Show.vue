@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import type { AdminProduct } from '@/types'
 import EditIllustrationsForm from '@/Components/Admin/Articles/EditIllustrationsForm.vue'
+import EditArticleDialog from '@/Components/Admin/Articles/EditArticleDialog.vue'
 import useNumbers from '@/Composables/numbers'
 import useStrings from '@/Composables/strings'
 import AdminLayout from '@/Layouts/AdminLayout.vue'
 import { useDisplay } from 'vuetify'
 import { ref } from 'vue'
+import { router } from '@inertiajs/vue3'
 import { useHead } from '@vueuse/head'
 
 interface Props {
@@ -87,6 +89,17 @@ useHead({
                                     class="text-body-2 description"
                                     v-html="toParagraphs(product.description)"
                                 />
+
+                                <VDivider class="my-4" />
+
+                                <div>
+                                    <p class="text-h6">
+                                        Poids
+                                    </p>
+                                    <p>
+                                        {{ product.weight }} grammes
+                                    </p>
+                                </div>
                             </VCol>
                             <VCol cols="12" md="6">
                                 <p class="text-h6 text-center">
@@ -129,6 +142,12 @@ useHead({
     >
         <VImg :src="previewUrl" />
     </VDialog>
+    <EditArticleDialog
+        v-if="product"
+        v-model="displayEditDialog"
+        :product
+        @success="router.visit('/administration/articles')"
+    />
 </template>
 
 <style scoped>

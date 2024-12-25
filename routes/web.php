@@ -34,8 +34,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::prefix('/administration')->group(function () {
             Route::controller(ProductController::class)->group(function () {
                 Route::get('/articles', 'index')->name('products.index');
+                Route::get('/article/api/{product}', 'showApi')->name('products.showApi');
                 Route::get('/article/{slug}', 'show')->name('products.show');
                 Route::post('/article', 'store')->name('products.store');
+                Route::put('/article/{product}', 'update')->name('products.update');
+                Route::delete('/article/{product}', 'destroy')->name('products.destroy');
+
                 Route::post('/article/update-illustration/{product}', 'addMedia')->name('products.add-media');
                 Route::delete('/article/remove-illustration/{product}', 'removeMedia')->name('products.remove-media');
             });

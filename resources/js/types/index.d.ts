@@ -26,6 +26,7 @@ export interface AdminProductList {
 }
 
 export interface AdminProduct extends AdminProductList {
+    id: number
     quickDescription: string
     description: string
     promotedImage: string
