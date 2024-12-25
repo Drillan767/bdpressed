@@ -3,24 +3,18 @@
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ShopController;
 use App\Http\Controllers\VisitorsController;
-use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
-
-/*Route::get('/', function () {
-    return Inertia::render('Welcome', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
-    ]);
-});*/
 
 Route::controller(VisitorsController::class)->group(function() {
     Route::get('/', 'landing')->name('landing');
-    Route::get('/boutique', 'shop')->name('shop');
     Route::get('/contact', 'contact')->name('contact');
+});
+
+Route::controller(ShopController::class)->group(function() {
+    Route::get('/boutique', 'index')->name('shop.index');
+    Route::get('/boutique/{slug}', 'show')->name('shop.show');
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {

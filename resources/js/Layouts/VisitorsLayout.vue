@@ -1,15 +1,16 @@
 <script setup lang="ts">
-import { Link } from '@inertiajs/vue3'
-// import Cart from '@/components/shop/Cart.vue'
-// import useCartStore from '@/stores/cartStore'
+import CartItem from '@/Components/Shop/CartItem.vue'
+import useCartStore from '@/Stores/cartStore'
+import { Link, router } from '@inertiajs/vue3'
 import { useHead } from '@vueuse/head'
+import { storeToRefs } from 'pinia'
 import { provide, ref, watch } from 'vue'
 import { useDisplay } from 'vuetify'
 
 const links = [
-    { title: 'Accueil', to: '/' },
-    { title: 'Boutique', to: '/boutique' },
-    { title: 'Contact', to: '/contact' },
+    { title: 'Accueil', href: '/' },
+    { title: 'Boutique', href: '/boutique' },
+    { title: 'Contact', href: '/contact' },
 ]
 
 const icons = [
@@ -24,7 +25,9 @@ useHead({
 })
 
 const { smAndDown } = useDisplay()
-// const { cart } = storeToRefs(useCartStore())
+const { cart } = storeToRefs(useCartStore())
+
+const { handleQuantity, removeItem } = useCartStore()
 
 const drawer = ref(false)
 const linksDrawer = ref(false)
@@ -61,20 +64,59 @@ provide('openDrawer', openDrawer)
                     prepend-icon="mdi-home"
                     title="Accueil"
                     density="comfortable"
-                    to="/"
+                    href="/"
                     exact
                 />
                 <VListItem
                     prepend-icon="mdi-store"
                     title="Boutique"
-                    to="/boutique"
+                    href="/boutique"
                     exact
                 />
                 <VListItem
                     prepend-icon="mdi-email-fast"
                     title="Contact"
-                    to="/contact"
+                    href="/contact"
                     exact
+                />
+            </VList>
+        </VNavigationDrawer>
+        <VNavigationDrawer
+            v-model="drawer"
+            :temporary="true"
+            location="right"
+            width="400"
+        >
+            <VListItem
+                title="Panier"
+                color="primary"
+                class="basket-title bg-primary"
+            >
+                <template #append>
+                    <VBtn
+                        icon="mdi-close"
+                        variant="text"
+                        color="white"
+                        @click="drawer = false"
+                    />
+                </template>
+            </VListItem>
+
+            <div
+                v-if="cart.length === 0"
+                class="h-75 d-flex align-center justify-center"
+            >
+                <p class="placeholder text-center">
+                    Lorsque toudincou,<br> un panier vide. 👁️👄👁️
+                </p>
+            </div>
+            <VList v-else>
+                <CartItem
+                    v-for="(item, i) in cart"
+                    :key="item.id"
+                    :item
+                    @quantity="handleQuantity(i, $event)"
+                    @remove="removeItem(item)"
                 />
             </VList>
         </VNavigationDrawer>
@@ -109,7 +151,10 @@ provide('openDrawer', openDrawer)
                             >
                                 Accueil
                             </Link>
-                            <Link href="/boutique">
+                            <Link
+                                :class="{ active: $page.url.startsWith('/boutique') }"
+                                href="/boutique"
+                            >
                                 Boutique
                             </Link>
                             <Link href="/contact">
@@ -142,8 +187,8 @@ provide('openDrawer', openDrawer)
                         <template #activator="{ props }">
                             <VBadge
                                 v-bind="props"
-                                :model-value="true"
-                                :content="45"
+                                :model-value="cart.length > 0"
+                                :content="cart.length"
                                 color="primary"
                                 max="9"
                             >
@@ -178,11 +223,11 @@ provide('openDrawer', openDrawer)
                         <VBtn
                             v-for="link in links"
                             :key="link.title"
-                            :to="link.to"
                             variant="text"
                             color="secondary"
                             class="mx-2"
                             exact
+                            @click="router.visit(link.href)"
                         >
                             {{ link.title }}
                         </VBtn>
