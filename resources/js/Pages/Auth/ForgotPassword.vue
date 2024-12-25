@@ -4,6 +4,7 @@ import VisitorsLayout from '@/Layouts/VisitorsLayout.vue'
 import { useForm } from '@inertiajs/vue3'
 import { useHead } from '@vueuse/head'
 import { watch } from 'vue'
+import { useDisplay } from 'vuetify'
 
 defineOptions({ layout: VisitorsLayout })
 
@@ -16,6 +17,7 @@ const props = defineProps<{
 }>()
 
 const { showSuccess } = useToast()
+const { smAndDown } = useDisplay()
 
 const form = useForm({
     email: '',
@@ -49,7 +51,7 @@ watch(() => props.status, (value) => {
                             <VCol>
                                 <VTextField
                                     v-model="form.email"
-                                    :error-messages="errors.email"
+                                    :error-messages="errors?.email"
                                     prepend-inner-icon="mdi-at"
                                     label="Email"
                                     type="email"
@@ -69,7 +71,6 @@ watch(() => props.status, (value) => {
                             </VCol>
                             <VCol class="d-flex justify-end">
                                 <VBtn
-                                    :loading
                                     variant="flat"
                                     @click="submit"
                                 >

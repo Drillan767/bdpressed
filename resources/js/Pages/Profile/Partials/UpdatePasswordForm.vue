@@ -1,8 +1,4 @@
 <script setup lang="ts">
-import InputError from '@/Components/InputError.vue'
-import InputLabel from '@/Components/InputLabel.vue'
-import PrimaryButton from '@/Components/PrimaryButton.vue'
-import TextInput from '@/Components/TextInput.vue'
 import { useForm } from '@inertiajs/vue3'
 import { ref } from 'vue'
 
@@ -49,7 +45,7 @@ function updatePassword() {
         </header>
 
         <form class="mt-6 space-y-6" @submit.prevent="updatePassword">
-            <div>
+<!--            <div>
                 <InputLabel for="current_password" value="Current Password" />
 
                 <TextInput
@@ -120,7 +116,7 @@ function updatePassword() {
                         Saved.
                     </p>
                 </Transition>
-            </div>
+            </div>-->
         </form>
     </section>
 </template>

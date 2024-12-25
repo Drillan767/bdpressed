@@ -5,6 +5,7 @@ import { router, useForm } from '@inertiajs/vue3'
 import { useHead } from '@vueuse/head'
 import { watch } from 'vue'
 import { useDisplay } from 'vuetify'
+import { route } from 'ziggy-js'
 
 defineOptions({ layout: VisitorsLayout })
 
@@ -47,7 +48,7 @@ useHead({
                                 de vérifier votre adresse email en cliquant sur le lien que je vous ai envoyé ? 👉👈
                             </p>
                             <p>
-                                SI vous n'avez rien reçu, je peux vous en renvoyer un autre sans problème ! ✨
+                                Si vous n'avez rien reçu, je peux vous en renvoyer un autre sans problème ! ✨
                             </p>
                         </template>
                         <template #actions>

@@ -1,13 +1,8 @@
 <script setup lang="ts">
-import DangerButton from '@/Components/DangerButton.vue'
-import InputError from '@/Components/InputError.vue'
-import InputLabel from '@/Components/InputLabel.vue'
-import Modal from '@/Components/Modal.vue'
-import SecondaryButton from '@/Components/SecondaryButton.vue'
-import TextInput from '@/Components/TextInput.vue'
 import { useForm } from '@inertiajs/vue3'
 import { nextTick, ref } from 'vue'
 
+/*
 const confirmingUserDeletion = ref(false)
 const passwordInput = ref<HTMLInputElement | null>(null)
 
@@ -30,14 +25,14 @@ function deleteUser() {
             form.reset()
         },
     })
-}
+} */
 
-function closeModal() {
+/* function closeModal() {
     confirmingUserDeletion.value = false
 
     form.clearErrors()
     form.reset()
-}
+} */
 </script>
 
 <template>
@@ -54,7 +49,8 @@ function closeModal() {
             </p>
         </header>
 
-        <DangerButton @click="confirmUserDeletion">
+        <!--
+       <DangerButton @click="confirmUserDeletion">
             Delete Account
         </DangerButton>
 
@@ -107,6 +103,6 @@ function closeModal() {
                     </DangerButton>
                 </div>
             </div>
-        </Modal>
+        </Modal> -->
     </section>
 </template>

@@ -1,14 +1,30 @@
 <script setup lang="ts">
-import InputError from '@/Components/InputError.vue'
-import InputLabel from '@/Components/InputLabel.vue'
-import PrimaryButton from '@/Components/PrimaryButton.vue'
-import TextInput from '@/Components/TextInput.vue'
-import GuestLayout from '@/Layouts/GuestLayout.vue'
-import { Head, useForm } from '@inertiajs/vue3'
+import VisitorsLayout from '@/Layouts/VisitorsLayout.vue'
+import { useForm } from '@inertiajs/vue3'
+import { useHead } from '@vueuse/head'
+import { ref } from 'vue'
+import { useDisplay } from 'vuetify'
+
+defineOptions({ layout: VisitorsLayout })
+
+defineProps<{
+    auth: {
+        user: any | null
+    }
+    errors?: Record<string, string>
+}>()
+
+useHead({
+    title: 'Confirmer le mot de passe',
+})
+
+const { smAndDown } = useDisplay()
 
 const form = useForm({
     password: '',
 })
+
+const passwordVisible = ref(false)
 
 function submit() {
     form.post(route('password.confirm'), {
@@ -20,38 +36,56 @@ function submit() {
 </script>
 
 <template>
-    <GuestLayout>
-        <Head title="Confirm Password" />
+    <VContainer>
+        <VRow>
+            <VCol class="d-flex justify-center">
+                <VForm>
+                    <VCard
+                        :width="smAndDown ? '100%' : '560'"
+                        prepend-icon="mdi-email-outline"
+                        title="Confirmer le mot de passe"
+                    >
+                        <template #text>
+                            <p>
+                                Veuillez confirmer votre mot de passe pour continuer.
+                            </p>
 
-        <div class="mb-4 text-sm text-gray-600">
-            This is a secure area of the application. Please confirm your
-            password before continuing.
-        </div>
-
-        <form @submit.prevent="submit">
-            <div>
-                <InputLabel for="password" value="Password" />
-                <TextInput
-                    id="password"
-                    v-model="form.password"
-                    type="password"
-                    class="mt-1 block w-full"
-                    required
-                    autocomplete="current-password"
-                    autofocus
-                />
-                <InputError class="mt-2" :message="form.errors.password" />
-            </div>
-
-            <div class="mt-4 flex justify-end">
-                <PrimaryButton
-                    class="ms-4"
-                    :class="{ 'opacity-25': form.processing }"
-                    :disabled="form.processing"
-                >
-                    Confirm
-                </PrimaryButton>
-            </div>
-        </form>
-    </GuestLayout>
+                            <VRow>
+                                <VCol>
+                                    <VTextField
+                                        v-model="form.password"
+                                        :type="passwordVisible ? 'text' : 'password'"
+                                        :error-messages="errors?.password"
+                                        prepend-inner-icon="mdi-lock-outline"
+                                        hint="8 caractères minimum, 1 majuscule, 1 minuscule, 1 chiffre et 1 caractère spécial"
+                                        label="Mot de passe"
+                                    >
+                                        <template #append-inner>
+                                            <VBtn
+                                                :icon="passwordVisible ? 'mdi-eye-off-outline' : 'mdi-eye-outline'"
+                                                variant="text"
+                                                @click="passwordVisible = !passwordVisible"
+                                            />
+                                        </template>
+                                    </VTextField>
+                                </VCol>
+                            </VRow>
+                        </template>
+                        <template #actions>
+                            <VRow no-gutters>
+                                <VCol class="d-flex justify-end">
+                                    <VBtn
+                                        variant="flat"
+                                        @click="submit"
+                                    >
+                                        Confirmer
+                                    </VBtn>
+                                </VCol>
+                            </VRow>
+                        </template>
+                    </VCard>
+                </VForm>
+            </VCol>
+        </VRow>
+    </VContainer>
 </template>
