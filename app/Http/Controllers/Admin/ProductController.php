@@ -101,6 +101,8 @@ class ProductController extends Controller
 
     public function destroy(Product $product): void
     {
+        Storage::disk('local')->deleteDirectory("articles/$product->id");
+        $product->delete();
 
     }
 

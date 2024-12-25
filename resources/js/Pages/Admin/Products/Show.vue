@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import type { AdminProduct } from '@/types'
+import DeleteArticleDialog from '@/Components/Admin/Articles/DeleteArticleDialog.vue'
 import EditArticleDialog from '@/Components/Admin/Articles/EditArticleDialog.vue'
 import EditIllustrationsForm from '@/Components/Admin/Articles/EditIllustrationsForm.vue'
 import useNumbers from '@/Composables/numbers'
 import useStrings from '@/Composables/strings'
+import useToast from '@/Composables/toast'
 import AdminLayout from '@/Layouts/AdminLayout.vue'
 import { router } from '@inertiajs/vue3'
 import { useHead } from '@vueuse/head'
@@ -18,6 +20,7 @@ defineOptions({ layout: AdminLayout })
 const props = defineProps<Props>()
 const { formatPrice } = useNumbers()
 const { toParagraphs } = useStrings()
+const { showSuccess } = useToast()
 
 const promotedImage = ref('')
 const displayPreview = ref(false)
@@ -33,6 +36,12 @@ function openPreview(url: string) {
     displayPreview.value = true
     previewUrl.value = url
 }
+
+function articleDeleted() {
+    showSuccess('L\'article a été supprimé')
+    router.visit('/administration/articles')
+}
+
 useHead({
     title: () => props.product.name,
 })
@@ -148,6 +157,12 @@ useHead({
         v-model="displayEditDialog"
         :product
         @success="router.visit('/administration/articles')"
+    />
+    <DeleteArticleDialog
+        v-if="product"
+        v-model="displayDeleteDialog"
+        :product="product"
+        @success="articleDeleted"
     />
 </template>
 

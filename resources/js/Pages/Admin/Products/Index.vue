@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { AdminProduct, AdminProductList, DataTableHeader } from '@/types'
 import CreateArticleDialog from '@/Components/Admin/Articles/CreateArticleDialog.vue'
+import DeleteArticleDialog from '@/Components/Admin/Articles/DeleteArticleDialog.vue'
 import EditArticleDialog from '@/Components/Admin/Articles/EditArticleDialog.vue'
 import useNumbers from '@/Composables/numbers'
 import useToast from '@/Composables/toast'
@@ -60,10 +61,11 @@ const headers: DataTableHeader[] = [
 const { formatPrice } = useNumbers()
 const { showSuccess } = useToast()
 
-const selectedProduct = ref<AdminProduct>()
+const editedProduct = ref<AdminProduct>()
+const deletedProduct = ref<AdminProductList>()
 const displayCreateDialog = ref(false)
 const displayEditDialog = ref(false)
-// const displayDeleteDialog = ref(false)
+const displayDeleteDialog = ref(false)
 
 function handleSuccess(action: 'edit' | 'delete') {
     showSuccess(
@@ -74,12 +76,18 @@ function handleSuccess(action: 'edit' | 'delete') {
 
     router.reload()
 }
+
 async function handleEditProduct(item: AdminProductList) {
-    selectedProduct.value = await fetch(route('products.showApi', { product: item.id }))
+    editedProduct.value = await fetch(route('products.showApi', { product: item.id }))
         .then(response => response.json())
         .then(data => data)
 
     displayEditDialog.value = true
+}
+
+function handleDeleteProduct(item: AdminProductList) {
+    deletedProduct.value = item
+    displayDeleteDialog.value = true
 }
 
 useHead({
@@ -135,8 +143,8 @@ useHead({
                     variant="text"
                     color="error"
                     icon="mdi-delete"
+                    @click="handleDeleteProduct(item)"
                 />
-                <!-- @click="handleDeleteProduct(item)" -->
             </div>
         </template>
     </VDataTable>
@@ -145,15 +153,15 @@ useHead({
         @success="router.reload()"
     />
     <EditArticleDialog
-        v-if="selectedProduct"
+        v-if="editedProduct"
         v-model="displayEditDialog"
-        v-model:product="selectedProduct"
+        v-model:product="editedProduct"
         @success="handleSuccess('edit')"
     />
-<!--       <DeleteArticleDialog
-        v-if="selectedProduct"
+    <DeleteArticleDialog
+        v-if="deletedProduct"
         v-model="displayDeleteDialog"
-        :product="selectedProduct"
+        :product="deletedProduct"
         @success="handleSuccess('delete')"
-    /> -->
+    />
 </template>
