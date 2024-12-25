@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import VisitorsLayout from '@/Layouts/VisitorsLayout.vue'
-import { Link, router, useForm } from '@inertiajs/vue3'
+import { Link, useForm } from '@inertiajs/vue3'
 import { useHead } from '@vueuse/head'
 import { useDisplay } from 'vuetify'
-import { ref, watch } from 'vue'
+import { ref } from 'vue'
 
 interface Props {
     auth: {

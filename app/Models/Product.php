@@ -5,6 +5,8 @@ namespace App\Models;
 use App\Casts\FileProperty;
 use Illuminate\Database\Eloquent\Casts\Json;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * @property int $id
@@ -25,6 +27,24 @@ class Product extends Model
         'created_at' => 'datetime:d/m/Y H:i',
         'updated_at' => 'datetime:d/m/Y H:i',
         'price' => 'float',
-        'illustrations' => FileProperty::class,
+        'illustrations' => 'array',
     ];
+
+    public function illustrations(): Attribute
+    {
+        return Attribute::make(
+            get: function($illustrations) {
+                $parsedPaths = json_decode($illustrations, true);
+
+                return array_map(function ($illustration) {
+                    $realPath = str_replace('/storage', '', $illustration);
+
+                    return [
+                        'path' => $illustration,
+                        'type' => Storage::mimeType($realPath),
+                    ];
+                }, $parsedPaths);
+            }
+        );
+    }
 }
