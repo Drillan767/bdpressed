@@ -37,6 +37,9 @@ async function submit() {
     formData.append('weight', String(form.value.weight))
     formData.append('price', String(form.value.price))
 
+    if (form.value.promotedImage)
+        formData.append('promotedImage', form.value.promotedImage)
+
     form.value.illustrations.forEach((illustration) => {
         formData.append('illustrations[]', illustration)
     })
