@@ -19,33 +19,14 @@ class ProductController extends Controller
         $products = Product::all([
             'id',
             'name',
+            'weight',
             'slug',
             'price',
             'promotedImage',
             'quickDescription',
             'created_at',
             'updated_at',
-        ])
-/*            ->map(function ($product) {
-                $illustrations = array_map(function ($item) {
-                    $parsedFiles = json_decode($item->illustrations, true);
-
-                    return array_map(function ($path) {
-                        $realPath = str_replace('/storage', '', $path);
-
-                        return [
-                            'path' => $path,
-                            'type' => Storage::mimeType($realPath),
-                        ];
-                    }, $parsedFiles);
-                }, $product->illustrations);
-
-                return [
-                    ...$product,
-                    'illustrations' => $illustrations,
-                ];
-            })*/
-        ;
+        ]);
         return Inertia::render('Admin/Products/Index', compact('products'));
     }
 
@@ -54,6 +35,11 @@ class ProductController extends Controller
         $product = Product::where('slug', $slug)->firstOrFail();
 
         return Inertia::render('Admin/Products/Show', compact('product'));
+    }
+
+    public function showApi(Product $product): JsonResponse
+    {
+        return response()->json($product);
     }
 
     public function store(Request $request): void
@@ -89,6 +75,33 @@ class ProductController extends Controller
         $product->promotedImage = "/storage/articles/$product->id/{$promotedImage->getClientOriginalName()}";
 
         $product->save();
+    }
+
+    public function update(Request $request, Product $product): void
+    {
+        $product->name = $request->get('name');
+        $product->slug = Str::slug($request->get('name'));
+        $product->weight = $request->get('weight');
+        $product->price = $request->get('price');
+        $product->quickDescription = $request->get('quickDescription');
+        $product->description = $request->get('description');
+
+        if ($request->hasFile('promotedImage')) {
+            $realPath = $realPath = str_replace('/storage/', '', $product->promotedImage);
+            Storage::delete($realPath);
+
+            $promotedImage = $request->file('promotedImage');
+            $promotedImage->storeAs("articles/$product->id", $promotedImage->getClientOriginalName());
+
+            $product->promotedImage = "/storage/articles/$product->id/{$promotedImage->getClientOriginalName()}";
+        }
+
+        $product->save();
+    }
+
+    public function destroy(Product $product): void
+    {
+
     }
 
     public function addMedia(Request $request, Product $product): JsonResponse
