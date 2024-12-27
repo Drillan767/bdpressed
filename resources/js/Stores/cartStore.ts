@@ -1,6 +1,6 @@
 import type { CartItem } from '@/types'
 import { defineStore } from 'pinia'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 
 const useCartStore = defineStore('cart', () => {
     const cart = ref<CartItem[]>([])
@@ -18,6 +18,18 @@ const useCartStore = defineStore('cart', () => {
             })
         }
     }
+
+    const totalPrice = computed(() => {
+        return cart.value.reduce((acc, item) => acc + item.price * item.quantity, 0)
+    })
+
+    const totalWeight = computed(() => {
+        return cart.value.reduce((acc, item) => acc + item.weight * item.quantity, 0)
+    })
+
+    const tax = computed(() => {
+        return totalPrice.value * 0.015 + 0.25
+    })
 
     function handleQuantity(index: number, action: 'increase' | 'decrease') {
         if (action === 'increase') {
@@ -39,6 +51,9 @@ const useCartStore = defineStore('cart', () => {
 
     return {
         cart,
+        totalPrice,
+        totalWeight,
+        tax,
         addItem,
         handleQuantity,
         removeItem,
