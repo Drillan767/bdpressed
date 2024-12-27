@@ -1,6 +1,7 @@
 [phases.setup]
 nixPkgs = [
   "...",
+  "python311Packages.supervisor",
 
   # https://nixos.org/manual/nixpkgs/stable/#var-meta-priority
   '(lib.recursiveUpdate php83Packages.composer { meta.priority = php83Packages.composer.meta.priority or 0 -1; })',
