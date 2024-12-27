@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import Cart from '@/Components/Shop/Cart.vue'
 import CartItem from '@/Components/Shop/CartItem.vue'
 import useCartStore from '@/Stores/cartStore'
 import { Link, router } from '@inertiajs/vue3'
@@ -26,8 +27,6 @@ useHead({
 
 const { smAndDown } = useDisplay()
 const { cart } = storeToRefs(useCartStore())
-
-const { handleQuantity, removeItem } = useCartStore()
 
 const drawer = ref(false)
 const linksDrawer = ref(false)
@@ -81,46 +80,7 @@ provide('openDrawer', openDrawer)
                 />
             </VList>
         </VNavigationDrawer>
-        <VNavigationDrawer
-            v-model="drawer"
-            :temporary="true"
-            location="right"
-            width="400"
-        >
-            <VListItem
-                title="Panier"
-                color="primary"
-                class="basket-title bg-primary"
-            >
-                <template #append>
-                    <VBtn
-                        icon="mdi-close"
-                        variant="text"
-                        color="white"
-                        @click="drawer = false"
-                    />
-                </template>
-            </VListItem>
-
-            <div
-                v-if="cart.length === 0"
-                class="h-75 d-flex align-center justify-center"
-            >
-                <p class="placeholder text-center">
-                    Lorsque toudincou,<br> un panier vide. 👁️👄👁️
-                </p>
-            </div>
-            <VList v-else>
-                <CartItem
-                    v-for="(item, i) in cart"
-                    :key="item.id"
-                    :item
-                    @quantity="handleQuantity(i, $event)"
-                    @remove="removeItem(item)"
-                />
-            </VList>
-        </VNavigationDrawer>
-        <!--        <Cart v-model="drawer" /> -->
+        <Cart v-model="drawer" />
         <VAppBar
             class="navigation rounded-b-xl pr-8"
             elevation="4"

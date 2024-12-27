@@ -15,6 +15,9 @@ Route::controller(VisitorsController::class)->group(function() {
 Route::controller(ShopController::class)->group(function() {
     Route::get('/boutique', 'index')->name('shop.index');
     Route::get('/boutique/{slug}', 'show')->name('shop.show');
+    Route::get('/checkout', 'checkout')->name('shop.checkout');
+    Route::post('/checkout', 'order')->name('shop.order');
+    Route::get('/merci', 'thankYou')->name('shop.thankYou');
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {

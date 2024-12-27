@@ -71,6 +71,18 @@ export interface CartItem {
     illustration: string
 }
 
+export interface Address {
+    firstName: string
+    lastName: string
+    street: string
+    street2: string
+    city: string
+    zipCode: string
+    country: string
+    billingAddressId?: number
+    shippingAddressId?: number
+}
+
 export type PageProps<
     T extends Record<string, unknown> = Record<string, unknown>,
 > = T & {
