@@ -1,6 +1,9 @@
 {
     "private": true,
     "type": "module",
+    "engines": {
+        "node": "20"
+    },
     "scripts": {
         "build": "vue-tsc && vite build && vite build --ssr",
         "dev": "vite",
