@@ -3,7 +3,6 @@ name: ci
 on:
   push:
     branches:
-      - feature/migrate-to-laravel
       - main
 
 jobs:
