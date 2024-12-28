@@ -1,6 +1,6 @@
 [variables]
-    UPLOAD_MAX_FILESIZE = '10M'
-    POST_MAX_SIZE = '10M'
+    UPLOAD_MAX_FILESIZE = '50M'
+    POST_MAX_SIZE = '50M'
 
 [phases.setup]
 nixPkgs = [
@@ -10,7 +10,7 @@ nixPkgs = [
   '(lib.recursiveUpdate php83Packages.composer { meta.priority = php83Packages.composer.meta.priority or 0 -1; })',
 ]
 
-cmds = ['PHP_INI_PATH=$(php --ini | grep "Additional .ini files parsed:" | cut -d: -f2 | tr -d " "); echo "PHP_INI_PATH is $PHP_INI_PATH"; echo "upload_max_filesize=10M" >> $PHP_INI_PATH; echo "post_max_size=10M" >> $PHP_INI_PATH; echo "Content of php.ini below:"; cat "$PHP_INI_PATH"']
+cmds = ['PHP_INI_PATH=$(php --ini | grep "Additional .ini files parsed:" | cut -d: -f2 | tr -d " "); echo "PHP_INI_PATH is $PHP_INI_PATH"; echo "upload_max_filesize=50M" >> $PHP_INI_PATH; echo "post_max_size=50M" >> $PHP_INI_PATH; echo "Content of php.ini below:"; cat "$PHP_INI_PATH"']
 
 [include]
 
@@ -38,6 +38,8 @@ events {
 http {
     include    $!{nginx}/conf/mime.types;
     index    index.html index.htm index.php;
+
+    client_max_body_size 50M;
 
     default_type application/octet-stream;
     log_format   main '$remote_addr - $remote_user [$time_local]  $status '
