@@ -22,4 +22,12 @@ export default defineConfig({
         vueDevTools(),
         vuetify(),
     ],
+    ssr: {
+        noExternal: [
+            '@inertiajs/server',
+            /\.css$/,
+            /\?vue&type=style/,
+            /^vuetify/,
+        ],
+    },
 })
