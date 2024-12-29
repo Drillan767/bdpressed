@@ -33,6 +33,18 @@ const phone = ref('')
 
 const submitDisabled = computed(() => loading.value || !shippingAddressValid.value || (!useSameAddress.value && !billingAddressValid.value))
 
+const disabled = computed(() => {
+    if (step.value === 1) {
+        return 'prev'
+    }
+    else if (step.value === 3) {
+        return 'next'
+    }
+    else {
+        return undefined
+    }
+})
+
 watch(cart, (value) => {
     if (value.length === 0) {
         showError('Vous devez avoir au moins un article dans votre panier')
@@ -69,10 +81,12 @@ useHead({
 
                                     <VStepper
                                         v-model="step"
+                                        :flat="true"
                                         color="primary"
+                                        class="my-4"
                                     >
                                         <template #default="{ prev, next }">
-                                            <VStepperHeader>
+                                            <VStepperHeader class="elevation-0">
                                                 <VStepperItem
                                                     :complete="step > 1"
                                                     :value="1"
@@ -97,6 +111,31 @@ useHead({
                                                     title="Récapitulatif"
                                                 />
                                             </VStepperHeader>
+                                            <VStepperWindow>
+                                                <VStepperWindowItem
+                                                    :value="1"
+                                                    class="py-2"
+                                                >
+                                                    Étape 1
+                                                </VStepperWindowItem>
+                                                <VStepperWindowItem
+                                                    :value="2"
+                                                    class="py-2"
+                                                >
+                                                    Étape 2
+                                                </VStepperWindowItem>
+                                                <VStepperWindowItem
+                                                    :value="3"
+                                                    class="py-2"
+                                                >
+                                                    Étape 3
+                                                </VStepperWindowItem>
+                                            </VStepperWindow>
+                                            <VStepperActions
+                                                :disabled
+                                                @click:next="next"
+                                                @click:prev="prev"
+                                            />
                                         </template>
                                     </VStepper>
 

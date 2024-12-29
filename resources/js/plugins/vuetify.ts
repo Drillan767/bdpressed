@@ -1,5 +1,6 @@
 import { createVuetify } from 'vuetify'
 import { md3 } from 'vuetify/blueprints'
+import { VStepperVertical } from 'vuetify/labs/VStepperVertical'
 import { fr } from 'vuetify/locale'
 
 import '@mdi/font/css/materialdesignicons.css'
@@ -12,6 +13,10 @@ export default createVuetify({
         locale: 'fr',
         fallback: 'fr',
         messages: { fr },
+    },
+
+    components: {
+        VStepperVertical,
     },
 
     defaults: {

@@ -28,7 +28,8 @@ const useCartStore = defineStore('cart', () => {
     })
 
     const tax = computed(() => {
-        return totalPrice.value * 0.015 + 0.25
+        const tax = totalPrice.value * 0.015 + 0.25
+        return Number(tax.toFixed(2))
     })
 
     function handleQuantity(index: number, action: 'increase' | 'decrease') {
