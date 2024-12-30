@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { router, usePage } from '@inertiajs/vue3'
 import { useHead } from '@vueuse/head'
-import { provide, ref } from 'vue'
+import { onMounted, provide, ref } from 'vue'
 import { useDisplay } from 'vuetify'
 import { route } from 'ziggy-js'
 
@@ -15,6 +15,13 @@ const page = usePage()
 provide('csrfToken', page.props.csrf_token)
 
 const openDrawer = ref(true)
+const pendingOrders = ref(0)
+
+onMounted(async () => {
+    pendingOrders.value = await fetch(route('orders.pending'))
+        .then(response => response.json())
+        .then(data => data)
+})
 </script>
 
 <template>
@@ -68,11 +75,26 @@ const openDrawer = ref(true)
                 />
                 <VDivider class="my-2" />
                 <VListItem
-                    href="/administration/articles"
                     prepend-icon="mdi-package-variant"
                     title="Articles"
                     nav
+                    @click="router.visit('/administration/articles')"
                 />
+                <VListItem
+                    prepend-icon="mdi-package-variant-closed"
+                    title="Commandes"
+                    nav
+                    @click="router.visit(route('orders.index'))"
+                >
+                    <template #append>
+                        <VBadge
+                            :model-value="pendingOrders > 0"
+                            :content="pendingOrders"
+                            color="primary"
+                            inline
+                        />
+                    </template>
+                </VListItem>
                 <VListItem
                     to="/administration/utilisateurs"
                     prepend-icon="mdi-account-group-outline"
