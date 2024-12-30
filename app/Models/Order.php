@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use App\Enums\OrderStatus;
 
 class Order extends Model
 {
@@ -17,4 +18,8 @@ class Order extends Model
     {
         return $this->hasOne(Illustration::class);
     }
+
+    protected $casts = [
+        'status' => OrderStatus::class,
+    ];
 }

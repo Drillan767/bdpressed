@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import type { Address } from '@/types'
-import AddressForm from '@/Components/Shop/AddressForm.vue'
+import type { Address, OrderStep1Form, User } from '@/types'
 import CartItem from '@/Components/Shop/CartItem.vue'
+import OrderStep1 from '@/Components/Shop/OrderStep1.vue'
+import OrderStep2 from '@/Components/Shop/OrderStep2.vue'
 import useNumbers from '@/Composables/numbers'
 import useToast from '@/Composables/toast'
 import VisitorsLayout from '@/Layouts/VisitorsLayout.vue'
@@ -13,8 +14,11 @@ import { computed, ref, watch } from 'vue'
 
 defineOptions({ layout: VisitorsLayout })
 
-defineProps<{
+const props = defineProps<{
     errors?: Record<string, string>
+    auth: {
+        user: User | null
+    }
 }>()
 
 const { cart, tax, totalPrice, totalWeight } = storeToRefs(useCartStore())
@@ -24,18 +28,20 @@ const { handleQuantity, removeItem } = useCartStore()
 
 const loading = ref(false)
 const step = ref(1)
-const shippingAddress = ref<Address>()
+const personalInformation = ref<OrderStep1Form>({
+    email: props.auth.user?.email ?? '',
+    guest: props.auth.user === null,
+})
+const step1Valid = ref(false)
 const shippingAddressValid = ref(false)
-const billingAddress = ref<Address>()
 const billingAddressValid = ref(false)
 const useSameAddress = ref(true)
-const phone = ref('')
 
 const submitDisabled = computed(() => loading.value || !shippingAddressValid.value || (!useSameAddress.value && !billingAddressValid.value))
 
 const disabled = computed(() => {
     if (step.value === 1) {
-        return 'prev'
+        return step1Valid.value ? 'prev' : true
     }
     else if (step.value === 3) {
         return 'next'
@@ -67,7 +73,7 @@ useHead({
                             <VRow>
                                 <VCol
                                     cols="12"
-                                    md="6"
+                                    md="8"
                                 >
                                     <h1 class="text-secondary mb-4">
                                         Informations de commande
@@ -116,13 +122,19 @@ useHead({
                                                     :value="1"
                                                     class="py-2"
                                                 >
-                                                    Étape 1
+                                                    <OrderStep1
+                                                        v-model:form="personalInformation"
+                                                        v-model:valid="step1Valid"
+                                                        :authenticated="auth.user !== null"
+                                                    />
                                                 </VStepperWindowItem>
                                                 <VStepperWindowItem
                                                     :value="2"
                                                     class="py-2"
                                                 >
-                                                    Étape 2
+                                                    <OrderStep2
+                                                        :authenticated="auth.user !== null"
+                                                    />
                                                 </VStepperWindowItem>
                                                 <VStepperWindowItem
                                                     :value="3"
@@ -139,42 +151,6 @@ useHead({
                                         </template>
                                     </VStepper>
 
-                                    <!--  <AddressForm
-                                        v-model:address="shippingAddress"
-                                        v-model:valid="shippingAddressValid"
-                                        title="Adresse de livraison"
-                                    />
-
-                                    <VContainer>
-                                        <VRow>
-                                            <VCol>
-                                                <VSwitch
-                                                    v-model="useSameAddress"
-                                                    label="Utiliser la même adresse"
-                                                />
-                                            </VCol>
-                                        </VRow>
-                                    </VContainer>
-
-                                    <AddressForm
-                                        v-if="!useSameAddress"
-                                        v-model:address="billingAddress"
-                                        v-model:valid="billingAddressValid"
-                                        title="Adresse de facturation"
-                                    />
-
-                                    <VDivider class="my-4" />
-
-                                    <VRow no-gutters>
-                                        <VCol>
-                                            <VTextField
-                                                v-model="phone"
-                                                prepend-inner-icon="mdi-phone-outline"
-                                                label="Téléphone"
-                                            />
-                                        </VCol>
-                                    </VRow>
- -->
                                     <VCardActions>
                                         <VBtn
                                             variant="flat"
@@ -188,7 +164,7 @@ useHead({
                                 </VCol>
                                 <VCol
                                     cols="12"
-                                    md="6"
+                                    md="4"
                                 >
                                     <VList>
                                         <CartItem
@@ -254,5 +230,7 @@ useHead({
 </template>
 
 <style scoped lang="scss">
-
+:deep(.v-alert__content) {
+    padding: 8px 0;
+}
 </style>
