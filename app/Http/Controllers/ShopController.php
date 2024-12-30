@@ -40,6 +40,7 @@ class ShopController extends Controller
 
     public function order(OrderRequest $request)
     {
+        dd($request);
         DB::transaction(function () use ($request) {
             // Create user and send verification email
             $user = (new RegisterClientAction())->handle($request);
@@ -70,7 +71,7 @@ class ShopController extends Controller
                     city: 'test',
                     zipCode: 'test',
                     country: 'test',
-                    
+
                 },
                 billingAddress: {
                     firstName: 'test',
@@ -86,7 +87,6 @@ class ShopController extends Controller
                 shipping_id: 1,
             }
         */
-        dd($request);
         return redirect()->route('shop.thankYou');
     }
 
