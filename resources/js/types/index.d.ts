@@ -71,6 +71,13 @@ export interface CartItem {
     illustration: string
 }
 
+export interface OrderStep1Form {
+    email: string
+    guest: boolean
+    password?: string
+    password_confirmation?: string
+}
+
 export interface Address {
     firstName: string
     lastName: string
