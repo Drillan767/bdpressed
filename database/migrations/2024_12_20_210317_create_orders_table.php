@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
             $table->float('total', 2);
+            $table->string('reference');
             $table->text('additionalInfos')->nullable();
             $table->foreignId('user_id')->constrained('users');
             $table->boolean('useSameAddress')->default(true);
