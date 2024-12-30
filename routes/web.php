@@ -1,10 +1,12 @@
 <?php
 
-use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ShopController;
 use App\Http\Controllers\VisitorsController;
+use App\Http\Controllers\User\DashboardController as UserDashboardController;
 use Illuminate\Support\Facades\Route;
 
 Route::controller(VisitorsController::class)->group(function() {
@@ -26,7 +28,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::middleware('role:admin')->group(function () {
-        Route::get('/administration', [DashboardController::class, 'index'])->name('admin.dashboard');
+        Route::get('/administration', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
 
         Route::prefix('/administration')->group(function () {
             Route::controller(ProductController::class)->group(function () {
@@ -40,7 +42,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
                 Route::post('/article/update-illustration/{product}', 'addMedia')->name('products.add-media');
                 Route::delete('/article/remove-illustration/{product}', 'removeMedia')->name('products.remove-media');
             });
+
+            Route::controller(OrderController::class)->group(function () {
+                Route::get('/commandes', 'index')->name('orders.index');
+                Route::get('/commandes/pending-orders', 'pendingOrders')->name('orders.pending');
+                Route::get('/commande/{order}', 'show')->name('orders.show');
+            });
         });
+    });
+
+    Route::middleware('role:user')->group(function () {
+        Route::get('/utilisateur', [UserDashboardController::class, 'index'])->name('user.dashboard');
     });
 });
 
