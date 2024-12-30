@@ -90,7 +90,7 @@ watch(controlledValues, (value) => {
             </VCol>
         </VRow>
         <VRow
-            v-if="!authenticated && asGuest"
+            v-if="!authenticated && !asGuest"
             no-gutters
         >
             <VCol
