@@ -13,10 +13,9 @@ const { defineField, controlledValues, resetForm } = useForm<Address>({
     validationSchema: {
         firstName: 'required',
         lastName: 'required',
-        address: 'required',
+        street: 'required',
         zipCode: 'required',
         country: 'required',
-        phoneNumber: 'required',
     },
 })
 
@@ -27,7 +26,6 @@ const [address2Field, address2Props] = defineField('street2', validationConfig)
 const [city, cityProps] = defineField('city', validationConfig)
 const [zipCode, zipCodeProps] = defineField('zipCode', validationConfig)
 const [country, countryProps] = defineField('country', validationConfig)
-// const [phoneNumber, phoneNumberProps] = defineField('phoneNumber', validationConfig)
 
 const formValid = useIsFormValid()
 
@@ -114,7 +112,7 @@ defineExpose({
                         v-model="city"
                         v-bind="cityProps"
                         prepend-inner-icon="mdi-map-marker-outline"
-                        label="Code postal"
+                        label="Ville"
                     />
                 </VCol>
                 <VCol
