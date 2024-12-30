@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Address, OrderStep1Form, User } from '@/types'
+import type { Address, OrderStep1Form, OrderStep2Form, User } from '@/types'
 import CartItem from '@/Components/Shop/CartItem.vue'
 import OrderStep1 from '@/Components/Shop/OrderStep1.vue'
 import OrderStep2 from '@/Components/Shop/OrderStep2.vue'
@@ -26,22 +26,38 @@ const { showError } = useToast()
 const { formatPrice } = useNumbers()
 const { handleQuantity, removeItem } = useCartStore()
 
-const loading = ref(false)
 const step = ref(1)
 const personalInformation = ref<OrderStep1Form>({
     email: props.auth.user?.email ?? '',
     guest: props.auth.user === null,
 })
 const step1Valid = ref(false)
-const shippingAddressValid = ref(false)
+const step2Valid = ref(false)
+
+const addresses = ref<OrderStep2Form>({
+    useSameAddress: true,
+    shippingAddress: {
+        firstName: '',
+        lastName: '',
+        street: '',
+        street2: '',
+        city: '',
+        zipCode: '',
+        country: '',
+    },
+})
+/* const shippingAddressValid = ref(false)
 const billingAddressValid = ref(false)
 const useSameAddress = ref(true)
 
-const submitDisabled = computed(() => loading.value || !shippingAddressValid.value || (!useSameAddress.value && !billingAddressValid.value))
+const submitDisabled = computed(() => loading.value || !shippingAddressValid.value || (!useSameAddress.value && !billingAddressValid.value)) */
 
 const disabled = computed(() => {
     if (step.value === 1) {
         return step1Valid.value ? 'prev' : true
+    }
+    else if (step.value === 2) {
+        return step2Valid.value ? undefined : 'next'
     }
     else if (step.value === 3) {
         return 'next'
@@ -133,6 +149,8 @@ useHead({
                                                     class="py-2"
                                                 >
                                                     <OrderStep2
+                                                        v-model:form="addresses"
+                                                        v-model:valid="step2Valid"
                                                         :authenticated="auth.user !== null"
                                                     />
                                                 </VStepperWindowItem>

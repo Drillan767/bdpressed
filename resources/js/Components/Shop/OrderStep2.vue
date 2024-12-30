@@ -1,16 +1,35 @@
 <script setup lang="ts">
-import type { Address } from '@/types'
+import type { Address, OrderStep2Form } from '@/types'
 import AddressForm from '@/Components/Shop/AddressForm.vue'
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
+
+const step2 = defineModel<OrderStep2Form>('form', { required: true })
+const step2Valid = defineModel<boolean>('valid', { required: true })
 
 const shippingAddress = ref<Address>()
 const shippingAddressValid = ref(false)
 const billingAddress = ref<Address>()
 const billingAddressValid = ref(false)
 const useSameAddress = ref(true)
+
+watch([shippingAddressValid, billingAddressValid], ([shipping, billing]) => {
+    step2Valid.value = useSameAddress.value ? shipping : shipping && billing
+})
+
+watch([shippingAddress, useSameAddress, billingAddress], ([shipping, same, billing]) => {
+    if (!shipping)
+        return
+    step2.value = {
+        shippingAddress: shipping,
+        billingAddress: same ? shipping : billing,
+        useSameAddress: same,
+    }
+})
 </script>
 
 <template>
+    <p>shipping address valid: {{ shippingAddressValid }}</p>
+    <p>billing address valid: {{ billingAddressValid }}</p>
     <AddressForm
         v-model:address="shippingAddress"
         v-model:valid="shippingAddressValid"

@@ -71,13 +71,6 @@ export interface CartItem {
     illustration: string
 }
 
-export interface OrderStep1Form {
-    email: string
-    guest: boolean
-    password?: string
-    password_confirmation?: string
-}
-
 export interface Address {
     firstName: string
     lastName: string
@@ -88,6 +81,19 @@ export interface Address {
     country: string
     billingAddressId?: number
     shippingAddressId?: number
+}
+
+export interface OrderStep1Form {
+    email: string
+    guest: boolean
+    password?: string
+    password_confirmation?: string
+}
+
+export interface OrderStep2Form {
+    useSameAddress: boolean
+    shippingAddress: Address
+    billingAddress?: Address
 }
 
 export type PageProps<
