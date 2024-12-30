@@ -11,19 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('addresses', function (Blueprint $table) {
+        Schema::create('guests', function (Blueprint $table) {
             $table->id();
-            $table->string('firstName');
-            $table->string('lastName');
-            $table->string('street');
-            $table->string('street2');
-            $table->string('city');
-            $table->string('zipCode');
-            $table->string('country');
+            $table->string('email')->unique();
+            $table->foreignId('order_id')->constrained();
             $table->foreignId('billing_address_id')->constrained('users', 'id');
             $table->foreignId('shipping_address_id')->constrained('users', 'id');
-            $table->enum('type', ['BILLING', 'SHIPPING']);
-            $table->boolean('default')->default(false);
             $table->timestamps();
         });
     }
@@ -33,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('addresses');
+        Schema::dropIfExists('guests');
     }
 };
