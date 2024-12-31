@@ -1,13 +1,14 @@
 <script setup lang="ts">
 import type { OrderStep1Form } from '@/types'
 import validationConfig from '@/plugins/validationConfig'
-import { Link } from '@inertiajs/vue3'
+import { Link, router } from '@inertiajs/vue3'
 import { useForm, useIsFormValid } from 'vee-validate'
 import { computed, ref, watch } from 'vue'
 
 interface Props {
     errors?: Record<string, string>
     authenticated: boolean
+    showEmailExists: boolean
 }
 
 const props = defineProps<Props>()
@@ -19,7 +20,7 @@ const guest = ref(true)
 const passwordVisible = ref(false)
 const confirmPasswordVisible = ref(false)
 
-const { defineField, controlledValues } = useForm<OrderStep1Form>({
+const { defineField, controlledValues, setErrors } = useForm<OrderStep1Form>({
     validationSchema: computed(() => ({
         email: 'required|email',
         password: !props.authenticated && !guest.value ? 'required' : '',
@@ -46,10 +47,39 @@ watch(formValid, (value) => {
 watch(controlledValues, (value) => {
     form.value = value
 })
+
+watch(() => props.errors, (value) => {
+    if (value) {
+        if (value['user.email'] && value['user.email'] === 'email exists') {
+            setErrors({ email: 'Cette adresse email existe déjà' })
+        }
+        else {
+            setErrors(value)
+        }
+    }
+})
 </script>
 
 <template>
     <VContainer>
+        <VAlert
+            v-if="showEmailExists"
+            class="mb-4"
+            color="primary"
+            variant="tonal"
+            icon="mdi-email-alert"
+            text="Cette adresse email existe déjà"
+        >
+            <template #append>
+                <VBtn
+                    color="primary"
+                    variant="flat"
+                    @click="router.visit('/connexion')"
+                >
+                    Connexion
+                </VBtn>
+            </template>
+        </VAlert>
         <VRow no-gutters>
             <VCol>
                 <h4>
