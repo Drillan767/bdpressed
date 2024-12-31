@@ -40,7 +40,7 @@ class ShopController extends Controller
 
     public function order(OrderRequest $request)
     {
-        dd($request);
+        dd($request->get('user'));
         DB::transaction(function () use ($request) {
             // Create user and send verification email
             $user = (new RegisterClientAction())->handle($request);

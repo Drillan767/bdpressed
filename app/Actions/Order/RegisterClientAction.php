@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Auth;
 
 class RegisterClientAction
 {
-    public function handle(OrderRequest $request): User
+    public function handle(OrderRequest $request): int
     {
         $user = User::create([
             'email' => $request->user->email,
@@ -24,6 +24,6 @@ class RegisterClientAction
 
         Auth::login($user);
 
-        return $user;
+        return $user->id;
     }
 }
