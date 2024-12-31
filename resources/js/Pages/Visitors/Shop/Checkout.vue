@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Address, OrderStep1Form, OrderStep2Form, User } from '@/types'
+import type { OrderStep1Form, OrderStep2Form, User } from '@/types'
 import CartItem from '@/Components/Shop/CartItem.vue'
 import OrderStep1 from '@/Components/Shop/OrderStep1.vue'
 import OrderStep2 from '@/Components/Shop/OrderStep2.vue'
@@ -26,6 +26,7 @@ const { showError } = useToast()
 const { formatPrice } = useNumbers()
 const { handleQuantity, removeItem } = useCartStore()
 
+const emailExists = ref(false)
 const step = ref(1)
 const personalInformation = ref<OrderStep1Form>({
     email: props.auth.user?.email ?? '',
@@ -46,11 +47,6 @@ const addresses = ref<OrderStep2Form>({
         country: '',
     },
 })
-/* const shippingAddressValid = ref(false)
-const billingAddressValid = ref(false)
-const useSameAddress = ref(true)
-
-const submitDisabled = computed(() => loading.value || !shippingAddressValid.value || (!useSameAddress.value && !billingAddressValid.value)) */
 
 const disabled = computed(() => {
     if (step.value === 1) {
@@ -67,10 +63,33 @@ const disabled = computed(() => {
     }
 })
 
+async function submit() {
+    await router.post(route('shop.order'), {
+        user: personalInformation.value,
+        products: cart.value.map(item => ({
+            id: item.id,
+            quantity: item.quantity,
+        })),
+        // TODO: add address id once available
+        addresses: {
+            shipping: addresses.value.shippingAddress,
+            same: addresses.value.useSameAddress,
+            billing: addresses.value.useSameAddress ? undefined : addresses.value.billingAddress,
+        },
+    })
+}
+
 watch(cart, (value) => {
     if (value.length === 0) {
         showError('Vous devez avoir au moins un article dans votre panier')
         router.visit('/')
+    }
+}, { immediate: true })
+
+watch(() => props.errors?.['user.email'], (value) => {
+    if (value === 'email exists') {
+        emailExists.value = true
+        step.value = 1
     }
 }, { immediate: true })
 
@@ -112,8 +131,8 @@ useHead({
                                                 <VStepperItem
                                                     :complete="step > 1"
                                                     :value="1"
+                                                    :subtitle="step1Valid && personalInformation.email ? personalInformation.email : undefined"
                                                     title="Informations personnelles"
-                                                    editable
                                                 />
 
                                                 <VDivider />
@@ -121,8 +140,8 @@ useHead({
                                                 <VStepperItem
                                                     :complete="step > 2"
                                                     :value="2"
+                                                    :subtitle="step2Valid ? `${addresses.shippingAddress.city}, ${addresses.shippingAddress.country}` : undefined"
                                                     title="Livraison"
-                                                    editable
                                                 />
 
                                                 <VDivider />
@@ -141,6 +160,8 @@ useHead({
                                                     <OrderStep1
                                                         v-model:form="personalInformation"
                                                         v-model:valid="step1Valid"
+                                                        :errors
+                                                        :show-email-exists="emailExists"
                                                         :authenticated="auth.user !== null"
                                                     />
                                                 </VStepperWindowItem>
@@ -158,27 +179,86 @@ useHead({
                                                     :value="3"
                                                     class="py-2"
                                                 >
-                                                    Étape 3
+                                                    <VRow>
+                                                        <VCol
+                                                            cols="12"
+                                                            md="3"
+                                                            offset-md="3"
+                                                        >
+                                                            <h3 class="mb-2">
+                                                                Adresse de livraison
+                                                            </h3>
+                                                            <p>
+                                                                {{ addresses.shippingAddress.firstName }}
+                                                                {{ addresses.shippingAddress.lastName }}
+                                                            </p>
+                                                            <p>
+                                                                {{ addresses.shippingAddress.street }}
+                                                            </p>
+                                                            <p v-if="addresses.shippingAddress.street2">
+                                                                {{ addresses.shippingAddress.street2 }}
+                                                            </p>
+                                                            <p>
+                                                                {{ addresses.shippingAddress.city }}
+                                                                {{ addresses.shippingAddress.zipCode }}
+                                                                {{ addresses.shippingAddress.country }}
+                                                            </p>
+                                                        </VCol>
+                                                        <VCol
+                                                            cols="12"
+                                                            md="6"
+                                                        >
+                                                            <h3 class="mb-2">
+                                                                Adresse de facturation
+                                                            </h3>
+                                                            <template v-if="addresses.billingAddress">
+                                                                <p>
+                                                                    {{ addresses.billingAddress.firstName }}
+                                                                    {{ addresses.billingAddress.lastName }}
+                                                                </p>
+                                                                <p>
+                                                                    {{ addresses.billingAddress.street }}
+                                                                </p>
+                                                                <p v-if="addresses.billingAddress.street2">
+                                                                    {{ addresses.billingAddress.street2 }}
+                                                                </p>
+                                                                <p>
+                                                                    {{ addresses.billingAddress.city }}
+                                                                    {{ addresses.billingAddress.zipCode }}
+                                                                    {{ addresses.billingAddress.country }}
+                                                                </p>
+                                                            </template>
+                                                        </VCol>
+                                                    </VRow>
+                                                    <VRow>
+                                                        <VCol class="d-flex justify-space-between">
+                                                            <VBtn
+                                                                color="primary"
+                                                                variant="text"
+                                                                @click="prev"
+                                                            >
+                                                                Précédent
+                                                            </VBtn>
+
+                                                            <VBtn
+                                                                color="secondary"
+                                                                variant="flat"
+                                                                @click="submit"
+                                                            >
+                                                                ¥ Passer commande ¥
+                                                            </VBtn>
+                                                        </VCol>
+                                                    </VRow>
                                                 </VStepperWindowItem>
                                             </VStepperWindow>
                                             <VStepperActions
+                                                v-if="step < 3"
                                                 :disabled
                                                 @click:next="next"
                                                 @click:prev="prev"
                                             />
                                         </template>
                                     </VStepper>
-
-                                    <VCardActions>
-                                        <VBtn
-                                            variant="flat"
-                                            color="secondary"
-                                            :disabled="submitDisabled"
-                                            block
-                                        >
-                                            ¥ Passer commande ¥
-                                        </VBtn>
-                                    </VCardActions>
                                 </VCol>
                                 <VCol
                                     cols="12"
@@ -250,5 +330,9 @@ useHead({
 <style scoped lang="scss">
 :deep(.v-alert__content) {
     padding: 8px 0;
+}
+
+:deep(.v-stepper-item__subtitle) {
+    margin-top: 10px;
 }
 </style>
