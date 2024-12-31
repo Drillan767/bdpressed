@@ -3,6 +3,12 @@ import type { Address, OrderStep2Form } from '@/types'
 import AddressForm from '@/Components/Shop/AddressForm.vue'
 import { ref, watch } from 'vue'
 
+interface Props {
+    authenticated: boolean
+}
+
+defineProps<Props>()
+
 const step2 = defineModel<OrderStep2Form>('form', { required: true })
 const step2Valid = defineModel<boolean>('valid', { required: true })
 
@@ -28,8 +34,6 @@ watch([shippingAddress, useSameAddress, billingAddress], ([shipping, same, billi
 </script>
 
 <template>
-    <p>shipping address valid: {{ shippingAddressValid }}</p>
-    <p>billing address valid: {{ billingAddressValid }}</p>
     <AddressForm
         v-model:address="shippingAddress"
         v-model:valid="shippingAddressValid"
