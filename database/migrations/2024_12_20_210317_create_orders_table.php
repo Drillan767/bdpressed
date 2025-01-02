@@ -16,7 +16,12 @@ return new class extends Migration
             $table->float('total', 2);
             $table->string('reference');
             $table->text('additionalInfos')->nullable();
-            $table->foreignId('user_id')->constrained('users');
+            $table->foreignId('user_id')
+                ->nullable()
+                ->constrained('users');
+            $table->foreignId('guest_id')
+                ->nullable()
+                ->constrained('guests');
             $table->boolean('useSameAddress')->default(true);
             $table->enum('status', [
                 'CANCELLED',
