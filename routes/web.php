@@ -46,7 +46,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::controller(OrderController::class)->group(function () {
                 Route::get('/commandes', 'index')->name('orders.index');
                 Route::get('/commandes/pending-orders', 'pendingOrders')->name('orders.pending');
-                Route::get('/commande/{order}', 'show')->name('orders.show');
+                Route::get('/commande/{reference}', 'show')->name('orders.show');
             });
         });
     });
