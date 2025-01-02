@@ -14,9 +14,6 @@ return new class extends Migration
         Schema::create('guests', function (Blueprint $table) {
             $table->id();
             $table->string('email')->unique();
-            $table->foreignId('order_id')->constrained();
-            $table->foreignId('billing_address_id')->constrained('users', 'id');
-            $table->foreignId('shipping_address_id')->constrained('users', 'id');
             $table->timestamps();
         });
     }

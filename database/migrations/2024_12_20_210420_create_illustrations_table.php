@@ -22,7 +22,7 @@ return new class extends Migration
             $table->float('price', 2);
             $table->enum('status', ['PENDING', 'IN_PROGRESS', 'COMPLETED']);
             $table->text('description');
-            $table->foreignId('order_id')->constrained();
+            $table->foreignId('order_detail_id')->constrained();
             $table->timestamps();
         });
     }

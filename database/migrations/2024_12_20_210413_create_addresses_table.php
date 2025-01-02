@@ -20,8 +20,18 @@ return new class extends Migration
             $table->string('city');
             $table->string('zipCode');
             $table->string('country');
-            $table->foreignId('billing_address_id')->constrained('users', 'id');
-            $table->foreignId('shipping_address_id')->constrained('users', 'id');
+            $table->foreignId('user_billing_id')
+                ->nullable()
+                ->constrained('users', 'id');
+            $table->foreignId('user_shipping_id')
+                ->nullable()
+                ->constrained('users', 'id');
+            $table->foreignId('guest_billing_id')
+                ->nullable()
+                ->constrained('guests', 'id');
+            $table->foreignId('guest_shipping_id')
+                ->nullable()
+                ->constrained('guests', 'id');
             $table->enum('type', ['BILLING', 'SHIPPING']);
             $table->boolean('default')->default(false);
             $table->timestamps();
