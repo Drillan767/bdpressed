@@ -22,6 +22,11 @@ return new class extends Migration
             $table->foreignId('guest_id')
                 ->nullable()
                 ->constrained('guests');
+            $table->foreignId('shipping_address_id')
+                ->constrained('addresses', 'id');
+            $table->foreignId('billing_address_id')
+                ->constrained('addresses', 'id');
+
             $table->boolean('useSameAddress')->default(true);
             $table->enum('status', [
                 'CANCELLED',

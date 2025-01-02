@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('firstName');
             $table->string('lastName');
             $table->string('street');
-            $table->string('street2');
+            $table->string('street2')->default('');
             $table->string('city');
             $table->string('zipCode');
             $table->string('country');
