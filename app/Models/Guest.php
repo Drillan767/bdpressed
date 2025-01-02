@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Guest extends Model
 {
+    protected $fillable = ['email'];
+
     public function orders(): HasOne
     {
         return $this->hasOne(Order::class);
