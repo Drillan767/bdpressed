@@ -64,7 +64,7 @@ const disabled = computed(() => {
 })
 
 async function submit() {
-    await router.post(route('shop.order'), {
+    await router.post(route('shop.orders'), {
         user: personalInformation.value,
         products: cart.value.map(item => ({
             id: item.id,
