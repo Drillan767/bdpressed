@@ -2,10 +2,12 @@
 
 namespace App\Notifications;
 
+use App\Models\Order;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Illuminate\Support\HtmlString;
+use NumberFormatter;
 
 class NewOrderNotification extends Notification
 {
@@ -14,7 +16,9 @@ class NewOrderNotification extends Notification
     /**
      * Create a new notification instance.
      */
-    public function __construct()
+    public function __construct(
+        public Order $order,
+    )
     {
         //
     }
@@ -34,10 +38,21 @@ class NewOrderNotification extends Notification
      */
     public function toMail(object $notifiable): MailMessage
     {
+        $total = new NumberFormatter('fr_FR', NumberFormatter::CURRENCY);
+        $totalPrice = $this->order->total + $this->order->total * 0.015 + 0.25;
+        $formattedPrice = $total->formatCurrency($totalPrice, 'EUR');
+
         return (new MailMessage)
-            ->line('The introduction to the notification.')
-            ->action('Notification Action', url('/'))
-            ->line('Thank you for using our application!');
+            ->subject('Nouvelle commande !')
+            ->greeting('Dinguerie ! 😱')
+            ->line('Une nouvelle commande a été passée sur le site !')
+            ->line(
+                new HtmlString("Il y en a tout pour <b>$formattedPrice</b>, frais de port et de transaction compris.")
+            )
+            ->action('Voir la commande', route('orders.show', $this->order->reference))
+            ->salutation('La bise et à bientôt !')
+
+        ;
     }
 
     /**
