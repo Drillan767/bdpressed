@@ -9,6 +9,18 @@ use App\Enums\OrderStatus;
 
 class Order extends Model
 {
+    public function shippingAddress(): HasOne
+    {
+        return $this->hasOne(Address::class, 'id', 'shipping_address_id')
+            ->where('type', '=', 'SHIPPING');
+    }
+
+    public function billingAddress(): HasOne
+    {
+        return $this->hasOne(Address::class, 'id', 'billing_address_id')
+            ->where('type', '=', 'BILLING');
+    }
+
     public function details(): HasMany
     {
         return $this->hasMany(OrderDetail::class);

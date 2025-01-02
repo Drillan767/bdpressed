@@ -2,16 +2,16 @@
 
 namespace App\Enums;
 
-enum OrderStatus
+enum OrderStatus: string
 {
-    case NEW;
-    case ILLUSTRATION_DEPOSIT_PENDING;
-    case ILLUSTRATION_DEPOSIT_PAID;
-    case PENDING_CLIENT_REVIEW;
-    case IN_PROGRESS;
-    case PAYMENT_PENDING;
-    case PAID;
-    case TO_SHIP;
-    case DONE;
-    case CANCELLED;
+    case NEW = 'NEW';
+    case ILLUSTRATION_DEPOSIT_PENDING = 'ILLUSTRATION_DEPOSIT_PENDING';
+    case ILLUSTRATION_DEPOSIT_PAID = 'ILLUSTRATION_DEPOSIT_PAID';
+    case PENDING_CLIENT_REVIEW = 'PENDING_CLIENT_REVIEW';
+    case IN_PROGRESS = 'IN_PROGRESS';
+    case PAYMENT_PENDING = 'PAYMENT_PENDING';
+    case PAID = 'PAID';
+    case TO_SHIP = 'TO_SHIP';
+    case DONE = 'DONE';
+    case CANCELLED = 'CANCELLED';
 }
