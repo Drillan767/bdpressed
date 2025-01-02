@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Actions\Order\RegisterClientAction;
+use App\Actions\Order\HandleGuestAction;
+use App\Actions\Order\HandleOrderAction;
+use App\Actions\Order\HandleAddressesAction;
 use App\Http\Requests\OrderRequest;
 use Illuminate\Support\Facades\DB;
 use App\Models\Product;
@@ -40,53 +43,23 @@ class ShopController extends Controller
 
     public function order(OrderRequest $request)
     {
-        dd($request->get('user'));
-        DB::transaction(function () use ($request) {
+        $guest = $request->get('user')['guest'];
+
+        if ($guest) {
+            $clientId = (new HandleGuestAction())->handle($request);
+        } else {
+            $clientId = (new RegisterClientAction())->handle($request);
+        }
+
+        $addressesInfos = (new HandleAddressesAction($guest, $clientId))->handle($request);
+
+        (new HandleOrderAction())->handle($request, $guest, $clientId, $addressesInfos);
+
+        /*DB::transaction(function () use ($request) {
             // Create user and send verification email
-            $user = (new RegisterClientAction())->handle($request);
-        });
 
-        /*
-            {
-                user: {
-                    email: 'test@test.com',
-                    password: 'password',
-                    phone: '0123456789',
-                },
-                products: [
-                    {
-                        id: 1,
-                        quantity: 1,
-                    },
-                    {
-                        id: 2,
-                        quantity: 1,
-                    },
-                ],
-                // If user not logged in
-                shippingAddress: {
-                    firstName: 'test',
-                    lastName: 'test',
-                    street: 'test',
-                    city: 'test',
-                    zipCode: 'test',
-                    country: 'test',
+        });*/
 
-                },
-                billingAddress: {
-                    firstName: 'test',
-                    lastName: 'test',
-                    street: 'test',
-                    city: 'test',
-                    zipCode: 'test',
-                    country: 'test',
-                },
-
-                // If user logged in
-                billing_id: 1,
-                shipping_id: 1,
-            }
-        */
         return redirect()->route('shop.thankYou');
     }
 
