@@ -1,5 +1,18 @@
 import type { Config } from 'ziggy-js'
 
+export enum OrderStatus {
+    NEW = 'NEW',
+    ILLUSTRATION_DEPOSIT_PENDING = 'ILLUSTRATION_DEPOSIT_PENDING',
+    ILLUSTRATION_DEPOSIT_PAID = 'ILLUSTRATION_DEPOSIT_PAID',
+    PENDING_CLIENT_REVIEW = 'PENDING_CLIENT_REVIEW',
+    IN_PROGRESS = 'IN_PROGRESS',
+    PAYMENT_PENDING = 'PAYMENT_PENDING',
+    PAID = 'PAID',
+    TO_SHIP = 'TO_SHIP',
+    DONE = 'DONE',
+    CANCELLED = 'CANCELLED',
+}
+
 export interface User {
     id: number
     name: string
@@ -94,6 +107,23 @@ export interface OrderStep2Form {
     useSameAddress: boolean
     shippingAddress: Address
     billingAddress?: Address
+}
+
+export interface OrderIndex {
+    id: number
+    reference: string
+    status: OrderStatus
+    total: number
+    guest: {
+        id: number
+        email: string
+    } | null
+    user: {
+        id: number
+        email: string
+    } | null
+    created_at: string
+    updated_at: string
 }
 
 export type PageProps<
