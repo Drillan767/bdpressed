@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { DataTableHeader, OrderIndex, User } from '@/types'
+import useNumbers from '@/Composables/numbers'
 import useStatus from '@/Composables/status'
 import AdminLayout from '@/Layouts/AdminLayout.vue'
 import { useHead } from '@vueuse/head'
@@ -24,6 +25,7 @@ useHead({
 })
 
 const { getStatus } = useStatus()
+const { formatPrice } = useNumbers()
 
 const search = ref<string>()
 
@@ -37,13 +39,22 @@ const headers: DataTableHeader[] = [
         key: 'client',
     },
     {
+        title: 'Total',
+        key: 'total',
+    },
+    {
         title: 'Statut',
         key: 'status',
         sortable: true,
     },
     {
-        title: 'Date',
+        title: 'Date de commande',
         key: 'created_at',
+        sortable: true,
+    },
+    {
+        title: 'Date de mise à jour',
+        key: 'updated_at',
         sortable: true,
     },
     {
@@ -87,6 +98,9 @@ const headers: DataTableHeader[] = [
             <div v-else-if="item.user">
                 {{ item.user.email }}
             </div>
+        </template>
+        <template #item.total="{ item }">
+            {{ formatPrice(item.total) }}
         </template>
         <template #item.status="{ item }">
             <VChip v-bind="getStatus(item.status)" />
