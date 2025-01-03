@@ -44,6 +44,7 @@ class Order extends Model
 
     protected $casts = [
         'status' => OrderStatus::class,
+        'useSameAddress' => 'boolean',
         'created_at' => 'datetime:d/m/Y H:i',
         'updated_at' => 'datetime:d/m/Y H:i',
     ];
