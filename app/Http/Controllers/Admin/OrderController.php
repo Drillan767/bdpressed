@@ -13,7 +13,18 @@ class OrderController extends Controller
 {
     public function index(): Response
     {
-        return Inertia::render('Admin/Orders/Index');
+        $orders = Order::with('guest', 'user')->get([
+            'id',
+            'reference',
+            'status',
+            'total',
+            'guest_id',
+            'user_id',
+            'created_at',
+            'updated_at',
+        ]);
+
+        return Inertia::render('Admin/Orders/Index', compact('orders'));
     }
 
     public function show(): Response
