@@ -8,6 +8,7 @@ export default antfu({
     jsonc: false,
     rules: {
         'vue/valid-v-slot': 'off',
+        'vue/prop-name-casing': 'off',
     },
     ignores: ['.github/*'],
 })
