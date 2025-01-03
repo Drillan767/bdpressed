@@ -19,6 +19,8 @@ return new class extends Migration
                 ->nullOnDelete();
             $table->foreignId('order_id')->constrained();
             $table->integer('quantity');
+            // We store it here to fix the price. If someone orders an item, and then this item's prices changes,
+            // We want to avoid the user to be surprised by a new price.
             $table->float('price', 2);
             $table->timestamps();
         });
