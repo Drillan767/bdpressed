@@ -23,4 +23,8 @@ class Address extends Model
         'guest_billing_id',
         'guest_shipping_id',
     ];
+
+    protected $casts = [
+        'default' => 'boolean',
+    ];
 }
