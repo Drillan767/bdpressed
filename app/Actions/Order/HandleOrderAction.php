@@ -47,7 +47,7 @@ class HandleOrderAction
             $orderDetail->order_id = $order->id;
             $orderDetail->product_id = $product['id'];
             $orderDetail->quantity = $product['quantity'];
-            $orderDetail->price = $products->firstWhere('id', $product['id'])->price;
+            $orderDetail->price = $products->firstWhere('id', $product['id'])->price * $product['quantity'];
 
             $orderDetail->save();
         }
@@ -55,8 +55,8 @@ class HandleOrderAction
 
     private function definePrice(Collection $products): float
     {
-        $totalPrice = $products->sum($products, 'price');
-        $totalWeight = $products->sum($products, 'weight');
+        $totalPrice = $products->sum('price');
+        $totalWeight = $products->sum('weight');
 
         $fees = 0.015 * $totalPrice + 0.25;
         $shipFee = $totalWeight > 400 ? 7 : 4;
