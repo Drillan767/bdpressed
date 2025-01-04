@@ -4,7 +4,7 @@ import useNumbers from '@/Composables/numbers'
 import VisitorsLayout from '@/Layouts/VisitorsLayout.vue'
 import useCartStore from '@/Stores/cartStore'
 import { useHead } from '@vueuse/head'
-import { inject, onMounted, ref } from 'vue'
+import { inject } from 'vue'
 import { useDisplay } from 'vuetify'
 
 defineOptions({ layout: VisitorsLayout })
@@ -30,6 +30,7 @@ function handleAddToCart(product: Catalog) {
             name: product.name,
             weight: product.weight,
             price: product.price,
+            stock: product.stock - 1,
             illustration: product.promotedImage,
         })
     }, 200)

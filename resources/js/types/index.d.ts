@@ -72,6 +72,7 @@ export interface Catalog {
     id: number
     name: string
     slug: string
+    stock: number
     price: number
     weight: number
     promotedImage: string
@@ -83,6 +84,7 @@ export interface CartItem {
     name: string
     price: number
     quantity: number
+    stock: number
     weight: number
     illustration: string
 }
