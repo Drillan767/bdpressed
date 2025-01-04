@@ -6,7 +6,8 @@ import useStrings from '@/Composables/strings'
 import VisitorsLayout from '@/Layouts/VisitorsLayout.vue'
 import useCartStore from '@/Stores/cartStore'
 import { useHead } from '@vueuse/head'
-import { inject, onMounted, ref } from 'vue'
+import { Link} from '@inertiajs/vue3'
+import { inject } from 'vue'
 
 interface Props {
     product: AdminProduct
@@ -22,22 +23,6 @@ const { formatPrice } = useNumbers()
 const { toParagraphs } = useStrings()
 const { addItem } = useCartStore()
 
-onMounted(async () => {
-    /* const result = await productBySlug(slug.toString())
-
-    if (result) {
-        product.value = result
-    }
-    else {
-        router.push({
-            name: 'NotFound',
-            params: { pathMatch: route.path.substring(1).split('/') },
-            query: route.query,
-            hash: route.hash,
-        })
-    } */
-})
-
 function handleAddToCart(product: Catalog) {
     openDrawer?.()
     setTimeout(() => {
@@ -45,6 +30,7 @@ function handleAddToCart(product: Catalog) {
             id: product.id,
             name: product.name,
             weight: product.weight,
+            stock: product.stock - 1,
             price: product.price,
             illustration: product.promotedImage,
         })
@@ -59,6 +45,21 @@ useHead({
 <template>
     <VCard class="bede-block">
         <VCardText class="bede-text">
+            <VAlert
+                color="primary"
+                variant="outlined"
+                v-if="product.stock === 0"
+            >
+                Je n'ai plus cet article pour le moment, et normalement, il est en cours de réapprovisionnement ! Mais si
+                vous trouvez que ça fait un moment qu'il n'est plus dispo, n'hésitez pas à venir râler
+                <Link
+                    :href="route('contact')"
+                    class="text-secondary"
+                >
+                  ici
+                </Link>
+
+            </VAlert>
             <VContainer v-if="product">
                 <VRow>
                     <VCol
@@ -89,6 +90,7 @@ useHead({
                                     variant="outlined"
                                     color="secondary"
                                     stacked
+                                    :disabled="product.stock === 0"
                                     @click="handleAddToCart(product)"
                                 >
                                     <VIcon
@@ -136,3 +138,9 @@ useHead({
         </VCardText>
     </VCard>
 </template>
+
+<style scoped lang="scss">
+:deep(.v-alert__content) {
+    padding: 8px 0;
+}
+</style>

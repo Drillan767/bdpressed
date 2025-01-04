@@ -39,6 +39,7 @@ const { formatPrice } = useNumbers()
                     />
                     {{ item.quantity }}
                     <VBtn
+                        :disabled="item.stock === 0"
                         variant="text"
                         color="secondary"
                         icon="mdi-plus"

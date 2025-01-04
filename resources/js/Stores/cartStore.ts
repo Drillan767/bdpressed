@@ -1,15 +1,23 @@
 import type { CartItem } from '@/types'
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
+import useToast from '@/Composables/toast'
 
 const useCartStore = defineStore('cart', () => {
+    const { showError } = useToast()
     const cart = ref<CartItem[]>([])
 
     function addItem(item: Omit<CartItem, 'quantity'>) {
         const itemIndex = cart.value.findIndex(cartItem => cartItem.id === item.id)
 
         if (itemIndex > -1) {
+            if (cart.value[itemIndex].stock === 0) {
+                showError('J\'ai plus de stock 🥲')
+                return
+            }
+
             cart.value[itemIndex].quantity++
+            cart.value[itemIndex].stock--
         }
         else {
             cart.value.push({
@@ -34,11 +42,17 @@ const useCartStore = defineStore('cart', () => {
 
     function handleQuantity(index: number, action: 'increase' | 'decrease') {
         if (action === 'increase') {
+            if (cart.value[index].stock === 0) {
+                showError('J\'ai plus de stock 🥲')
+                return
+            }
             cart.value[index].quantity++
+            cart.value[index].stock--
         }
         else {
             if (cart.value[index].quantity > 1) {
                 cart.value[index].quantity--
+                cart.value[index].stock++
             }
             else {
                 removeItem(cart.value[index])
