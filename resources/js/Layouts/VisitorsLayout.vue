@@ -7,6 +7,7 @@ import { useHead } from '@vueuse/head'
 import { storeToRefs } from 'pinia'
 import { computed, provide, ref, watch } from 'vue'
 import { useDisplay } from 'vuetify'
+import { route } from 'ziggy-js'
 
 const links = [
     { title: 'Accueil', href: '/' },
@@ -126,13 +127,13 @@ provide('openDrawer', openDrawer)
                             </Link>
                             <Link
                                 :class="{ active: $page.url.startsWith('/boutique') }"
-                                href="/boutique"
+                                :href="route('shop.index')"
                             >
                                 Boutique
                             </Link>
                             <Link
                                 :class="{ active: $page.url === '/contact' }"
-                                href="/contact"
+                                :href="route('contact')"
                             >
                                 Contact
                             </Link>
@@ -146,7 +147,7 @@ provide('openDrawer', openDrawer)
                         <template #activator="{ props }">
                             <Link
                                 v-bind="props"
-                                href="/connexion"
+                                :href="route('login')"
                             >
                                 <VAvatar
                                     size="48"
