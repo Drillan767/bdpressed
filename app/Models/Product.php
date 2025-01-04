@@ -2,8 +2,6 @@
 
 namespace App\Models;
 
-use App\Casts\FileProperty;
-use Illuminate\Database\Eloquent\Casts\Json;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Support\Facades\Storage;
@@ -17,6 +15,7 @@ use Illuminate\Support\Facades\Storage;
  * @property string $promotedImage
  * @property string[] $illustrations
  * @property int $weight
+ * @property int $stock
  * @property float $price
  * @property \DateTime $created_at
  * @property \DateTime $updated_at

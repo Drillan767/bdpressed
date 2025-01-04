@@ -22,6 +22,7 @@ class ProductController extends Controller
             'weight',
             'slug',
             'price',
+            'stock',
             'promotedImage',
             'quickDescription',
             'created_at',
@@ -48,6 +49,7 @@ class ProductController extends Controller
         $product->name = $request->get('name');
         $product->slug = Str::slug($request->get('name'));
         $product->weight = $request->get('weight');
+        $product->stock = $request->get('stock');
         $product->price = $request->get('price');
         $product->quickDescription = $request->get('quickDescription');
         $product->description = $request->get('description');
@@ -82,6 +84,7 @@ class ProductController extends Controller
         $product->name = $request->get('name');
         $product->slug = Str::slug($request->get('name'));
         $product->weight = $request->get('weight');
+        $product->stock = $request->get('stock');
         $product->price = $request->get('price');
         $product->quickDescription = $request->get('quickDescription');
         $product->description = $request->get('description');
@@ -110,7 +113,7 @@ class ProductController extends Controller
     {
         $illustrations = $product->illustrations;
 
-        $illustrationsPaths = array_map(fn($i) => $i['path'], $illustrations);
+        $illustrationsPaths = array_column($illustrations, 'path');
 
         foreach ($request->file('illustrations') as $illustration) {
             Storage::putFileAs(

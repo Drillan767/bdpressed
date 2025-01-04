@@ -30,6 +30,7 @@ export interface ProductForm {
     name?: string
     quickDescription?: string
     description?: string
+    stock?: number
     price?: number
     weight?: number
     illustrations?: File[]
@@ -40,6 +41,7 @@ export interface AdminProductList {
     id: number
     name: string
     slug: string
+    stock: number
     weight: number
     price: number
     created_at: string
