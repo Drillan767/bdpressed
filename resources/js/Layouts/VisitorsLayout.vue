@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import Cart from '@/Components/Shop/Cart.vue'
-import CartItem from '@/Components/Shop/CartItem.vue'
+import useToast from '@/Composables/toast'
 import useCartStore from '@/Stores/cartStore'
 import { Link, router } from '@inertiajs/vue3'
 import { useHead } from '@vueuse/head'
 import { storeToRefs } from 'pinia'
-import { provide, ref, watch } from 'vue'
+import { computed, provide, ref, watch } from 'vue'
 import { useDisplay } from 'vuetify'
 
 const links = [
@@ -27,9 +27,12 @@ useHead({
 
 const { smAndDown } = useDisplay()
 const { cart } = storeToRefs(useCartStore())
+const { showError } = useToast()
 
 const drawer = ref(false)
 const linksDrawer = ref(false)
+
+const params = computed(() => Object.fromEntries(new URLSearchParams(location.search)))
 
 const openDrawer = () => drawer.value = true
 
@@ -46,6 +49,16 @@ watch(drawer, (val) => {
         html?.classList.remove('overflow-hidden')
     }
 })
+
+watch(params, (value) => {
+    if ('error' in value) {
+        switch (value.error) {
+            case 'empty-cart':
+                showError('Vous devez avoir au moins un article dans le panier')
+                break
+        }
+    }
+}, { immediate: true })
 
 provide('openDrawer', openDrawer)
 </script>

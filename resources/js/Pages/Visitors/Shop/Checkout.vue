@@ -4,7 +4,6 @@ import CartItem from '@/Components/Shop/CartItem.vue'
 import OrderStep1 from '@/Components/Shop/OrderStep1.vue'
 import OrderStep2 from '@/Components/Shop/OrderStep2.vue'
 import useNumbers from '@/Composables/numbers'
-import useToast from '@/Composables/toast'
 import VisitorsLayout from '@/Layouts/VisitorsLayout.vue'
 import useCartStore from '@/Stores/cartStore'
 import { router } from '@inertiajs/vue3'
@@ -22,7 +21,6 @@ const props = defineProps<{
 }>()
 
 const { cart, tax, totalPrice, totalWeight } = storeToRefs(useCartStore())
-const { showError } = useToast()
 const { formatPrice } = useNumbers()
 const { handleQuantity, removeItem } = useCartStore()
 
@@ -64,7 +62,7 @@ const disabled = computed(() => {
 })
 
 async function submit() {
-    await router.post(route('shop.orders'), {
+    router.post(route('shop.order'), {
         user: personalInformation.value,
         products: cart.value.map(item => ({
             id: item.id,
@@ -78,13 +76,6 @@ async function submit() {
         },
     })
 }
-
-watch(cart, (value) => {
-    if (value.length === 0) {
-        showError('Vous devez avoir au moins un article dans votre panier')
-        router.visit('/')
-    }
-}, { immediate: true })
 
 watch(() => props.errors?.['user.email'], (value) => {
     if (value === 'email exists') {
@@ -111,7 +102,7 @@ useHead({
                                     md="8"
                                 >
                                     <h1 class="text-secondary mb-4">
-                                        Informations de commande
+                                        Informations de commande {{ cart.length }}
                                     </h1>
                                     <VAlert
                                         variant="outlined"
