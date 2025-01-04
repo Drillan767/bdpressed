@@ -11,6 +11,7 @@ class HandleGuestAction
     {
         $guest = Guest::create([
             'email' => $request->get('user')['email'],
+            'instagram' => $request->get('user')['instagram'],
         ]);
 
         return $guest->id;
