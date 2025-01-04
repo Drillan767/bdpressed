@@ -104,8 +104,10 @@ export interface Address {
 export interface OrderStep1Form {
     email: string
     guest: boolean
+    instagram: string
     password?: string
     password_confirmation?: string
+    additionalInfos: string
 }
 
 export interface OrderStep2Form {
