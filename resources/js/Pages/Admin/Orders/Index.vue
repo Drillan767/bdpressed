@@ -3,8 +3,10 @@ import type { DataTableHeader, OrderIndex, User } from '@/types'
 import useNumbers from '@/Composables/numbers'
 import useStatus from '@/Composables/status'
 import AdminLayout from '@/Layouts/AdminLayout.vue'
+import { router } from '@inertiajs/vue3'
 import { useHead } from '@vueuse/head'
 import { ref } from 'vue'
+import { route } from 'ziggy-js'
 
 interface Props {
     orders: OrderIndex[]
@@ -104,6 +106,16 @@ const headers: DataTableHeader[] = [
         </template>
         <template #item.status="{ item }">
             <VChip v-bind="getStatus(item.status)" />
+        </template>
+        <template #item.actions="{ item }">
+            <div class="d-flex justify-end">
+                <VBtn
+                    variant="text"
+                    color="blue"
+                    icon="mdi-eye"
+                    @click="router.visit(route('orders.show', { reference: item.reference }))"
+                />
+            </div>
         </template>
     </VDataTable>
 </template>
