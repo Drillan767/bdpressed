@@ -36,6 +36,7 @@ async function submit() {
     formData.append('description', form.value.description)
     formData.append('weight', String(form.value.weight))
     formData.append('price', String(form.value.price))
+    formData.append('stock', String(form.value.stock))
 
     if (form.value.promotedImage)
         formData.append('promotedImage', form.value.promotedImage)

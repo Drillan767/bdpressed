@@ -41,6 +41,10 @@ const headers: DataTableHeader[] = [
         sortable: true,
     },
     {
+        title: 'Inventaire',
+        key: 'stock',
+    },
+    {
         title: 'Date d\'ajout',
         key: 'created_at',
         sortable: true,

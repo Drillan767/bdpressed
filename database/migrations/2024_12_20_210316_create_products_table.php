@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('quickDescription');
             $table->text('description');
             $table->integer('weight');
+            $table->integer('stock')->default(0);
             $table->jsonb('illustrations');
             $table->string('promotedImage');
             $table->float('price', 2);

@@ -16,10 +16,11 @@ class ShopController extends Controller
 {
     public function index(): Response
     {
-        $products = Product::all([
+        $products = Product::where('stock', '>', 0)->get([
             'id',
             'name',
             'slug',
+            'stock',
             'price',
             'weight',
             'promotedImage',

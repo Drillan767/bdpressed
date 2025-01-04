@@ -23,6 +23,7 @@ const { defineField, controlledValues, resetForm, setValues } = useForm<ProductF
         name: 'required',
         quickDescription: 'required',
         description: 'required',
+        stock: 'required',
         price: 'required',
         weight: 'required',
         promotedImage: props.edit ? '' : 'required',
@@ -36,6 +37,7 @@ const [description, descriptionProps] = defineField('description', validationCon
 const [illustrations, illustrationsProps] = defineField('illustrations', validationConfig)
 const [promotedImage, promotedImageProps] = defineField('promotedImage', validationConfig)
 const [price, priceProps] = defineField('price', validationConfig)
+const [stock, stockProps] = defineField('stock', validationConfig)
 const [weight, weightProps] = defineField('weight', validationConfig)
 
 const formValid = useIsFormValid()
@@ -140,7 +142,7 @@ defineExpose({
         </VCol>
     </VRow>
     <VRow>
-        <VCol cols="12" md="3">
+        <VCol cols="12" md="2">
             <VTextField
                 v-bind="priceProps"
                 v-model="price"
@@ -153,7 +155,7 @@ defineExpose({
                 persistent-hint
             />
         </VCol>
-        <VCol cols="12" md="3">
+        <VCol cols="12" md="2">
             <VTextField
                 v-bind="weightProps"
                 v-model="weight"
@@ -164,6 +166,17 @@ defineExpose({
                 :min="0"
                 type="number"
                 persistent-hint
+            />
+        </VCol>
+        <VCol cols="12" md="2">
+            <VTextField
+                v-bind="stockProps"
+                v-model="stock"
+                prepend-inner-icon="mdi-counter"
+                label="Stock"
+                :step="1"
+                :min="0"
+                type="number"
             />
         </VCol>
 
