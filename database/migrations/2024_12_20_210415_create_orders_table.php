@@ -38,6 +38,7 @@ return new class extends Migration
                 'PAYMENT_PENDING',
                 'PAID',
                 'TO_SHIP',
+                'SHIPPED',
                 'DONE',
             ]);
             $table->timestamps();
