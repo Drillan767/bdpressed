@@ -9,6 +9,7 @@ export enum OrderStatus {
     PAYMENT_PENDING = 'PAYMENT_PENDING',
     PAID = 'PAID',
     TO_SHIP = 'TO_SHIP',
+    SHIPPED = 'SHIPPED',
     DONE = 'DONE',
     CANCELLED = 'CANCELLED',
 }
@@ -124,6 +125,42 @@ export interface OrderIndex {
     } | null
     created_at: string
     updated_at: string
+}
+
+interface Detail {
+    id: number
+    price: number
+    quantity: number
+    product: {
+        id: number
+        name: string
+        promotedImage: string
+        slug: string
+        weigh: number
+    }
+}
+
+export interface OrderDetail {
+    id: number
+    additionalInfos: string
+    reference: string
+    total: number
+    status: OrderStatus
+    created_at: string
+    updated_at: string
+    useSameAddress: boolean
+    details: Detail[]
+    guest: {
+        email: string
+        shipping_address: Address
+        billing_address: Address | null
+    } | null
+
+    user: {
+        email: string
+        shipping_address: Address
+        billing_address: Address | null
+    } | null
 }
 
 export type PageProps<

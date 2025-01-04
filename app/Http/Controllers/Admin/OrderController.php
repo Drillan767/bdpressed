@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Admin;
 
-use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 use App\Models\Order;
@@ -27,9 +26,23 @@ class OrderController extends Controller
         return Inertia::render('Admin/Orders/Index', compact('orders'));
     }
 
-    public function show(): Response
+    public function show(string $reference): Response
     {
-        return Inertia::render('Admin/Orders/Show');
+        $order = Order::with(
+            'guest.shippingAddress',
+            'guest.billingAddress',
+            'user.shippingAddress',
+            'user.billingAddress',
+            'details.product:id,name,promotedImage,slug,price,weight',
+        )
+            ->where('reference', $reference)
+            ->firstOrFail();
+
+        $totalWeight = $order->details->sum(function ($detail) {
+            return $detail->product->weight;
+        });
+
+        return Inertia::render('Admin/Orders/Show', compact('order', 'totalWeight'));
     }
 
     public function pendingOrders(): JsonResponse
