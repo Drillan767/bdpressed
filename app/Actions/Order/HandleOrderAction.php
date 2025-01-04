@@ -7,6 +7,7 @@ use App\Models\Order;
 use App\Models\OrderDetail;
 use App\Models\Product;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
 use App\Enums\OrderStatus;
 use Illuminate\Support\Collection;
 
@@ -26,13 +27,12 @@ class HandleOrderAction
         $order = new Order();
         $order->total = $this->definePrice($products);
         $order->reference = $this->defineReference();
-        // TODO: replace with request value.
-        $order->additionalInfos = '';
+        $order->additionalInfos = $request->get('user')['additionalInfos'];
 
         if ($guest) {
             $order->guest_id = $authId;
         } else {
-            $order->auth_id = $authId;
+            $order->user_id = $authId;
         }
 
         $order->shipping_address_id = $shippingId;
@@ -50,6 +50,8 @@ class HandleOrderAction
             $orderDetail->price = $products->firstWhere('id', $product['id'])->price * $product['quantity'];
 
             $orderDetail->save();
+
+            DB::table('products')->decrement('stock', $product['quantity']);
         }
     }
 

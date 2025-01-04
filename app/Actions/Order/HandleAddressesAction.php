@@ -76,7 +76,7 @@ class HandleAddressesAction
 
         $fields = array_intersect_key($addresses[$addressType], array_flip($this->fields));
         $fields['type'] = $type;
-        $fields['default'] = $this->guest ? false : $addresses[$addressType]['default'];
+        $fields['default'] = !$this->guest;
         $fields[$relationColumn] = $this->authId;
 
         $address = Address::create($fields);

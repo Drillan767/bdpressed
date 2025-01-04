@@ -7,7 +7,6 @@ use App\Actions\Order\HandleGuestAction;
 use App\Actions\Order\HandleOrderAction;
 use App\Actions\Order\HandleAddressesAction;
 use App\Http\Requests\OrderRequest;
-use Illuminate\Support\Facades\DB;
 use App\Models\Product;
 use Inertia\Inertia;
 use Inertia\Response;
