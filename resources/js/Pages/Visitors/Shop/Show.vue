@@ -5,9 +5,10 @@ import useNumbers from '@/Composables/numbers'
 import useStrings from '@/Composables/strings'
 import VisitorsLayout from '@/Layouts/VisitorsLayout.vue'
 import useCartStore from '@/Stores/cartStore'
+import { Link } from '@inertiajs/vue3'
 import { useHead } from '@vueuse/head'
-import { Link} from '@inertiajs/vue3'
 import { inject } from 'vue'
+import { route } from 'ziggy-js'
 
 interface Props {
     product: AdminProduct
@@ -46,9 +47,9 @@ useHead({
     <VCard class="bede-block">
         <VCardText class="bede-text">
             <VAlert
+                v-if="product.stock === 0"
                 color="primary"
                 variant="outlined"
-                v-if="product.stock === 0"
             >
                 Je n'ai plus cet article pour le moment, et normalement, il est en cours de réapprovisionnement ! Mais si
                 vous trouvez que ça fait un moment qu'il n'est plus dispo, n'hésitez pas à venir râler
@@ -56,16 +57,15 @@ useHead({
                     :href="route('contact')"
                     class="text-secondary"
                 >
-                  ici
+                    ici
                 </Link>
-
             </VAlert>
             <VContainer v-if="product">
                 <VRow>
                     <VCol
                         cols="12"
                         md="6"
-                        class="image-container borde-xl pa-4"
+                        class="image-container border-xl pa-4"
                     >
                         <VImg
                             :src="product.promotedImage"
