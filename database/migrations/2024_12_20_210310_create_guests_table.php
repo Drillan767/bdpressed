@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('guests', function (Blueprint $table) {
             $table->id();
             $table->string('email')->unique();
+            $table->string('instagram')->nullable();
             $table->timestamps();
         });
     }

@@ -7,6 +7,7 @@ import useNumbers from '@/Composables/numbers'
 import VisitorsLayout from '@/Layouts/VisitorsLayout.vue'
 import useCartStore from '@/Stores/cartStore'
 import { router } from '@inertiajs/vue3'
+import useStrings from '@/Composables/strings'
 import { useHead } from '@vueuse/head'
 import { storeToRefs } from 'pinia'
 import { computed, ref, watch } from 'vue'
@@ -23,6 +24,7 @@ const props = defineProps<{
 const { cart, tax, totalPrice, totalWeight } = storeToRefs(useCartStore())
 const { formatPrice } = useNumbers()
 const { handleQuantity, removeItem } = useCartStore()
+const { toParagraphs } = useStrings()
 
 const emailExists = ref(false)
 const step = ref(1)
@@ -102,7 +104,7 @@ useHead({
                                     md="8"
                                 >
                                     <h1 class="text-secondary mb-4">
-                                        Informations de commande {{ cart.length }}
+                                        Informations de commande
                                     </h1>
                                     <VAlert
                                         variant="outlined"
@@ -170,6 +172,35 @@ useHead({
                                                     :value="3"
                                                     class="py-2"
                                                 >
+                                                    <VRow>
+                                                        <VCol
+                                                            cols="12"
+                                                            md="6"
+                                                        >
+                                                            <p>
+                                                                Création de compte :
+                                                                <b>
+                                                                    {{ personalInformation.guest ? 'Non' : 'Oui' }}
+                                                                </b>
+                                                            </p>
+                                                            <p v-if="personalInformation.instagram">
+                                                                Identifiant Instagram :
+                                                                <b>
+                                                                    {{ personalInformation.instagram }}
+                                                                </b>
+                                                            </p>
+                                                        </VCol>
+                                                        <VCol
+                                                            v-if="personalInformation.additionalInfos.length > 0"
+                                                            cols="12"
+                                                            md="6"
+                                                        >
+                                                            <p class="font-weight-bold">Informartions complémentaires</p>
+
+                                                            <div v-html="toParagraphs(personalInformation.additionalInfos)" />
+                                                        </VCol>
+                                                    </VRow>
+                                                    <VDivider class="my-4" />
                                                     <VRow>
                                                         <VCol
                                                             cols="12"

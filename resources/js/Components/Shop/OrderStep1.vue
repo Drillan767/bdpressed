@@ -4,6 +4,7 @@ import validationConfig from '@/plugins/validationConfig'
 import { Link, router } from '@inertiajs/vue3'
 import { useForm, useIsFormValid } from 'vee-validate'
 import { computed, ref, watch } from 'vue'
+import { route } from 'ziggy-js'
 
 interface Props {
     errors?: Record<string, string>
@@ -30,9 +31,11 @@ const { defineField, controlledValues, setErrors } = useForm<OrderStep1Form>({
 })
 
 const [email, emailProps] = defineField('email', validationConfig)
+const [insta, instaProps] = defineField('instagram', validationConfig)
 const [password, passwordProps] = defineField('password', validationConfig)
 const [passwordConfirmation, passwordConfirmationProps] = defineField('password_confirmation', validationConfig)
 const [asGuest, asGuestProps] = defineField('guest', validationConfig)
+const [additionalInfos, additionalInfosProps] = defineField('additionalInfos', validationConfig)
 
 const formValid = useIsFormValid()
 
@@ -89,7 +92,7 @@ watch(() => props.errors, (value) => {
             <VCol class="text-end">
                 <Link
                     v-if="!authenticated"
-                    href="/connexion"
+                    :href="route('login')"
                     class="text-decoration-none"
                 >
                     Connexion
@@ -104,6 +107,18 @@ watch(() => props.errors, (value) => {
                     :disabled="authenticated"
                     label="Adresse e-mail"
                     type="email"
+                />
+            </VCol>
+        </VRow>
+        <VRow>
+            <VCol>
+                <VTextField
+                    v-bind="instaProps"
+                    v-model="insta"
+                    label="Identifiant instagram"
+                    prepend-inner-icon="mdi-at"
+                    type="email"
+                    hint="exemple: bede.primee"
                 />
             </VCol>
         </VRow>
@@ -163,6 +178,18 @@ watch(() => props.errors, (value) => {
                         />
                     </template>
                 </VTextField>
+            </VCol>
+        </VRow>
+
+        <VDivider class="mb-4" />
+
+        <VRow>
+            <VCol>
+                <VTextarea
+                    v-bind="additionalInfosProps"
+                    v-model="additionalInfos"
+                    label="Une demande particulière ?"
+                />
             </VCol>
         </VRow>
     </VContainer>
