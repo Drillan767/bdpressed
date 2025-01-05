@@ -57,7 +57,7 @@ defineExpose({
                         v-model="firstName"
                         v-bind="firstNameProps"
                         prepend-inner-icon="mdi-account-outline"
-                        label="Prénom"
+                        label="Prénom *"
                     />
                 </VCol>
                 <VCol
@@ -68,7 +68,7 @@ defineExpose({
                         v-model="lastName"
                         v-bind="lastNameProps"
                         prepend-inner-icon="mdi-account-outline"
-                        label="Nom"
+                        label="Nom *"
                     />
                 </VCol>
             </VRow>
@@ -78,7 +78,7 @@ defineExpose({
                         v-model="addressField"
                         v-bind="addressProps"
                         prepend-inner-icon="mdi-map-marker-outline"
-                        label="Adresse"
+                        label="Adresse *"
                     />
                 </VCol>
             </VRow>
@@ -101,7 +101,7 @@ defineExpose({
                         v-model="zipCode"
                         v-bind="zipCodeProps"
                         prepend-inner-icon="mdi-map-marker-outline"
-                        label="Code postal"
+                        label="Code postal *"
                     />
                 </VCol>
                 <VCol
@@ -112,7 +112,7 @@ defineExpose({
                         v-model="city"
                         v-bind="cityProps"
                         prepend-inner-icon="mdi-map-marker-outline"
-                        label="Ville"
+                        label="Ville *"
                     />
                 </VCol>
                 <VCol
@@ -123,7 +123,7 @@ defineExpose({
                         v-model="country"
                         v-bind="countryProps"
                         prepend-inner-icon="mdi-map-marker-outline"
-                        label="Pays"
+                        label="Pays *"
                     />
                 </VCol>
                 <!-- <VCol

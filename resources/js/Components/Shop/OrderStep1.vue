@@ -105,7 +105,7 @@ watch(() => props.errors, (value) => {
                     v-bind="emailProps"
                     v-model="email"
                     :disabled="authenticated"
-                    label="Adresse e-mail"
+                    label="Adresse e-mail *"
                     type="email"
                 />
             </VCol>
@@ -148,7 +148,7 @@ watch(() => props.errors, (value) => {
                     :error-messages="errors?.password"
                     prepend-inner-icon="mdi-lock-outline"
                     hint="8 caractères minimum, 1 majuscule, 1 minuscule, 1 chiffre et 1 caractère spécial"
-                    label="Mot de passe"
+                    label="Mot de passe *"
                 >
                     <template #append-inner>
                         <VBtn
@@ -168,7 +168,7 @@ watch(() => props.errors, (value) => {
                     :error-messages="errors?.password_confirmation"
                     :type="confirmPasswordVisible ? 'text' : 'password'"
                     prepend-inner-icon="mdi-lock-outline"
-                    label="Confirmer le mot de passe"
+                    label="Confirmer le mot de passe *"
                 >
                     <template #append-inner>
                         <VBtn
