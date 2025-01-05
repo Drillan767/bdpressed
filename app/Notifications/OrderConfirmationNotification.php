@@ -2,10 +2,13 @@
 
 namespace App\Notifications;
 
+use App\Models\Order;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Illuminate\Support\Number;
+use Illuminate\Support\HtmlString;
 
 class OrderConfirmationNotification extends Notification
 {
@@ -14,7 +17,7 @@ class OrderConfirmationNotification extends Notification
     /**
      * Create a new notification instance.
      */
-    public function __construct()
+    public function __construct(public Order $order)
     {
         //
     }
@@ -35,9 +38,19 @@ class OrderConfirmationNotification extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->line('The introduction to the notification.')
-            ->action('Notification Action', url('/'))
-            ->line('Thank you for using our application!');
+            ->subject('Commande confirmée !')
+            ->lines([
+                'Merci énormément pour votre commande !',
+                'Comme indiqué sur le site, vous n\'aurez à payer qu\'au moment où la commande sera prête pour l\'expédition.',
+                'Vous recevrez alors un email vous permettant de payer votre commande.',
+            ])
+            ->line('Détail de votre commande :')
+            ->line(new HtmlString($this->orderTable($this->order)))
+            ->linesIf(
+                $this->order->guest()->exists(), [
+                'Vos informations personnelles seront supprimées automatiquement si la commande est annulée ou 2 semaines après qu\'elle soit terminée.',
+                'Si vous souhaitez les conserver, il vous suffira de créer un compte en utilisant la même adresse e-mail que celle utilisée pour la commande.',
+            ]);
     }
 
     /**
@@ -50,5 +63,28 @@ class OrderConfirmationNotification extends Notification
         return [
             //
         ];
+    }
+
+    private function orderTable(Order $order): string
+    {
+        $order->load('details.product');
+        $table = '<table style="width: 100%">';
+        $table .= '<tr><th style="text-align: left">Nom</th><th style="text-align: right">Quantité</th><th style="text-align: right">Prix</th></tr>';
+
+        foreach ($order->details as $detail) {
+            $table .= "<tr><td>{$detail->product->name}</td><td style='text-align: right'>{$detail->quantity}</td><td style='text-align: right'>" . Number::currency($detail->price, 'EUR', 'fr') . "</td></tr>";
+        }
+
+        $totalFees = $order->shipmentFees + $order->stripeFees;
+
+        // Fees
+        $table .= '<tr><td colspan="2" style="text-align: left">Frais de livraison (estimés)</td><td style="text-align: right">'.Number::currency($totalFees, 'EUR', 'fr').'</td></tr>';
+
+        // Total
+        $table .= '<tr style="font-weight: bold"><td colspan="2" style="text-align: left">Total</td><td style="text-align: right">'.Number::currency($order->total, 'EUR', 'fr').'</td></tr>';
+
+        $table .= '</table>';
+
+        return $table;
     }
 }

@@ -8,6 +8,22 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Enums\OrderStatus;
 
+/**
+ * @property int $id
+ * @property float $total
+ * @property float $shipmentFees
+ * @property float $stripeFees
+ * @property string $reference
+ * @property string $additionalInfos
+ * @property int $user_id
+ * @property int $guest_id
+ * @property int $shipping_address_id
+ * @property int $billing_address_id
+ * @property bool $useSameAddress
+ * @property OrderStatus $status
+ * @property string $created_at
+ * @property string $updated_at
+ */
 class Order extends Model
 {
     public function guest(): BelongsTo
