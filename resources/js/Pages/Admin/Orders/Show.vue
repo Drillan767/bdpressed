@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { OrderDetail } from '@/types'
 import useNumbers from '@/Composables/numbers'
+import useStrings from '@/Composables/strings'
 import useStatus from '@/Composables/status'
 import AdminLayout from '@/Layouts/AdminLayout.vue'
 import { useHead } from '@vueuse/head'
@@ -21,6 +22,7 @@ useHead({
 
 const { formatPrice } = useNumbers()
 const { getStatus } = useStatus()
+const { toParagraphs } = useStrings()
 
 const displayEditDialog = ref(false)
 
@@ -116,6 +118,39 @@ const shipmentFees = computed(() => props.totalWeight > 400 ? 7 : 4)
                                     cols="12"
                                     md="8"
                                 >
+                                    <VRow no-gutters>
+                                        <VCol>
+                                            <h2 class="mb-4">
+                                                Informations personnelles
+                                            </h2>
+                                            <p>
+                                                <b>Adresse e-mail :</b> {{ order.user.email }}
+                                            </p>
+                                            <template v-if="order.user.instagram">
+                                                <p class="font-weight-bold">
+                                                    Instagram :
+
+                                                    <VChip
+                                                        :text="order.user.instagram"
+                                                        :href="`https://instagram.com/${order.user.instagram}`"
+                                                        target="_blank"
+                                                        color="secondary"
+                                                        prepend-icon="mdi-open-in-new"
+                                                        class="ml-2"
+                                                    />
+                                                </p>
+                                            </template>
+                                        </VCol>
+                                    </VRow>
+                                    <VRow no-gutters>
+                                        <VCol>
+                                            <p class="font-weight-bold">
+                                                Demande :
+                                            </p>
+                                            <div v-html="toParagraphs(order.additionalInfos)" />
+                                        </VCol>
+                                    </VRow>
+                                    <VDivider />
                                     <VRow>
                                         <VCol
                                             v-if="shippingAddress"
