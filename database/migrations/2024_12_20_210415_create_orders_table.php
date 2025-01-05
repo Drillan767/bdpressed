@@ -14,6 +14,8 @@ return new class extends Migration
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
             $table->float('total', 2);
+            $table->float('shipmentFees', 2);
+            $table->float('stripeFees', 2);
             $table->string('reference');
             $table->text('additionalInfos')->nullable();
             $table->foreignId('user_id')

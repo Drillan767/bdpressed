@@ -7,13 +7,14 @@ use App\Models\Order;
 use App\Models\OrderDetail;
 use App\Models\Product;
 use Illuminate\Support\Str;
+use Illuminate\Support\Number;
 use Illuminate\Support\Facades\DB;
 use App\Enums\OrderStatus;
 use Illuminate\Support\Collection;
 
 class HandleOrderAction
 {
-    public function handle(OrderRequest $request, bool $guest, int $authId, array $addressesInfos)
+    public function handle(OrderRequest $request, bool $guest, int $authId, array $addressesInfos): void
     {
         $productIds = array_column($request->get('products'), 'id');
         $products = Product::whereIn('id', $productIds)->get(['id', 'price', 'weight']);
@@ -24,8 +25,12 @@ class HandleOrderAction
             'same' => $useSame,
         ] = $addressesInfos;
 
+        [$totalPrice, $fees, $shipFee] = $this->definePrice($products, $request->get('products'));
+
         $order = new Order();
-        $order->total = $this->definePrice($products);
+        $order->total = Number::abbreviate($totalPrice, 2);
+        $order->stripeFees = Number::abbreviate($fees, 2);
+        $order->shipmentFees = Number::abbreviate($shipFee, 2);
         $order->reference = $this->defineReference();
         $order->additionalInfos = $request->get('user')['additionalInfos'];
 
@@ -55,21 +60,34 @@ class HandleOrderAction
         }
     }
 
-    private function definePrice(Collection $products): float
+    private function definePrice(Collection $products, array $referenceProducts): array
     {
-        $totalPrice = $products->sum('price');
-        $totalWeight = $products->sum('weight');
+        $totalPrice = 0;
+        $totalWeight = 0;
+
+        foreach ($referenceProducts as $refProduct) {
+            $product = $products->firstWhere('id', $refProduct['id']);
+            if ($product) {
+                $quantity = $refProduct['quantity'];
+                $totalPrice += $product->price * $quantity;
+                $totalWeight += $product->weight * $quantity;
+            }
+        }
 
         $fees = 0.015 * $totalPrice + 0.25;
         $shipFee = $totalWeight > 400 ? 7 : 4;
 
-        return $totalPrice + $fees + $shipFee;
+        return [
+            $totalPrice + $fees + $shipFee,
+            $fees,
+            $shipFee,
+        ];
     }
 
     /**
      * Ensures reference is unique.
      */
-    private function defineReference()
+    private function defineReference(): string
     {
         $orders = Order::all(['reference']);
 
