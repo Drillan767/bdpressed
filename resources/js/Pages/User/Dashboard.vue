@@ -83,7 +83,7 @@ const headers: DataTableHeader[] = [
                                         variant="text"
                                         color="blue"
                                         icon="mdi-eye"
-                                        @click="router.visit(route('orders.show', { reference: item.reference }))"
+                                        @click="router.visit(route('user.order.show', { reference: item.reference }))"
                                     />
                                 </div>
                             </template>
