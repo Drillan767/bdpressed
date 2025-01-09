@@ -14,7 +14,7 @@ use Illuminate\Support\Collection;
 
 class HandleOrderAction
 {
-    public function handle(OrderRequest $request, bool $guest, int $authId, array $addressesInfos): void
+    public function handle(OrderRequest $request, bool $guest, int $authId, array $addressesInfos): Order
     {
         $productIds = array_column($request->get('products'), 'id');
         $products = Product::whereIn('id', $productIds)->get(['id', 'price', 'weight']);
@@ -58,6 +58,8 @@ class HandleOrderAction
 
             DB::table('products')->decrement('stock', $product['quantity']);
         }
+
+        return $order;
     }
 
     private function definePrice(Collection $products, array $referenceProducts): array
