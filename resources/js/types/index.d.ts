@@ -104,7 +104,7 @@ export interface Address {
 export interface OrderStep1Form {
     email: string
     guest: boolean
-    instagram: string
+    instagram?: string
     password?: string
     password_confirmation?: string
     additionalInfos: string
@@ -166,6 +166,7 @@ export interface OrderDetail {
         email: string
         shipping_address: Address
         billing_address: Address | null
+        instagram: string | null
     } | null
 }
 

@@ -4,10 +4,10 @@ import CartItem from '@/Components/Shop/CartItem.vue'
 import OrderStep1 from '@/Components/Shop/OrderStep1.vue'
 import OrderStep2 from '@/Components/Shop/OrderStep2.vue'
 import useNumbers from '@/Composables/numbers'
+import useStrings from '@/Composables/strings'
 import VisitorsLayout from '@/Layouts/VisitorsLayout.vue'
 import useCartStore from '@/Stores/cartStore'
 import { router } from '@inertiajs/vue3'
-import useStrings from '@/Composables/strings'
 import { useHead } from '@vueuse/head'
 import { storeToRefs } from 'pinia'
 import { computed, ref, watch } from 'vue'
@@ -31,6 +31,7 @@ const step = ref(1)
 const personalInformation = ref<OrderStep1Form>({
     email: props.auth.user?.email ?? '',
     guest: props.auth.user === null,
+    additionalInfos: '',
 })
 const step1Valid = ref(false)
 const step2Valid = ref(false)
@@ -195,7 +196,9 @@ useHead({
                                                             cols="12"
                                                             md="6"
                                                         >
-                                                            <p class="font-weight-bold">Informartions complémentaires</p>
+                                                            <p class="font-weight-bold">
+                                                                Informartions complémentaires
+                                                            </p>
 
                                                             <div v-html="toParagraphs(personalInformation.additionalInfos)" />
                                                         </VCol>

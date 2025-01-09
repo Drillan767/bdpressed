@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import type { OrderDetail } from '@/types'
 import useNumbers from '@/Composables/numbers'
-import useStrings from '@/Composables/strings'
 import useStatus from '@/Composables/status'
+import useStrings from '@/Composables/strings'
 import AdminLayout from '@/Layouts/AdminLayout.vue'
 import { useHead } from '@vueuse/head'
 import { computed, ref } from 'vue'
@@ -124,9 +124,9 @@ const shipmentFees = computed(() => props.totalWeight > 400 ? 7 : 4)
                                                 Informations personnelles
                                             </h2>
                                             <p>
-                                                <b>Adresse e-mail :</b> {{ order.user.email }}
+                                                <b>Adresse e-mail :</b> {{ order.user?.email }}
                                             </p>
-                                            <template v-if="order.user.instagram">
+                                            <template v-if="order.user?.instagram">
                                                 <p class="font-weight-bold">
                                                     Instagram :
 
