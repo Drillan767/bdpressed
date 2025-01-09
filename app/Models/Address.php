@@ -18,6 +18,8 @@ class Address extends Model
         'country',
         'type',
         'default',
+        'user_id',
+        'guest_id',
     ];
 
     protected $casts = [
