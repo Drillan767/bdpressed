@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ShopController;
+use App\Http\Controllers\User\AddressesController;
 use App\Http\Controllers\VisitorsController;
 use App\Http\Controllers\User\DashboardController as UserDashboardController;
 use Illuminate\Support\Facades\Route;
@@ -54,6 +55,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::middleware('role:user')->prefix('/utilisateur')->group(function () {
         Route::get('', [UserDashboardController::class, 'index'])->name('user.dashboard');
         Route::get('/commande/{reference}', [UserDashboardController::class, 'showOrder'])->name('user.order.show');
+
+        Route::controller(AddressesController::class)->group(function () {
+            Route::get('/adresses', 'index')->name('user.addresses.index');
+        });
     });
 });
 

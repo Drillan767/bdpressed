@@ -69,10 +69,11 @@ provide('csrfToken', page.props.csrf_token)
                     @click="router.visit(route('user.dashboard'))"
                 />
                 <VListItem
+                    :active="$page.url.includes('/adresses')"
                     prepend-icon="mdi-map-marker-outline"
                     title="Adresses"
                     nav
-                    @click="router.visit(route('orders.index'))"
+                    @click="router.visit(route('user.addresses.index'))"
                 />
                 <VDivider />
                 <VListItem
