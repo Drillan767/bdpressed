@@ -155,6 +155,8 @@ export interface OrderDetail {
     created_at: string
     updated_at: string
     useSameAddress: boolean
+    stripeFees: number
+    shipmentFees: number
     details: Detail[]
     guest: {
         email: string
