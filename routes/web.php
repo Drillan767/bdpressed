@@ -51,8 +51,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         });
     });
 
-    Route::middleware('role:user')->group(function () {
-        Route::get('/utilisateur', [UserDashboardController::class, 'index'])->name('user.dashboard');
+    Route::middleware('role:user')->prefix('/utilisateur')->group(function () {
+        Route::get('', [UserDashboardController::class, 'index'])->name('user.dashboard');
+        Route::get('/commande/{reference}', [UserDashboardController::class, 'showOrder'])->name('user.order.show');
     });
 });
 

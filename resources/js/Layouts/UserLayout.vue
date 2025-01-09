@@ -3,6 +3,7 @@ import { router, usePage } from '@inertiajs/vue3'
 import { useHead } from '@vueuse/head'
 import { provide, ref } from 'vue'
 import { useDisplay } from 'vuetify'
+import { VListItem } from 'vuetify/components'
 import { route } from 'ziggy-js'
 
 useHead({
@@ -60,24 +61,25 @@ provide('csrfToken', page.props.csrf_token)
             :temporary="mobile"
         >
             <VList nav>
-                <VListItem
-                    prepend-icon="mdi-home"
-                    title="Accueil"
-                    nav
-                    @click="router.visit('/utilisateur')"
-                />
                 <VDivider class="my-2" />
                 <VListItem
+                    :active="$page.url === '/utilisateur'"
                     prepend-icon="mdi-package-variant"
                     title="Commandes"
                     nav
-                    @click="router.visit('/utilisateur/commandes')"
+                    @click="router.visit(route('user.dashboard'))"
                 />
                 <VListItem
                     prepend-icon="mdi-map-marker-outline"
                     title="Adresses"
                     nav
                     @click="router.visit(route('orders.index'))"
+                />
+                <VListItem
+                    prepend-icon="mdi-account-edit"
+                    title="Informations personnelles"
+                    nav
+                    @click="router.visit(route('profile.edit'))"
                 />
             </VList>
         </VNavigationDrawer>
