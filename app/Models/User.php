@@ -24,12 +24,12 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function ShippingAddress(): HasOne
     {
-        return $this->hasOne(Address::class, 'user_shipping_id', 'id')->where('type', 'SHIPPING');
+        return $this->hasOne(Address::class)->where('type', 'SHIPPING');
     }
 
     public function BillingAddress(): HasOne
     {
-        return $this->hasOne(Address::class, 'user_billing_id', 'id')->where('type', 'BILLING');
+        return $this->hasOne(Address::class)->where('type', 'BILLING');
     }
 
     /**

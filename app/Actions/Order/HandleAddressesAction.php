@@ -72,11 +72,12 @@ class HandleAddressesAction
     {
         $addressType = strtolower($type->name);
         $addresses = $request->get('addresses');
-        $relationColumn = $this->guest ? "guest_{$addressType}_id" : "user_{$addressType}_id";
+        $relationColumn = $this->guest ? 'guest_id' : 'user_id';
 
         $fields = array_intersect_key($addresses[$addressType], array_flip($this->fields));
         $fields['type'] = $type;
         $fields['default'] = !$this->guest;
+
         $fields[$relationColumn] = $this->authId;
 
         $address = Address::create($fields);
