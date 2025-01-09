@@ -6,6 +6,7 @@ use App\Actions\Order\RegisterClientAction;
 use App\Actions\Order\HandleGuestAction;
 use App\Actions\Order\HandleOrderAction;
 use App\Actions\Order\HandleAddressesAction;
+use App\Events\OrderCreated;
 use App\Http\Requests\OrderRequest;
 use App\Models\Product;
 use Inertia\Inertia;
@@ -43,6 +44,8 @@ class ShopController extends Controller
 
     public function order(OrderRequest $request)
     {
+        // TODO: handle request if user is already authenticated.
+
         $guest = $request->get('user')['guest'];
 
         if ($guest) {
@@ -53,12 +56,10 @@ class ShopController extends Controller
 
         $addressesInfos = (new HandleAddressesAction($guest, $clientId))->handle($request);
 
-        (new HandleOrderAction())->handle($request, $guest, $clientId, $addressesInfos);
+        $order = (new HandleOrderAction())->handle($request, $guest, $clientId, $addressesInfos);
 
-        /*DB::transaction(function () use ($request) {
-            // Create user and send verification email
-
-        });*/
+        // TODO: render 2nd parameter dynamic once we have a way to know if the user is already registered.
+        event(new OrderCreated($order, !$guest));
 
         return redirect()->route('shop.thankYou');
     }
