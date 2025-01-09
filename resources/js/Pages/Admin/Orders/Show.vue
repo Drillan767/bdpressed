@@ -113,7 +113,13 @@ const billingAddress = computed(() => {
                                                 Informations personnelles
                                             </h2>
                                             <p>
-                                                <b>Adresse e-mail :</b> {{ order.user?.email }}
+                                                <b class="mr-2">Adresse e-mail :</b>
+                                                <span v-if="order.user">
+                                                    {{ order.user.email }}
+                                                </span>
+                                                <span v-else-if="order.guest">
+                                                    {{ order.guest.email }}
+                                                </span>
                                             </p>
                                             <template v-if="order.user?.instagram">
                                                 <p class="font-weight-bold">
