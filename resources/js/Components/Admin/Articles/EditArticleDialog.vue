@@ -29,6 +29,7 @@ const form = ref<Required<ProductForm>>({
     description: '',
     weight: 0,
     price: 0,
+    stock: 0,
     promotedImage: null,
     illustrations: [],
 })
