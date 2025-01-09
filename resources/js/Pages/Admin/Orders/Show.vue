@@ -52,17 +52,6 @@ const billingAddress = computed(() => {
         return undefined
     }
 })
-
-const stripeFees = computed(() => {
-    const itemsPrice = props.order.details.reduce((acc, detail) => {
-        acc += detail.price
-        return acc
-    }, 0)
-
-    return itemsPrice * 0.015 + 0.25
-})
-
-const shipmentFees = computed(() => props.totalWeight > 400 ? 7 : 4)
 </script>
 
 <template>
@@ -229,7 +218,7 @@ const shipmentFees = computed(() => props.totalWeight > 400 ? 7 : 4)
                                             title="Frais de paiement"
                                         >
                                             <template #append>
-                                                {{ formatPrice(stripeFees) }}
+                                                {{ formatPrice(order.stripeFees) }}
                                             </template>
                                         </VListItem>
                                         <VDivider />
@@ -237,7 +226,7 @@ const shipmentFees = computed(() => props.totalWeight > 400 ? 7 : 4)
                                             :title="`Frais de port (${totalWeight} g)`"
                                         >
                                             <template #append>
-                                                {{ formatPrice(shipmentFees) }}
+                                                {{ formatPrice(order.shipmentFees) }}
                                             </template>
                                         </VListItem>
                                         <VDivider />
