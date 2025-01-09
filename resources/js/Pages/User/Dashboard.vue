@@ -59,7 +59,10 @@ const headers: DataTableHeader[] = [
     <VContainer>
         <VRow>
             <VCol>
-                <h1>Historique des commandes</h1>
+                <h1>
+                    <VIcon icon="mdi-package-variant" />
+                    Historique des commandes
+                </h1>
             </VCol>
         </VRow>
         <VRow>

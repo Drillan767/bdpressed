@@ -62,7 +62,7 @@ provide('csrfToken', page.props.csrf_token)
         >
             <VList nav>
                 <VListItem
-                    :active="$page.url === '/utilisateur'"
+                    :active="$page.url === '/utilisateur' || $page.url.includes('/commande')"
                     prepend-icon="mdi-package-variant"
                     title="Commandes"
                     nav
