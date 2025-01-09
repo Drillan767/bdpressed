@@ -16,4 +16,13 @@ class DashboardController extends Controller
 
         return Inertia::render('User/Dashboard', compact('orders'));
     }
+
+    public function showOrder(string $reference): Response
+    {
+        $order = Order::with('shippingAddress', 'billingAddress', 'details.product')
+        ->where('reference', $reference)
+        ->firstOrFail();
+
+        return Inertia::render('User/Order/Show', compact('order'));
+    }
 }

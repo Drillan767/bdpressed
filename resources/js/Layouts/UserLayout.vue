@@ -61,7 +61,6 @@ provide('csrfToken', page.props.csrf_token)
             :temporary="mobile"
         >
             <VList nav>
-                <VDivider class="my-2" />
                 <VListItem
                     :active="$page.url === '/utilisateur'"
                     prepend-icon="mdi-package-variant"
@@ -75,6 +74,7 @@ provide('csrfToken', page.props.csrf_token)
                     nav
                     @click="router.visit(route('orders.index'))"
                 />
+                <VDivider />
                 <VListItem
                     prepend-icon="mdi-account-edit"
                     title="Informations personnelles"
