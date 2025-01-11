@@ -18,6 +18,7 @@ export interface User {
     id: number
     name: string
     email: string
+    instagram?: string
     email_verified_at?: string
 }
 
@@ -90,7 +91,6 @@ export interface CartItem {
 }
 
 export interface Address {
-    id: number
     firstName: string
     lastName: string
     street: string

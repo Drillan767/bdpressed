@@ -5,6 +5,7 @@ import { ref, watch } from 'vue'
 
 interface Props {
     authenticated: boolean
+    addresses: Address[]
 }
 
 defineProps<Props>()

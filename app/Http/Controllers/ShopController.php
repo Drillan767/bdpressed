@@ -8,6 +8,8 @@ use App\Actions\Order\HandleOrderAction;
 use App\Actions\Order\HandleAddressesAction;
 use App\Events\OrderCreated;
 use App\Http\Requests\OrderRequest;
+use App\Models\Address;
+use Illuminate\Support\Facades\Auth;
 use App\Models\Product;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -39,7 +41,12 @@ class ShopController extends Controller
 
     public function checkout(): Response
     {
-        return Inertia::render('Visitors/Shop/Checkout');
+        $addresses = Address::where([
+            'user_id' => Auth::id(),
+            'guest_id' => null,
+        ])->get();
+
+        return Inertia::render('Visitors/Shop/Checkout', compact('addresses'));
     }
 
     public function order(OrderRequest $request)
