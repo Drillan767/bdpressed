@@ -38,14 +38,12 @@ class Order extends Model
 
     public function shippingAddress(): HasOne
     {
-        return $this->hasOne(Address::class, 'id', 'shipping_address_id')
-            ->where('type', '=', 'SHIPPING');
+        return $this->hasOne(Address::class, 'id', 'shipping_address_id');
     }
 
     public function billingAddress(): HasOne
     {
-        return $this->hasOne(Address::class, 'id', 'billing_address_id')
-            ->where('type', '=', 'BILLING');
+        return $this->hasOne(Address::class, 'id', 'billing_address_id');
     }
 
     public function details(): HasMany

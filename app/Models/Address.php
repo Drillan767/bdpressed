@@ -23,6 +23,7 @@ class Address extends Model
     ];
 
     protected $casts = [
-        'default' => 'boolean',
+        'default_shipping' => 'boolean',
+        'default_billing' => 'boolean',
     ];
 }
