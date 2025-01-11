@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { OrderStep1Form, OrderStep2Form, User } from '@/types'
+import type { Address, OrderStep1Form, OrderStep2Form, User } from '@/types'
 import CartItem from '@/Components/Shop/CartItem.vue'
 import OrderStep1 from '@/Components/Shop/OrderStep1.vue'
 import OrderStep2 from '@/Components/Shop/OrderStep2.vue'
@@ -19,6 +19,7 @@ const props = defineProps<{
     auth: {
         user: User | null
     }
+    addresses: Address[]
 }>()
 
 const { cart, tax, totalPrice, totalWeight } = storeToRefs(useCartStore())
@@ -30,6 +31,7 @@ const emailExists = ref(false)
 const step = ref(1)
 const personalInformation = ref<OrderStep1Form>({
     email: props.auth.user?.email ?? '',
+    instagram: props.auth.user?.instagram ?? '',
     guest: props.auth.user === null,
     additionalInfos: '',
 })
@@ -46,6 +48,8 @@ const addresses = ref<OrderStep2Form>({
         city: '',
         zipCode: '',
         country: '',
+        default_billing: false,
+        default_shipping: false,
     },
 })
 
@@ -167,6 +171,7 @@ useHead({
                                                         v-model:form="addresses"
                                                         v-model:valid="step2Valid"
                                                         :authenticated="auth.user !== null"
+                                                        :addresses
                                                     />
                                                 </VStepperWindowItem>
                                                 <VStepperWindowItem
