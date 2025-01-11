@@ -75,8 +75,7 @@ class HandleAddressesAction
         $relationColumn = $this->guest ? 'guest_id' : 'user_id';
 
         $fields = array_intersect_key($addresses[$addressType], array_flip($this->fields));
-        $fields['type'] = $type;
-        $fields['default'] = !$this->guest;
+        $fields["default_$addressType"] = !$this->guest;
 
         $fields[$relationColumn] = $this->authId;
 

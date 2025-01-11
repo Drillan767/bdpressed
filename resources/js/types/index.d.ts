@@ -90,6 +90,7 @@ export interface CartItem {
 }
 
 export interface Address {
+    id: number
     firstName: string
     lastName: string
     street: string
@@ -97,6 +98,8 @@ export interface Address {
     city: string
     zipCode: string
     country: string
+    default_billing: boolean
+    default_shipping: boolean
     billingAddressId?: number
     shippingAddressId?: number
 }
