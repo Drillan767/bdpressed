@@ -17,6 +17,7 @@ const { defineField, controlledValues, resetForm } = useForm<AddressFields>({
         zipCode: 'required',
         country: 'required',
     },
+    initialValues: address.value,
 })
 
 const [firstName, firstNameProps] = defineField('firstName', validationConfig)

@@ -44,4 +44,28 @@ class AddressesController extends Controller
         $address->user_id = $request->user()->id;
         $address->save();
     }
+
+    public function update(Request $request, Address $address): void
+    {
+        $fields = [
+            'firstName',
+            'lastName',
+            'street',
+            'street2',
+            'city',
+            'zipCode',
+            'country',
+        ];
+        
+        foreach ($fields as $field) {
+            $address->{$field} = $request->get($field) ?? '';
+        }
+
+        $address->save();
+    }
+
+    public function destroy(Address $address): void
+    {
+        $address->delete();
+    }
 }
