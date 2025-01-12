@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { Address } from '@/types'
 import CreateAddressDialog from '@/Components/User/Adresses/CreateAddressDialog.vue'
+import DeleteAddressDialog from '@/Components/User/Adresses/DeleteAddressDialog.vue'
 import EditAddressDialog from '@/Components/User/Adresses/EditAddressDialog.vue'
 import useToast from '@/Composables/toast'
 import UserLayout from '@/Layouts/UserLayout.vue'
@@ -58,6 +59,11 @@ async function handleDefaultShipping(value: any, addressId: number, type: 'shipp
 function handleEdit(address: Address) {
     selectedAddress.value = address
     displayEditDialog.value = true
+}
+
+function handleDelete(address: Address) {
+    selectedAddress.value = address
+    displayDeleteDialog.value = true
 }
 
 onMounted(() => {
@@ -124,7 +130,7 @@ watch(() => props.addresses, (addresses) => {
                                                 color="error"
                                                 icon="mdi-delete"
                                                 size="x-small"
-                                                @click="displayDeleteDialog = true"
+                                                @click="handleDelete(address)"
                                             />
                                             <VBtn
                                                 variant="outlined"
@@ -198,6 +204,13 @@ watch(() => props.addresses, (addresses) => {
     <EditAddressDialog
         v-if="selectedAddress"
         v-model="displayEditDialog"
+        :address="selectedAddress"
+        @success="router.reload()"
+    />
+
+    <DeleteAddressDialog
+        v-if="selectedAddress"
+        v-model="displayDeleteDialog"
         :address="selectedAddress"
         @success="router.reload()"
     />

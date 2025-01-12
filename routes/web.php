@@ -60,6 +60,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::get('/adresses', 'index')->name('user.addresses.index');
             Route::post('/address', 'store')->name('user.addresses.store');
             Route::put('/address/{address}', 'update')->name('user.addresses.update');
+            Route::delete('/address/{address}', 'destroy')->name('user.addresses.destroy');
             Route::post('/addresses/default', 'updateDefaultAddress')->name('user.addresses.update-default');
         });
     });
