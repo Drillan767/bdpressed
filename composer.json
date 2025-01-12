@@ -10,6 +10,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.3",
+        "ext-intl": "*",
         "inertiajs/inertia-laravel": "^2.0",
         "intervention/image": "^3.9",
         "laravel-lang/common": "^6.4",
@@ -19,8 +20,8 @@
         "league/flysystem-aws-s3-v3": "^3.0",
         "mailersend/laravel-driver": "^2.7",
         "spatie/laravel-permission": "^6.10",
-        "tightenco/ziggy": "^2.0",
-        "ext-intl": "*"
+        "spatie/laravel-settings": "^3.4",
+        "tightenco/ziggy": "^2.0"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
