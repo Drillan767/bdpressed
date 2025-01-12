@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { Address } from '@/types'
 import CreateAddressDialog from '@/Components/User/Adresses/CreateAddressDialog.vue'
+import EditAddressDialog from '@/Components/User/Adresses/EditAddressDialog.vue'
 import useToast from '@/Composables/toast'
 import UserLayout from '@/Layouts/UserLayout.vue'
 import { router } from '@inertiajs/vue3'
@@ -23,6 +24,7 @@ const { showSuccess } = useToast()
 
 const localAddresses = ref<Address[]>([])
 
+const selectedAddress = ref<Address>()
 const displayAddDialog = ref(false)
 const displayEditDialog = ref(false)
 const displayDeleteDialog = ref(false)
@@ -51,6 +53,11 @@ async function handleDefaultShipping(value: any, addressId: number, type: 'shipp
     router.reload()
 
     showSuccess('Informations enregistrées avec succès')
+}
+
+function handleEdit(address: Address) {
+    selectedAddress.value = address
+    displayEditDialog.value = true
 }
 
 onMounted(() => {
@@ -125,7 +132,7 @@ watch(() => props.addresses, (addresses) => {
                                                 icon="mdi-pencil"
                                                 size="x-small"
                                                 class="ml-2"
-                                                @click="displayEditDialog = true"
+                                                @click="handleEdit(address)"
                                             />
                                         </template>
                                         <template #text>
@@ -151,7 +158,7 @@ watch(() => props.addresses, (addresses) => {
                                                         <VSwitch
                                                             v-model="address.default_shipping"
                                                             :loading="shippingLoading"
-                                                            :disabled="shippingLoading || address.default_shipping"
+                                                            :disabled="shippingLoading"
                                                             label="Adresse de livraison par défaut"
                                                             density="compact"
                                                             hide-details
@@ -164,7 +171,7 @@ watch(() => props.addresses, (addresses) => {
                                                         <VSwitch
                                                             v-model="address.default_billing"
                                                             :loading="billingLoading"
-                                                            :disabled="billingLoading || address.default_billing"
+                                                            :disabled="billingLoading"
                                                             label="Adresse de facturation par défaut"
                                                             density="compact"
                                                             hide-details
@@ -185,6 +192,13 @@ watch(() => props.addresses, (addresses) => {
     </VContainer>
     <CreateAddressDialog
         v-model="displayAddDialog"
+        @success="router.reload()"
+    />
+
+    <EditAddressDialog
+        v-if="selectedAddress"
+        v-model="displayEditDialog"
+        :address="selectedAddress"
         @success="router.reload()"
     />
 </template>
