@@ -46,27 +46,42 @@ class ShopController extends Controller
             'guest_id' => null,
         ])->get();
 
-        return Inertia::render('Visitors/Shop/Checkout', compact('addresses'));
+        return Inertia::render('Visitors/Shop/Checkout', [
+            'user_addresses' => $addresses,
+        ]);
     }
 
     public function order(OrderRequest $request)
     {
-        // TODO: handle request if user is already authenticated.
+        if ($request->user()) {
+            if ($request->has('addresses.shippingId')) {
+                $shippingId = $request->get('addresses')['shippingId'];
+                $billingId = $request->get('addresses')['billingId'];
 
-        $guest = $request->get('user')['guest'];
+                $order = (new HandleOrderAction())->handle($request, false, $request->user()->id, [
+                    'shipping' => $shippingId,
+                    'billing' => $billingId,
+                    'same' => $shippingId === $billingId,
+                ]);
+            } else {
+                $addressesInfos = (new HandleAddressesAction(false, $request->user()->id))->handle($request);
+                $order = (new HandleOrderAction())->handle($request, false, $request->user()->id, $addressesInfos);
+            }
 
-        if ($guest) {
-            $clientId = (new HandleGuestAction())->handle($request);
+            event(new OrderCreated($order, false));
         } else {
-            $clientId = (new RegisterClientAction())->handle($request);
+            $guest = $request->get('user')['guest'];
+
+            $clientId = $guest
+                ? (new HandleGuestAction())->handle($request)
+                : (new RegisterClientAction())->handle($request);
+
+            $addressesInfos = (new HandleAddressesAction($guest, $clientId))->handle($request);
+
+            $order = (new HandleOrderAction())->handle($request, $guest, $clientId, $addressesInfos);
+
+            event(new OrderCreated($order, !$guest));
         }
-
-        $addressesInfos = (new HandleAddressesAction($guest, $clientId))->handle($request);
-
-        $order = (new HandleOrderAction())->handle($request, $guest, $clientId, $addressesInfos);
-
-        // TODO: render 2nd parameter dynamic once we have a way to know if the user is already registered.
-        event(new OrderCreated($order, !$guest));
 
         return redirect()->route('shop.thankYou');
     }
