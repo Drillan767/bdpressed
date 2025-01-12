@@ -76,7 +76,7 @@ watch(() => props.address, (address) => {
         <VCard
             :loading="loading ? 'primary' : false"
             prepend-icon="mdi-package-variant-plus"
-            title="Créer une adresse"
+            title="Modifier une adresse"
         >
             <VContainer>
                 <AddressFormComponent
