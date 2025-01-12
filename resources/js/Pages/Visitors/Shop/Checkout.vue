@@ -10,7 +10,7 @@ import useCartStore from '@/Stores/cartStore'
 import { router } from '@inertiajs/vue3'
 import { useHead } from '@vueuse/head'
 import { storeToRefs } from 'pinia'
-import { computed, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 
 defineOptions({ layout: VisitorsLayout })
 
@@ -19,7 +19,7 @@ const props = defineProps<{
     auth: {
         user: User | null
     }
-    addresses: Address[]
+    user_addresses: Address[]
 }>()
 
 const { cart, tax, totalPrice, totalWeight } = storeToRefs(useCartStore())
@@ -38,6 +38,10 @@ const personalInformation = ref<OrderStep1Form>({
 const step1Valid = ref(false)
 const step2Valid = ref(false)
 
+// Case where the user already has an address
+const shippingId = ref<number>()
+const billingId = ref<number>()
+
 const addresses = ref<OrderStep2Form>({
     useSameAddress: true,
     shippingAddress: {
@@ -48,8 +52,6 @@ const addresses = ref<OrderStep2Form>({
         city: '',
         zipCode: '',
         country: '',
-        default_billing: false,
-        default_shipping: false,
     },
 })
 
@@ -68,19 +70,27 @@ const disabled = computed(() => {
     }
 })
 
+const selectedShipping = computed(() => props.user_addresses.find(address => address.id === shippingId.value))
+const selectedBilling = computed(() => props.user_addresses.find(address => address.id === billingId.value))
+
 async function submit() {
+    const addressesPayload = props.user_addresses.length > 0
+        ? {
+                shippingId: shippingId.value,
+                billingId: billingId.value,
+            }
+        : {
+                shipping: addresses.value.shippingAddress,
+                same: addresses.value.useSameAddress,
+                billing: addresses.value.useSameAddress ? undefined : addresses.value.billingAddress,
+            }
     router.post(route('shop.order'), {
         user: personalInformation.value,
         products: cart.value.map(item => ({
             id: item.id,
             quantity: item.quantity,
         })),
-        // TODO: add address id once available
-        addresses: {
-            shipping: addresses.value.shippingAddress,
-            same: addresses.value.useSameAddress,
-            billing: addresses.value.useSameAddress ? undefined : addresses.value.billingAddress,
-        },
+        addresses: addressesPayload,
     })
 }
 
@@ -93,6 +103,13 @@ watch(() => props.errors?.['user.email'], (value) => {
 
 useHead({
     title: 'Commander',
+})
+
+onMounted(() => {
+    if (props.user_addresses.length > 0) {
+        shippingId.value = props.user_addresses.find(address => address.default_shipping)?.id
+        billingId.value = props.user_addresses.find(address => address.default_billing)?.id
+    }
 })
 </script>
 
@@ -170,8 +187,10 @@ useHead({
                                                     <OrderStep2
                                                         v-model:form="addresses"
                                                         v-model:valid="step2Valid"
+                                                        v-model:shipping-id="shippingId"
+                                                        v-model:billing-id="billingId"
                                                         :authenticated="auth.user !== null"
-                                                        :addresses
+                                                        :user-addresses="user_addresses"
                                                     />
                                                 </VStepperWindowItem>
                                                 <VStepperWindowItem
@@ -218,30 +237,67 @@ useHead({
                                                             <h3 class="mb-2">
                                                                 Adresse de livraison
                                                             </h3>
-                                                            <p>
-                                                                {{ addresses.shippingAddress.firstName }}
-                                                                {{ addresses.shippingAddress.lastName }}
-                                                            </p>
-                                                            <p>
-                                                                {{ addresses.shippingAddress.street }}
-                                                            </p>
-                                                            <p v-if="addresses.shippingAddress.street2">
-                                                                {{ addresses.shippingAddress.street2 }}
-                                                            </p>
-                                                            <p>
-                                                                {{ addresses.shippingAddress.city }}
-                                                                {{ addresses.shippingAddress.zipCode }}
-                                                                {{ addresses.shippingAddress.country }}
-                                                            </p>
+                                                            <template v-if="auth.user && selectedShipping">
+                                                                <p>
+                                                                    {{ selectedShipping.firstName }}
+                                                                    {{ selectedShipping.lastName }}
+                                                                </p>
+                                                                <p>
+                                                                    {{ selectedShipping.street }}
+                                                                </p>
+                                                                <p v-if="selectedShipping.street2">
+                                                                    {{ selectedShipping.street2 }}
+                                                                </p>
+                                                                <p>
+                                                                    {{ selectedShipping.city }}
+                                                                    {{ selectedShipping.zipCode }}
+                                                                    {{ selectedShipping.country }}
+                                                                </p>
+                                                            </template>
+                                                            <template v-else>
+                                                                <p>
+                                                                    {{ addresses.shippingAddress.firstName }}
+                                                                    {{ addresses.shippingAddress.lastName }}
+                                                                </p>
+                                                                <p>
+                                                                    {{ addresses.shippingAddress.street }}
+                                                                </p>
+                                                                <p v-if="addresses.shippingAddress.street2">
+                                                                    {{ addresses.shippingAddress.street2 }}
+                                                                </p>
+                                                                <p>
+                                                                    {{ addresses.shippingAddress.city }}
+                                                                    {{ addresses.shippingAddress.zipCode }}
+                                                                    {{ addresses.shippingAddress.country }}
+                                                                </p>
+                                                            </template>
                                                         </VCol>
                                                         <VCol
+                                                            v-if="addresses.billingAddress || auth.user && selectedBilling"
                                                             cols="12"
                                                             md="6"
                                                         >
                                                             <h3 class="mb-2">
                                                                 Adresse de facturation
                                                             </h3>
-                                                            <template v-if="addresses.billingAddress">
+                                                            <template v-if="auth.user && selectedBilling">
+                                                                <p>
+                                                                    {{ selectedBilling.firstName }}
+                                                                    {{ selectedBilling.lastName }}
+                                                                </p>
+                                                                <p>
+                                                                    {{ selectedBilling.street }}
+                                                                </p>
+                                                                <p v-if="selectedBilling.street2">
+                                                                    {{ selectedBilling.street2 }}
+                                                                </p>
+                                                                <p>
+                                                                    {{ selectedBilling.city }}
+                                                                    {{ selectedBilling.zipCode }}
+                                                                    {{ selectedBilling.country }}
+                                                                </p>
+                                                            </template>
+                                                            <template v-else-if="addresses.billingAddress">
                                                                 <p>
                                                                     {{ addresses.billingAddress.firstName }}
                                                                     {{ addresses.billingAddress.lastName }}
