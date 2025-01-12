@@ -8,6 +8,7 @@ use App\Models\Address;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
+use Illuminate\Http\RedirectResponse;
 
 class AddressesController extends Controller
 {
@@ -33,6 +34,14 @@ class AddressesController extends Controller
 
         $address = Address::find($request->get('id'));
         $address->{"default_{$request->get('type')}"} = $request->get('value');
+        $address->save();
+    }
+
+    public function store(Request $request): void
+    {
+        $address = new Address();
+        $address->fill($request->all());
+        $address->user_id = $request->user()->id;
         $address->save();
     }
 }

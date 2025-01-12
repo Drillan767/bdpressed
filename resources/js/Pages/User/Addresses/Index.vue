@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import type { Address } from '@/types'
+import CreateAddressDialog from '@/Components/User/Adresses/CreateAddressDialog.vue'
 import useToast from '@/Composables/toast'
 import UserLayout from '@/Layouts/UserLayout.vue'
 import { router } from '@inertiajs/vue3'
 import { useHead } from '@vueuse/head'
 import { onMounted, ref, watch } from 'vue'
+import { VCol } from 'vuetify/components'
 import { route } from 'ziggy-js'
 
 defineOptions({ layout: UserLayout })
@@ -85,6 +87,23 @@ watch(() => props.addresses, (addresses) => {
                     <template #text>
                         <VContainer>
                             <VRow>
+                                <VCol v-if="localAddresses.length === 0">
+                                    <VEmptyState
+                                        icon="mdi-map-marker-remove-outline"
+                                        title="Aucune adresse enregistrée"
+                                    >
+                                        <template #actions>
+                                            <VBtn
+                                                variant="outlined"
+                                                color="primary"
+                                                prepend-icon="mdi-plus"
+                                                @click="displayAddDialog = true"
+                                            >
+                                                Ajouter une adresse
+                                            </VBtn>
+                                        </template>
+                                    </VEmptyState>
+                                </VCol>
                                 <VCol
                                     v-for="(address, i) in localAddresses"
                                     :key="i"
@@ -164,4 +183,8 @@ watch(() => props.addresses, (addresses) => {
             </VCol>
         </VRow>
     </VContainer>
+    <CreateAddressDialog
+        v-model="displayAddDialog"
+        @success="router.reload()"
+    />
 </template>

@@ -58,6 +58,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         Route::controller(AddressesController::class)->group(function () {
             Route::get('/adresses', 'index')->name('user.addresses.index');
+            Route::post('/address', 'store')->name('user.addresses.store');
             Route::post('/addresses/default', 'updateDefaultAddress')->name('user.addresses.update-default');
         });
     });

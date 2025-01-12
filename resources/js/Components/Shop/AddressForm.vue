@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import type { Address } from '@/types'
+import type { AddressFields } from '@/types'
 import validationConfig from '@/plugins/validationConfig'
 import { useForm, useIsFormValid } from 'vee-validate'
 import { watch } from 'vue'
 
-const { title } = defineProps<{ title: string }>()
+const { title } = defineProps<{ title?: string }>()
 
-const address = defineModel<Address>('address')
+const address = defineModel<AddressFields>('address')
 const valid = defineModel<boolean>('valid', { required: true })
 
-const { defineField, controlledValues, resetForm } = useForm<Address>({
+const { defineField, controlledValues, resetForm } = useForm<AddressFields>({
     validationSchema: {
         firstName: 'required',
         lastName: 'required',
@@ -45,7 +45,10 @@ defineExpose({
 <template>
     <VForm>
         <VContainer>
-            <h2 class="text-h5 mb-4">
+            <h2
+                v-if="title"
+                class="text-h5 mb-4"
+            >
                 {{ title }}
             </h2>
             <VRow no-gutter>

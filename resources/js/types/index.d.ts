@@ -90,7 +90,7 @@ export interface CartItem {
     illustration: string
 }
 
-export interface Address {
+export interface AddressFields {
     firstName: string
     lastName: string
     street: string
@@ -98,10 +98,12 @@ export interface Address {
     city: string
     zipCode: string
     country: string
+}
+
+export interface Address extends AddressFields {
+    id: number
     default_billing: boolean
     default_shipping: boolean
-    billingAddressId?: number
-    shippingAddressId?: number
 }
 
 export interface OrderStep1Form {
@@ -115,8 +117,8 @@ export interface OrderStep1Form {
 
 export interface OrderStep2Form {
     useSameAddress: boolean
-    shippingAddress: Address
-    billingAddress?: Address
+    shippingAddress: AddressForm
+    billingAddress?: AddressForm
 }
 
 export interface OrderIndex {
