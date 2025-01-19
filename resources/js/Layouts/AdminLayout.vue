@@ -68,19 +68,22 @@ onMounted(async () => {
         >
             <VList nav>
                 <VListItem
+                    :active="$page.url.endsWith('/administration')"
                     prepend-icon="mdi-home"
                     title="Accueil"
                     nav
-                    @click="router.visit('/administration')"
+                    @click="router.visit(route('admin.dashboard'))"
                 />
                 <VDivider class="my-2" />
                 <VListItem
+                    :active="$page.url.includes('/articles')"
                     prepend-icon="mdi-package-variant"
                     title="Articles"
                     nav
-                    @click="router.visit('/administration/articles')"
+                    @click="router.visit(route('products.index'))"
                 />
                 <VListItem
+                    :active="$page.url.includes('/commandes')"
                     prepend-icon="mdi-package-variant-closed"
                     title="Commandes"
                     nav
@@ -96,10 +99,11 @@ onMounted(async () => {
                     </template>
                 </VListItem>
                 <VListItem
-                    to="/administration/utilisateurs"
-                    prepend-icon="mdi-account-group-outline"
-                    title="Utilisateurs"
+                    :active="$page.url.includes('/parametres')"
+                    prepend-icon="mdi-cog-outline"
+                    title="Paramètres"
                     nav
+                    @click="router.visit(route('settings.website'))"
                 />
             </VList>
         </VNavigationDrawer>
