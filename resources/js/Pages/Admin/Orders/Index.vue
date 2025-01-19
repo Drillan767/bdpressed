@@ -70,52 +70,56 @@ const headers: DataTableHeader[] = [
 
 <template>
     <h1>Commandes</h1>
-    <VDataTable
-        :headers
-        :search
-        :items="orders"
-    >
-        <template #top>
-            <VRow class="mr-2">
-                <VCol
-                    cols="12"
-                    md="3"
-                    offset-md="9"
-                    class="my-2"
-                >
-                    <VTextField
-                        v-model="search"
-                        label="Rechercher"
-                        prepend-inner-icon="mdi-magnify"
-                        density="compact"
-                        hide-details
-                    />
-                </VCol>
-            </VRow>
+    <VCard>
+        <template #text>
+            <VDataTable
+                :headers
+                :search
+                :items="orders"
+            >
+                <template #top>
+                    <VRow class="mr-2">
+                        <VCol
+                            cols="12"
+                            md="3"
+                            offset-md="9"
+                            class="my-2"
+                        >
+                            <VTextField
+                                v-model="search"
+                                label="Rechercher"
+                                prepend-inner-icon="mdi-magnify"
+                                density="compact"
+                                hide-details
+                            />
+                        </VCol>
+                    </VRow>
+                </template>
+                <template #item.client="{ item }">
+                    <div v-if="item.guest">
+                        {{ item.guest.email }}
+                    </div>
+                    <div v-else-if="item.user">
+                        {{ item.user.email }}
+                    </div>
+                </template>
+                <template #item.total="{ item }">
+                    {{ formatPrice(item.total) }}
+                </template>
+                <template #item.status="{ item }">
+                    <VChip v-bind="getStatus(item.status)" />
+                </template>
+                <template #item.actions="{ item }">
+                    <div class="d-flex justify-end">
+                        <VBtn
+                            variant="text"
+                            color="blue"
+                            icon="mdi-eye"
+                            @click="router.visit(route('orders.show', { reference: item.reference }))"
+                        />
+                    </div>
+                </template>
+            </VDataTable>
         </template>
-        <template #item.client="{ item }">
-            <div v-if="item.guest">
-                {{ item.guest.email }}
-            </div>
-            <div v-else-if="item.user">
-                {{ item.user.email }}
-            </div>
-        </template>
-        <template #item.total="{ item }">
-            {{ formatPrice(item.total) }}
-        </template>
-        <template #item.status="{ item }">
-            <VChip v-bind="getStatus(item.status)" />
-        </template>
-        <template #item.actions="{ item }">
-            <div class="d-flex justify-end">
-                <VBtn
-                    variant="text"
-                    color="blue"
-                    icon="mdi-eye"
-                    @click="router.visit(route('orders.show', { reference: item.reference }))"
-                />
-            </div>
-        </template>
-    </VDataTable>
+    </VCard>
 </template>
