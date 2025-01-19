@@ -12,12 +12,6 @@ interface Props {
     errors?: Record<string, string>
 }
 
-interface LoginForm {
-    email: string
-    password: string
-    remember: boolean
-}
-
 defineOptions({ layout: VisitorsLayout })
 
 defineProps<Props>()
@@ -28,7 +22,7 @@ useHead({
 
 const { smAndDown } = useDisplay()
 
-const form = useForm<LoginForm>({
+const form = useForm({
     email: '',
     password: '',
     remember: false,

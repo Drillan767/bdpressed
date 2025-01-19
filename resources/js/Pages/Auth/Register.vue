@@ -14,12 +14,6 @@ interface Props {
     errors?: Record<string, string>
 }
 
-interface RegisterForm {
-    email: string
-    password: string
-    password_confirmation: string
-}
-
 defineOptions({ layout: VisitorsLayout })
 
 const props = defineProps<Props>()
@@ -27,7 +21,7 @@ const props = defineProps<Props>()
 const { smAndDown } = useDisplay()
 const { showSuccess } = useToast()
 
-const form = useForm<RegisterForm>({
+const form = useForm({
     email: '',
     password: '',
     password_confirmation: '',
