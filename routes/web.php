@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ShopController;
+use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\User\AddressesController;
 use App\Http\Controllers\VisitorsController;
 use App\Http\Controllers\User\DashboardController as UserDashboardController;
@@ -48,6 +49,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
                 Route::get('/commandes', 'index')->name('orders.index');
                 Route::get('/commandes/pending-orders', 'pendingOrders')->name('orders.pending');
                 Route::get('/commande/{reference}', 'show')->name('orders.show');
+            });
+
+            Route::controller(SettingsController::class)->prefix('/parametres')->group(function () {
+                Route::get('/site', 'website')->name('settings.website');
+                Route::post('/website', 'updateWebsite')->name('settings.website.update');
             });
         });
     });
