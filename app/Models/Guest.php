@@ -16,11 +16,11 @@ class Guest extends Model
 
     public function shippingAddress(): HasOne
     {
-        return $this->hasOne(Address::class)->where('type', 'SHIPPING');
+        return $this->hasOne(Address::class);
     }
 
     public function billingAddress(): HasOne
     {
-        return $this->hasOne(Address::class)->where('type', 'BILLING');
+        return $this->hasOne(Address::class);
     }
 }
