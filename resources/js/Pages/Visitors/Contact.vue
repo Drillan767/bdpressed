@@ -3,7 +3,14 @@ import DescriptionBlock from '@/Components/DescriptionBlock.vue'
 import VisitorsLayout from '@/Layouts/VisitorsLayout.vue'
 import { useHead } from '@vueuse/head'
 
+interface Props {
+    description_url: string
+    description_text: string
+}
+
 defineOptions({ layout: VisitorsLayout })
+
+defineProps<Props>()
 
 useHead({
     title: 'Accueil',
@@ -14,7 +21,10 @@ useHead({
     <VContainer>
         <VRow class="mb-8">
             <VCol class="d-flex justify-center">
-                <DescriptionBlock />
+                <DescriptionBlock
+                    :image="description_url"
+                    :message="description_text"
+                />
             </VCol>
         </VRow>
         <VRow>
