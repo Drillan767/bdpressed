@@ -13,6 +13,7 @@
                 <VTab
                     prepend-icon="mdi-palette-outline"
                     text="Illustrations"
+                    disabled
                 />
             </VTabs>
 
