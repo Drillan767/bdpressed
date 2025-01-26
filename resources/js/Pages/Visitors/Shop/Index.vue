@@ -10,6 +10,10 @@ import { useDisplay } from 'vuetify'
 defineOptions({ layout: VisitorsLayout })
 const { products } = defineProps<{
     products: Catalog[]
+    settings: {
+        title: string
+        subtitle: string
+    }
 }>()
 
 useHead({
@@ -44,10 +48,10 @@ function handleAddToCart(product: Catalog) {
                 <VCard class="bede-block">
                     <VCardText class="bede-text">
                         <h1 class="text-center text-h4 mb-4 bd">
-                            Mes petites créations à vendre :
+                            {{ settings.title }}
                         </h1>
                         <h2 class="text-center my-12 bd">
-                            ¥ Tu reçois des payettes, je reçois de quoi payer ma psy ¥
+                            {{ settings.subtitle }}
                         </h2>
 
                         <VContainer>

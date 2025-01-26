@@ -6,6 +6,7 @@ use App\Actions\Order\RegisterClientAction;
 use App\Actions\Order\HandleGuestAction;
 use App\Actions\Order\HandleOrderAction;
 use App\Actions\Order\HandleAddressesAction;
+use App\Settings\WebsiteSettings;
 use App\Events\OrderCreated;
 use App\Http\Requests\OrderRequest;
 use App\Models\Address;
@@ -16,7 +17,7 @@ use Inertia\Response;
 
 class ShopController extends Controller
 {
-    public function index(): Response
+    public function index(WebsiteSettings $settings): Response
     {
         $products = Product::where('stock', '>', 0)->get([
             'id',
@@ -29,7 +30,12 @@ class ShopController extends Controller
             'quickDescription',
         ]);
 
-        return Inertia::render('Visitors/Shop/Index', compact('products'));
+        $settings = [
+            'title' => $settings->shop_title,
+            'subtitle' => $settings->shop_subtitle,
+        ];
+
+        return Inertia::render('Visitors/Shop/Index', compact('products', 'settings'));
     }
 
     public function show(string $slug): Response

@@ -1,7 +1,19 @@
 <script setup lang="ts">
+import useStrings from '@/Composables/strings'
+import { computed } from 'vue'
 import { useDisplay } from 'vuetify'
 
+interface Props {
+    message: string
+    image: string
+}
+
+const props = defineProps<Props>()
+
 const { smAndUp } = useDisplay()
+const { toParagraphs } = useStrings()
+
+const paragraphs = computed(() => toParagraphs(props.message))
 </script>
 
 <template>
@@ -16,7 +28,7 @@ const { smAndUp } = useDisplay()
                     <VCol cols="12" md="6">
                         <VImg
                             class="rounded-xl"
-                            src="/assets/images/yell.png"
+                            :src="image"
                             :aspect-ratio="1"
                             max-width="250"
                             max-height="250"
@@ -28,12 +40,7 @@ const { smAndUp } = useDisplay()
                         md="6"
                         class="text-center d-flex flex-column justify-center text-secondary"
                     >
-                        <p>
-                            Bienvenue dans mon journal intime pas très intime, mi burn-out mi révolution pantoufle.
-                        </p>
-                        <p>
-                            Ici règne le désordre mental et l'auto sabotage glorieux ¥
-                        </p>
+                        <div v-html="paragraphs" />
                     </VCol>
                 </VRow>
             </VContainer>
