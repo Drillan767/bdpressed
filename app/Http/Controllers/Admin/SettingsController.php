@@ -28,21 +28,29 @@ class SettingsController extends Controller
         $settings->shop_subtitle = $request->get('shop_subtitle');
         $settings->contact_text = $request->get('contact_text');
 
-        if ($request->hasFile('comics_image_url')) {
-            // Not defaut config.
-            if (str_contains($settings->comics_image_url, '/storage')) {
-                $realPath = $realPath = str_replace('/storage/', '', $settings->comics_image_url);
-                Storage::delete($realPath);
-
-                $file = $request->file('comics_image_url');
-                $file->storeAs('settings', $file->getClientOriginalName());
-
-                $settings->comics_image_url = "/storage/{$file->getClientOriginalName()}";
-            }
-        }
+        $settings->comics_image_url = $this->uploadFile($request, $settings, 'comics_image_url');
+        $settings->contact_image_url = $this->uploadFile($request, $settings, 'contact_image_url');
 
         $settings->save();
 
         return redirect()->back()->with('success', 'Paramètres enregistrés');
+    }
+
+    private function uploadFile(WebsiteSettingsRequest $request, WebsiteSettings $settings, string $field): string
+    {
+        if ($request->hasFile($field)) {
+            if (str_contains($settings->{$field}, '/storage')) {
+                $realPath = $realPath = str_replace('/storage', '', $settings->{$field});
+                Storage::delete($realPath);
+            }
+
+            $file = $request->file($field);
+            $file->storeAs('settings', $file->getClientOriginalName());
+
+            return "/storage/settings/{$file->getClientOriginalName()}";
+
+        } else {
+            return $settings->{$field};
+        }
     }
 }

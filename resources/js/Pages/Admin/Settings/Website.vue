@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import DescriptionBlock from '@/Components/DescriptionBlock.vue'
 import useToast from '@/Composables/toast'
 import AdminLayout from '@/Layouts/AdminLayout.vue'
 import SettingsLayout from '@/Layouts/SettingsLayout.vue'
@@ -7,7 +6,7 @@ import validationConfig from '@/plugins/validationConfig'
 import { router } from '@inertiajs/vue3'
 import { useHead } from '@vueuse/head'
 import { useForm, useIsFormDirty, useIsFormValid } from 'vee-validate'
-import { ref, useAttrs, watch } from 'vue'
+import { onMounted, ref, useAttrs, watch } from 'vue'
 import { VTextField } from 'vuetify/components'
 import { route } from 'ziggy-js'
 
@@ -73,6 +72,8 @@ const formDirty = useIsFormDirty()
 
 const displayPreview = ref(false)
 const previewUrl = ref<string>()
+const comicsPreview = ref('')
+const contactPreview = ref('')
 
 const submit = handleSubmit(async (form) => {
     router.post(route('settings.website.update'), {
@@ -84,6 +85,23 @@ function openPreview(preview: string) {
     previewUrl.value = preview
     displayPreview.value = true
 }
+
+async function generatePreviewUrl(file: File | File[], field: 'comics' | 'contact') {
+    if (Array.isArray(file))
+        return
+
+    if (field === 'comics') {
+        comicsPreview.value = URL.createObjectURL(file)
+    }
+    else {
+        contactPreview.value = URL.createObjectURL(file)
+    }
+}
+
+onMounted(() => {
+    comicsPreview.value = props.settings.comics_image_url
+    contactPreview.value = props.settings.contact_image_url
+})
 
 watch(() => props.flash.success, (value) => {
     if (value)
@@ -106,12 +124,15 @@ watch(() => props.flash.success, (value) => {
                                 v-bind="comicsImageProps"
                                 v-model="comicsImage"
                                 label="Image pour les bédés"
+                                prepend-icon="mdi-image"
+                                accept="image/*"
+                                @update:model-value="($e) => generatePreviewUrl($e, 'comics')"
                             >
                                 <template #append-inner>
                                     <VAvatar
-                                        :image="settings.comics_image_url"
+                                        :image="comicsPreview"
                                         class="cursor-pointer"
-                                        @click.stop.prevent="openPreview(settings.comics_image_url)"
+                                        @click.stop.prevent="openPreview(comicsPreview)"
                                     />
                                 </template>
                             </VFileInput>
@@ -166,13 +187,24 @@ watch(() => props.flash.success, (value) => {
                                 v-bind="contactImageProps"
                                 v-model="contactImage"
                                 label="Image de la page contact"
-                            />
+                                prepend-icon="mdi-image"
+                                accept="image/*"
+                                @update:model-value="($e) => generatePreviewUrl($e, 'contact')"
+                            >
+                                <template #append-inner>
+                                    <VAvatar
+                                        :image="contactPreview"
+                                        class="cursor-pointer"
+                                        @click.stop.prevent="openPreview(contactPreview)"
+                                    />
+                                </template>
+                            </VFileInput>
                         </VCol>
                         <VCol cols="12" md="6">
-                            <VTextField
+                            <VTextarea
                                 v-bind="contactTextProps"
                                 v-model="contactText"
-                                label="Texte des bédés"
+                                label="Texte de la page contact"
                             />
                         </vcol>
                     </VRow>
