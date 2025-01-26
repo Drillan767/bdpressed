@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import DescriptionBlock from '@/Components/DescriptionBlock.vue'
+import useToast from '@/Composables/toast'
 import AdminLayout from '@/Layouts/AdminLayout.vue'
 import SettingsLayout from '@/Layouts/SettingsLayout.vue'
 import validationConfig from '@/plugins/validationConfig'
 import { router } from '@inertiajs/vue3'
 import { useHead } from '@vueuse/head'
 import { useForm, useIsFormDirty, useIsFormValid } from 'vee-validate'
-import { ref } from 'vue'
+import { ref, useAttrs, watch } from 'vue'
 import { VTextField } from 'vuetify/components'
 import { route } from 'ziggy-js'
 
@@ -18,6 +19,10 @@ interface Props {
         shop_subtitle: string
         contact_image_url: string
         contact_text: string
+    }
+    flash: {
+        message: string | null
+        success: string | null
     }
 }
 
@@ -33,12 +38,15 @@ interface SettingsProps {
 defineOptions({ layout: AdminLayout })
 
 const props = defineProps<Props>()
+useAttrs()
+
+const { showSuccess } = useToast()
 
 useHead({
     title: 'Paramètres du site',
 })
 
-const { defineField } = useForm<SettingsProps>({
+const { defineField, handleSubmit } = useForm<SettingsProps>({
     validationSchema: {
         comics_text: 'required',
         shop_title: 'required',
@@ -66,15 +74,21 @@ const formDirty = useIsFormDirty()
 const displayPreview = ref(false)
 const previewUrl = ref<string>()
 
-async function submit() {
-    router.post(route('settings.website.update', {
-        comics_text: comicsText.value,
-    }))
-}
+const submit = handleSubmit(async (form) => {
+    router.post(route('settings.website.update'), {
+        ...form,
+    })
+})
 
 function openPreview(preview: string) {
-
+    previewUrl.value = preview
+    displayPreview.value = true
 }
+
+watch(() => props.flash.success, (value) => {
+    if (value)
+        showSuccess(value)
+}, { immediate: true })
 </script>
 
 <template>
@@ -97,7 +111,7 @@ function openPreview(preview: string) {
                                     <VAvatar
                                         :image="settings.comics_image_url"
                                         class="cursor-pointer"
-                                        @click.stop.prevent="openPreview(promotedImage)"
+                                        @click.stop.prevent="openPreview(settings.comics_image_url)"
                                     />
                                 </template>
                             </VFileInput>
@@ -167,13 +181,19 @@ function openPreview(preview: string) {
         </VCard>
         <VRow class="mt-4">
             <VCol class="text-end">
-                <VBtn @click="submit">
+                <VBtn
+                    :disabled="!formDirty || !formValid"
+                    @click="submit"
+                >
                     Enregistrer
                 </VBtn>
             </VCol>
         </VRow>
     </SettingsLayout>
-    <VDialog v-model="displayPreview">
-        <VImg v-model="previewUrl" />
+    <VDialog
+        v-model="displayPreview"
+        :width="800"
+    >
+        <VImg :src="previewUrl" />
     </VDialog>
 </template>
