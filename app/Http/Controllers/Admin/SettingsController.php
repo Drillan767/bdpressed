@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Admin;
 
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\IllustrationSettingsRequest;
 use App\Http\Requests\WebsiteSettingsRequest;
 use App\Settings\WebsiteSettings;
+use App\Settings\IllustrationSettings;
 use Inertia\Response;
 use Inertia\Inertia;
 
@@ -14,11 +16,6 @@ class SettingsController extends Controller
     public function website(WebsiteSettings $settings): Response
     {
         return Inertia::render('Admin/Settings/Website', compact('settings'));
-    }
-
-    public function illustrations()
-    {
-
     }
 
     public function updateWebsite(WebsiteSettingsRequest $request, WebsiteSettings $settings)
@@ -31,6 +28,19 @@ class SettingsController extends Controller
         $settings->comics_image_url = $this->uploadFile($request, $settings, 'comics_image_url');
         $settings->contact_image_url = $this->uploadFile($request, $settings, 'contact_image_url');
 
+        $settings->save();
+
+        return redirect()->back()->with('success', 'Paramètres enregistrés');
+    }
+
+    public function illustration(IllustrationSettings $settings)
+    {
+        return Inertia::render('Admin/Settings/Illustration', compact('settings'));
+    }
+
+    public function updateIllustration(IllustrationSettingsRequest $request, IllustrationSettings $settings)
+    {
+        $settings->fill($request->validated());
         $settings->save();
 
         return redirect()->back()->with('success', 'Paramètres enregistrés');
