@@ -4111,9 +4111,9 @@ vue@^3.4.0, vue@^3.5.13:
     "@vue/shared" "3.5.13"
 
 vuetify@^3.7.6:
-  version "3.7.7"
-  resolved "https://registry.yarnpkg.com/vuetify/-/vuetify-3.7.7.tgz#f40e06abf81c426a29aee53e166fb7fcb05e98cd"
-  integrity sha512-YqKnRo2+BZWQRzfxHVA/5reQo1eLvbS9Z6N+Lvaot/5lpdi7JWooMr/hWoCr7/QPBGRcXArHppqIB+hMfPlsXw==
+  version "3.7.9"
+  resolved "https://registry.yarnpkg.com/vuetify/-/vuetify-3.7.9.tgz#a06c7d79fe1ee592ce620729d988c868f4e653eb"
+  integrity sha512-9pHu6ESdg/lYYCrdXb2uoLZGbw2bysWLaqMu2bzQPMTrMj1GfgcL0k/siTGkUa+o0cVWzvlP/cnjOFGMTxH3og==
 
 webpack-virtual-modules@^0.6.2:
   version "0.6.2"
@@ -4204,9 +4204,9 @@ zhead@^2.2.4:
   integrity sha512-8F0OI5dpWIA5IGG5NHUg9staDwz/ZPxZtvGVf01j7vHqSyZ0raHY+78atOVxRqb73AotX22uV1pXt3gYSstGag==
 
 ziggy-js@^2.4.1:
-  version "2.5.0"
-  resolved "https://registry.yarnpkg.com/ziggy-js/-/ziggy-js-2.5.0.tgz#0c741a6584003f82c1c78e5be0fb4546ced03ad3"
-  integrity sha512-utavemVmBcWkU3RVqfne2NcVH0k16+KEqZX1fXa5RUS1Zi1jgdUD/L3zGXaFFcB82YpxWPyrZMwQPuPiLMV/Qw==
+  version "2.5.1"
+  resolved "https://registry.yarnpkg.com/ziggy-js/-/ziggy-js-2.5.1.tgz#48e7a393498fa7fe4a564468cf658ee2e98d35a7"
+  integrity sha512-m+zQi3PJmK1sT9Bf2nzVaUaMFzPL8O1m2dEWjXGPmLcsDJBJkoN/fTWDEVoRbbdilhBk+GI//Qa+ruLKWX4H+w==
   dependencies:
     "@types/qs" "^6.9.17"
     qs "~6.9.7"
