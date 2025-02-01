@@ -20,7 +20,6 @@ interface Props {
         contact_text: string
     }
     flash: {
-        message: string | null
         success: string | null
     }
 }
