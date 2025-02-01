@@ -53,7 +53,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
             Route::controller(SettingsController::class)->prefix('/parametres')->group(function () {
                 Route::get('/site', 'website')->name('settings.website');
+                Route::get('/illustration', 'illustration')->name('settings.illustration');
                 Route::post('/website', 'updateWebsite')->name('settings.website.update');
+                Route::post('/illustration', 'updateIllustration')->name('settings.illustration.update');
             });
         });
     });
