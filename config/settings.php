@@ -1,5 +1,6 @@
 <?php
 use App\Settings\WebsiteSettings;
+use App\Settings\IllustrationSettings;
 
 return [
 
@@ -9,6 +10,7 @@ return [
      */
     'settings' => [
         WebsiteSettings::class,
+        IllustrationSettings::class,
     ],
 
     /*

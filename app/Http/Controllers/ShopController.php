@@ -7,6 +7,7 @@ use App\Actions\Order\HandleGuestAction;
 use App\Actions\Order\HandleOrderAction;
 use App\Actions\Order\HandleAddressesAction;
 use App\Settings\WebsiteSettings;
+use App\Settings\IllustrationSettings;
 use App\Events\OrderCreated;
 use App\Http\Requests\OrderRequest;
 use App\Models\Address;
@@ -36,6 +37,11 @@ class ShopController extends Controller
         ];
 
         return Inertia::render('Visitors/Shop/Index', compact('products', 'settings'));
+    }
+
+    public function illustration(IllustrationSettings $settings): Response
+    {
+        return Inertia::render('Visitors/Shop/Illustration', compact('settings'));
     }
 
     public function show(string $slug): Response
