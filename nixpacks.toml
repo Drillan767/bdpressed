@@ -1,16 +1,15 @@
 [variables]
-    UPLOAD_MAX_FILESIZE = '50M'
-    POST_MAX_SIZE = '50M'
+UPLOAD_MAX_FILESIZE = '50M'
+POST_MAX_SIZE = '50M'
 
 [phases.setup]
 nixPkgs = [
-  "...",
+    "...",
 
-  # https://nixos.org/manual/nixpkgs/stable/#var-meta-priority
-  '(lib.recursiveUpdate php83Packages.composer { meta.priority = php83Packages.composer.meta.priority or 0 -1; })',
+    # https://nixos.org/manual/nixpkgs/stable/#var-meta-priority
+    '(lib.recursiveUpdate php83Packages.composer { meta.priority = php83Packages.composer.meta.priority or 0 -1; })',
 ]
-
-cmds = ['PHP_INI_PATH=$(php --ini | grep "Additional .ini files parsed:" | cut -d: -f2 | tr -d " "); echo "PHP_INI_PATH is $PHP_INI_PATH"; echo "upload_max_filesize=50M" >> $PHP_INI_PATH; echo "post_max_size=50M" >> $PHP_INI_PATH; echo "Content of php.ini below:"; cat "$PHP_INI_PATH"']
+cmds = [ 'PHP_INI_PATH=$(php --ini | grep "Additional .ini files parsed:" | cut -d: -f2 | tr -d " "); echo "PHP_INI_PATH is $PHP_INI_PATH"; echo "upload_max_filesize=50M" >> $PHP_INI_PATH; echo "post_max_size=50M" >> $PHP_INI_PATH; echo "Content of php.ini below:"; cat "$PHP_INI_PATH"' ]
 
 [staticAssets]
 

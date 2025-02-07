@@ -45,7 +45,7 @@ function updatePassword() {
         </header>
 
         <form class="mt-6 space-y-6" @submit.prevent="updatePassword">
-<!--            <div>
+            <!--            <div>
                 <InputLabel for="current_password" value="Current Password" />
 
                 <TextInput
@@ -116,7 +116,7 @@ function updatePassword() {
                         Saved.
                     </p>
                 </Transition>
-            </div>-->
+            </div> -->
         </form>
     </section>
 </template>

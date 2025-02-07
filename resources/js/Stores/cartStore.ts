@@ -1,7 +1,7 @@
 import type { CartItem } from '@/types'
+import useToast from '@/Composables/toast'
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
-import useToast from '@/Composables/toast'
 
 const useCartStore = defineStore('cart', () => {
     const { showError } = useToast()

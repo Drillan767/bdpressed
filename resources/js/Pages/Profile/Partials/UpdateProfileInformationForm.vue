@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Link, useForm, usePage } from '@inertiajs/vue3'
+import { useForm, usePage } from '@inertiajs/vue3'
 import { route } from 'ziggy-js'
 
 defineProps<{
