@@ -1,5 +1,6 @@
 import { createVuetify } from 'vuetify'
 import { md3 } from 'vuetify/blueprints'
+import { VNumberInput } from 'vuetify/labs/VNumberInput'
 import { VStepperVertical } from 'vuetify/labs/VStepperVertical'
 import { fr } from 'vuetify/locale'
 
@@ -17,6 +18,7 @@ export default createVuetify({
 
     components: {
         VStepperVertical,
+        VNumberInput,
     },
 
     defaults: {
