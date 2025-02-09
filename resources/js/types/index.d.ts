@@ -185,3 +185,41 @@ export type PageProps<
     }
     ziggy: Config & { location: string }
 }
+
+export interface IllustrationSettings {
+    bust_base: number
+    bust_add_human: number
+    bust_add_animal: number
+    fl_base: number
+    fl_add_human: number
+    fl_add_animal: number
+    animal_base: number
+    annimal_add_one: number
+    animal_toy: number
+    option_pose_simple: number
+    option_pose_complex: number
+    option_bg_gradient: number
+    option_bg_simple: number
+    option_bg_complex: number
+    options_print: number
+    options_add_tracking: number
+}
+
+export interface IllustrationDetailed {
+    addedHuman?: number
+    addedAnimal?: number
+    pose: 'simple' | 'complex'
+    background: 'gradient' | 'simple' | 'complex'
+}
+
+export interface IllustrationForm {
+    illustrationType: 'bust' | 'full' | 'animal'
+    bustDetails?: IllustrationDetailed
+    fullDetails?: IllustrationDetailed
+    animalDetails?: IllustrationDetailed & { addedToy: number }
+    options: {
+        print: boolean
+        addTracking: boolean
+        description: string
+    }
+}
