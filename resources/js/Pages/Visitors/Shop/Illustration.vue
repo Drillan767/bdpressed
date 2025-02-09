@@ -1,4 +1,8 @@
 <script setup lang="ts">
+import type { IllustrationForm, IllustrationSettings } from '@/types'
+import AnimalForm from '@/Components/Shop/illustrations/AnimalForm.vue'
+import BustForm from '@/Components/Shop/illustrations/BustForm.vue'
+import FullLengthForm from '@/Components/Shop/illustrations/FullLengthForm.vue'
 import VisitorsLayout from '@/Layouts/VisitorsLayout.vue'
 import validationConfig from '@/plugins/validationConfig'
 import { useHead } from '@vueuse/head'
@@ -6,56 +10,14 @@ import { useForm, useIsFormValid } from 'vee-validate'
 import { computed, ref, watch } from 'vue'
 
 interface Props {
-    settings: {
-        bust_base: number
-        bust_add_human: number
-        bust_add_animal: number
-        fl_base: number
-        fl_add_human: number
-        fl_add_animal: number
-        animal_base: number
-        annimal_add_one: number
-        animal_toy: number
-        option_pose_simple: number
-        option_pose_complex: number
-        option_bg_gradient: number
-        option_bg_simple: number
-        option_bg_complex: number
-        options_print: number
-        options_add_tracking: number
-    }
+    settings: IllustrationSettings
 }
 
-interface Form {
-    illustrationType: 'bust' | 'full' | 'animal'
-    bustDetails?: {
-        addedHuman: number
-        addedAnimal: number
-        pose: 'simple' | 'complex'
-        background: 'gradient' | 'simple' | 'complex'
-    }
-    fullDetails?: {
-        addedHuman: number
-        addedAnimal: number
-        pose: 'simple' | 'complex'
-        background: 'gradient' | 'simple' | 'complex'
-    }
-    animalDetails?: {
-        addedAnimal: number
-        addedToy: number
-        pose: 'simple' | 'complex'
-        background: 'gradient' | 'simple' | 'complex'
-    }
-    options: {
-        print: boolean
-        addTracking: boolean
-        description: string
-    }
-}
+type FormDetail = IllustrationForm['bustDetails'] | IllustrationForm['fullDetails'] | IllustrationForm['animalDetails']
 
 defineOptions({ layout: VisitorsLayout })
 
-const props = defineProps<Props>()
+defineProps<Props>()
 
 useHead({
     title: 'Commander une illustration',
@@ -64,7 +26,7 @@ useHead({
 const step = ref(1)
 const illustrationType = ref<'bust' | 'full' | 'animal'>('bust')
 
-const { defineField, handleSubmit } = useForm<Form>({
+const { defineField, handleSubmit } = useForm<IllustrationForm>({
     validationSchema: computed(() => ({
         'illustrationType': 'required',
         'bustDetails.addedHuman': illustrationType.value === 'bust' ? 'required|integer' : '',
@@ -87,16 +49,16 @@ const { defineField, handleSubmit } = useForm<Form>({
     initialValues: {
         illustrationType: 'bust',
         bustDetails: {
-            pose: 'simple',
-            background: 'gradient',
             addedHuman: 0,
             addedAnimal: 0,
-        }
+            pose: 'simple',
+            background: 'gradient',
+        },
     },
 })
 
 const [illustration, illustrationProps] = defineField('illustrationType', validationConfig)
-const [bAddedHuman, bAddedHumanProps] = defineField('bustDetails.addedHuman', validationConfig)
+/* const [bAddedHuman, bAddedHumanProps] = defineField('bustDetails.addedHuman', validationConfig)
 const [bAddedAnimal, bAddedAnimalProps] = defineField('bustDetails.addedAnimal', validationConfig)
 const [bPose, bPoseProps] = defineField('bustDetails.pose', validationConfig)
 const [bBackground, bBackgroundProps] = defineField('bustDetails.background', validationConfig)
@@ -113,7 +75,7 @@ const [aBackground, aBackgroundProps] = defineField('animalDetails.background', 
 
 const [print, printProps] = defineField('options.print', validationConfig)
 const [addTracking, addTrackingProps] = defineField('options.addTracking', validationConfig)
-const [description, descriptionProps] = defineField('options.description', validationConfig)
+const [description, descriptionProps] = defineField('options.description', validationConfig) */
 
 const formValid = useIsFormValid()
 
@@ -121,12 +83,26 @@ const submit = handleSubmit(async (form) => {
     console.log(form)
 })
 
-const showBAddHumans = ref(false)
-const showBAddAnimals = ref(false)
-const showFAddHumans = ref(false)
-const showFAddAnimals = ref(false)
-const showAnimalAddAnimals = ref(false)
-const showAnimalAddToys = ref(false)
+const detailsForm = ref<Required<FormDetail>>({
+    addedHuman: 0,
+    addedAnimal: 0,
+    pose: 'simple',
+    background: 'gradient',
+})
+const detailsValid = ref(false)
+
+const detailsFormStep = computed(() => {
+    switch (illustrationType.value) {
+        case 'bust':
+            return BustForm
+        case 'full':
+            return FullLengthForm
+        case 'animal':
+            return AnimalForm
+        default:
+            return false
+    }
+})
 
 watch(illustration, (value) => {
     illustrationType.value = value
@@ -268,122 +244,15 @@ watch(illustration, (value) => {
                                     <VStepperWindowItem
                                         :value="2"
                                     >
-                                        <template v-if="illustration === 'bust'">
-                                            <VContainer>
-                                                <VRow>
-                                                    <VCol>
-                                                        <VCard
-                                                            variant="outlined"
-                                                            color="primary"
-                                                            title="Ajouter une personne ?"
-                                                        >
-                                                            <template #append>
-                                                                <span class="font-weight-bold text-body-2">
-                                                                    {{ settings.bust_add_human }} € / personne
-                                                                </span>
-                                                            </template>
-                                                            <template #text>
-                                                                <VTextField
-                                                                    v-bind="bAddedHumanProps"
-                                                                    v-model="bAddedHuman"
-                                                                    :min="0"
-                                                                    label="Combien ?"
-                                                                    type="number"
-                                                                />
-                                                            </template>
-                                                        </VCard>
-                                                    </VCol>
-                                                    <VCol>
-                                                        <VCard
-                                                            variant="outlined"
-                                                            color="primary"
-                                                            title="Ajouter un compagnon ?"
-                                                        >
-                                                            <template #append>
-                                                                <span class="font-weight-bold text-body-2">
-                                                                    {{ settings.bust_add_animal }} € / compagnon
-                                                                </span>
-                                                            </template>
-                                                            <template #text>
-                                                                <VTextField
-                                                                    v-bind="bAddedHumanProps"
-                                                                    v-model="bAddedHuman"
-                                                                    :min="0"
-                                                                    label="Combien ?"
-                                                                    type="number"
-                                                                />
-                                                            </template>
-                                                        </VCard>
-                                                    </VCol>
-                                                </VRow>
-                                                <VRow>
-                                                    <VCol>
-                                                        <VCard
-                                                            variant="outlined"
-                                                            color="primary"
-                                                            title="Pose"
-                                                        >
-                                                            <template #text>
-                                                                <VListGroup
-                                                                    v-bind="bPoseProps"
-                                                                    v-model="bPose"
-                                                                    mandatory
-                                                                >
-                                                                    <VRow>
-                                                                        <VItem
-                                                                            value="simple"
-                                                                            v-slot="{ isSelected, toggle }"
-                                                                        >
-                                                                            <VCol
-                                                                                cols="12"
-                                                                                md="4"
-                                                                            >
-                                                                                <VCard
-                                                                                    :variant="isSelected ? 'tonal' : 'outlined'"
-                                                                                    title="Simple"
-                                                                                    prepend-icon="mdi-account"
-                                                                                    color="primary"
-                                                                                    @click="toggle"
-                                                                                >
-                                                                                    <template #append>
-                                                                                        <span class="font-weight-bold">
-                                                                                            {{ settings.fl_base }} €
-                                                                                        </span>
-                                                                                    </template>
-                                                                                </VCard>
-                                                                            </VCol>
-                                                                        </VItem>
-                                                                        <VItem
-                                                                            value="complex"
-                                                                            v-slot="{ isSelected, toggle }"
-                                                                        >
-                                                                            <VCol
-                                                                                cols="12"
-                                                                                md="4"
-                                                                            >
-                                                                                <VCard
-                                                                                    :variant="isSelected ? 'tonal' : 'outlined'"
-                                                                                    color="primary"
-                                                                                    prepend-icon="mdi-human-greeting"
-                                                                                    title="Complexe"
-                                                                                    @click="toggle"
-                                                                                >
-                                                                                    <template #append>
-                                                                                        <span class="font-weight-bold">
-                                                                                            {{ settings.fl_base }} €
-                                                                                        </span>
-                                                                                    </template>
-                                                                                </VCard>
-                                                                            </VCol>
-                                                                        </VItem>
-                                                                    </VRow>
-                                                                </VListGroup>
-                                                            </template>
-                                                        </VCard>
-                                                    </VCol>
-                                                </VRow>
-                                            </VContainer>
-                                        </template>
+                                        <component
+                                            :is="detailsFormStep"
+                                            v-model:form="detailsForm"
+                                            v-model:valid="detailsValid"
+                                            :settings
+                                        />
+                                        <!-- <template v-if="illustration === 'bust'">
+
+                                        </template> -->
                                     </VStepperWindowItem>
                                 </VStepperWindow>
                                 <VStepperActions
