@@ -1,13 +1,16 @@
 <script setup lang="ts">
 import type { IllustrationDetailed, IllustrationSettings } from '@/types'
 import validationConfig from '@/plugins/validationConfig'
+import useIllustrationStore from '@/Stores/illustrationStore'
+import { storeToRefs } from 'pinia'
 import { useForm, useIsFormValid } from 'vee-validate'
 import { watch } from 'vue'
 
 defineProps<{ settings: IllustrationSettings }>()
 
-const form = defineModel<IllustrationDetailed>('form', { required: true })
 const valid = defineModel<boolean>('valid', { required: true })
+
+const { bustForm } = storeToRefs(useIllustrationStore())
 
 const { defineField, controlledValues } = useForm<IllustrationDetailed>({
     validationSchema: {
@@ -16,7 +19,7 @@ const { defineField, controlledValues } = useForm<IllustrationDetailed>({
         pose: 'required',
         background: 'required',
     },
-    initialValues: form.value,
+    initialValues: bustForm.value,
 })
 
 const [addedHuman, addedHumanProps] = defineField('addedHuman', validationConfig)
@@ -27,7 +30,7 @@ const [background, backgroundProps] = defineField('background', validationConfig
 const formValid = useIsFormValid()
 
 watch(controlledValues, (value) => {
-    form.value = value
+    bustForm.value = value
 })
 
 watch(formValid, (value) => {
@@ -156,5 +159,97 @@ watch(formValid, (value) => {
                 </VCard>
             </VCol>
         </VRow>
+        <<<<<<< Updated upstream
+        =======
+        <VRow>
+            <VCol>
+                <VCard
+                    variant="outlined"
+                    color="primary"
+                    title="Fond"
+                >
+                    <template #text>
+                        <VItemGroup
+                            v-bind="backgroundProps"
+                            v-model="background"
+                            mandatory
+                        >
+                            <VRow>
+                                <VItem
+                                    v-slot="{ isSelected, toggle }"
+                                    value="gradient"
+                                >
+                                    <VCol
+                                        cols="12"
+                                        md="4"
+                                    >
+                                        <VCard
+                                            :variant="isSelected ? 'tonal' : 'outlined'"
+                                            color="primary"
+                                            prepend-icon="mdi-gradient-vertical"
+                                            title="Gradient"
+                                            @click="toggle"
+                                        >
+                                            <template #append>
+                                                <span class="font-weight-bold">
+                                                    {{ settings.option_bg_gradient }} €
+                                                </span>
+                                            </template>
+                                        </VCard>
+                                    </VCol>
+                                </VItem>
+                                <VItem
+                                    v-slot="{ isSelected, toggle }"
+                                    value="simple"
+                                >
+                                    <VCol
+                                        cols="12"
+                                        md="4"
+                                    >
+                                        <VCard
+                                            :variant="isSelected ? 'tonal' : 'outlined'"
+                                            color="primary"
+                                            prepend-icon="mdi-square-outline"
+                                            title="Simple"
+                                            @click="toggle"
+                                        >
+                                            <template #append>
+                                                <span class="font-weight-bold">
+                                                    {{ settings.option_bg_simple }} €
+                                                </span>
+                                            </template>
+                                        </VCard>
+                                    </VCol>
+                                </VItem>
+                                <VItem
+                                    v-slot="{ isSelected, toggle }"
+                                    value="complex"
+                                >
+                                    <VCol
+                                        cols="12"
+                                        md="4"
+                                    >
+                                        <VCard
+                                            :variant="isSelected ? 'tonal' : 'outlined'"
+                                            color="primary"
+                                            prepend-icon="mdi-image-area"
+                                            title="Complexe"
+                                            @click="toggle"
+                                        >
+                                            <template #append>
+                                                <span class="font-weight-bold">
+                                                    {{ settings.option_bg_complex }} €
+                                                </span>
+                                            </template>
+                                        </VCard>
+                                    </VCol>
+                                </VItem>
+                            </VRow>
+                        </VItemGroup>
+                    </template>
+                </VCard>
+            </VCol>
+        </VRow>
+        >>>>>>> Stashed changes
     </VContainer>
 </template>

@@ -213,10 +213,10 @@ export interface IllustrationDetailed {
 }
 
 export interface IllustrationForm {
-    illustrationType: 'bust' | 'full' | 'animal'
-    bustDetails?: IllustrationDetailed
-    fullDetails?: IllustrationDetailed
-    animalDetails?: IllustrationDetailed & { addedToy: number }
+    illustrationType: 'bust' | 'fl' | 'animal'
+    bustDetails: IllustrationDetailed
+    fullDetails: IllustrationDetailed
+    animalDetails: IllustrationDetailed & { addedToy: number }
     options: {
         print: boolean
         addTracking: boolean

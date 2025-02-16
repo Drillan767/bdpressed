@@ -3,11 +3,14 @@ import type { IllustrationForm, IllustrationSettings } from '@/types'
 import AnimalForm from '@/Components/Shop/illustrations/AnimalForm.vue'
 import BustForm from '@/Components/Shop/illustrations/BustForm.vue'
 import FullLengthForm from '@/Components/Shop/illustrations/FullLengthForm.vue'
+import IllustrationRecap from '@/Components/Shop/illustrations/IllustrationRecap.vue'
 import VisitorsLayout from '@/Layouts/VisitorsLayout.vue'
 import validationConfig from '@/plugins/validationConfig'
+import useIllustrationStore from '@/Stores/illustrationStore'
 import { useHead } from '@vueuse/head'
+import { storeToRefs } from 'pinia'
 import { useForm, useIsFormValid } from 'vee-validate'
-import { computed, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 
 interface Props {
     settings: IllustrationSettings
@@ -17,35 +20,19 @@ type FormDetail = IllustrationForm['bustDetails'] | IllustrationForm['fullDetail
 
 defineOptions({ layout: VisitorsLayout })
 
-defineProps<Props>()
+const props = defineProps<Props>()
 
 useHead({
     title: 'Commander une illustration',
 })
 
-const step = ref(1)
-const illustrationType = ref<'bust' | 'full' | 'animal'>('bust')
+const { initSettings } = useIllustrationStore()
+const { currentStep, illustrationType } = storeToRefs(useIllustrationStore())
 
 const { defineField, handleSubmit } = useForm<IllustrationForm>({
-    validationSchema: computed(() => ({
-        'illustrationType': 'required',
-        'bustDetails.addedHuman': illustrationType.value === 'bust' ? 'required|integer' : '',
-        'bustDetails.addedAnimal': illustrationType.value === 'bust' ? 'required|integer' : '',
-        'bustDetails.pose': illustrationType.value === 'bust' ? 'required' : '',
-        'bustDetails.background': illustrationType.value === 'bust' ? 'required' : '',
-
-        'fullDetails.addedHuman': illustrationType.value === 'full' ? 'required|integer' : '',
-        'fullDetails.addedAnimal': illustrationType.value === 'full' ? 'required|integer' : '',
-        'fullDetails.pose': illustrationType.value === 'full' ? 'required' : '',
-        'fullDetails.background': illustrationType.value === 'full' ? 'required' : '',
-
-        'animalDetails.addedAnimal': illustrationType.value === 'animal' ? 'required|integer' : '',
-        'animalDetails.addedToy': illustrationType.value === 'animal' ? 'required|integer' : '',
-        'animalDetails.pose': illustrationType.value === 'animal' ? 'required' : '',
-        'animalDetails.background': illustrationType.value === 'animal' ? 'required' : '',
-
-        'description': 'required',
-    })),
+    validationSchema: {
+        illustrationType: 'required',
+    },
     initialValues: {
         illustrationType: 'bust',
         bustDetails: {
@@ -58,24 +45,6 @@ const { defineField, handleSubmit } = useForm<IllustrationForm>({
 })
 
 const [illustration, illustrationProps] = defineField('illustrationType', validationConfig)
-/* const [bAddedHuman, bAddedHumanProps] = defineField('bustDetails.addedHuman', validationConfig)
-const [bAddedAnimal, bAddedAnimalProps] = defineField('bustDetails.addedAnimal', validationConfig)
-const [bPose, bPoseProps] = defineField('bustDetails.pose', validationConfig)
-const [bBackground, bBackgroundProps] = defineField('bustDetails.background', validationConfig)
-
-const [fAddedHuman, fAddedHumanProps] = defineField('fullDetails.addedHuman', validationConfig)
-const [fAddedAnimal, fAddedAnimalProps] = defineField('fullDetails.addedAnimal', validationConfig)
-const [fPose, fPoseProps] = defineField('fullDetails.pose', validationConfig)
-const [fBackground, fBackgroundProps] = defineField('fullDetails.background', validationConfig)
-
-const [aAddedAnimal, aAddedAnimalProps] = defineField('animalDetails.addedAnimal', validationConfig)
-const [aAddedToy, aAddedToyProps] = defineField('animalDetails.addedToy', validationConfig)
-const [aPose, aPoseProps] = defineField('animalDetails.pose', validationConfig)
-const [aBackground, aBackgroundProps] = defineField('animalDetails.background', validationConfig)
-
-const [print, printProps] = defineField('options.print', validationConfig)
-const [addTracking, addTrackingProps] = defineField('options.addTracking', validationConfig)
-const [description, descriptionProps] = defineField('options.description', validationConfig) */
 
 const formValid = useIsFormValid()
 
@@ -95,7 +64,7 @@ const detailsFormStep = computed(() => {
     switch (illustrationType.value) {
         case 'bust':
             return BustForm
-        case 'full':
+        case 'fl':
             return FullLengthForm
         case 'animal':
             return AnimalForm
@@ -106,6 +75,10 @@ const detailsFormStep = computed(() => {
 
 watch(illustration, (value) => {
     illustrationType.value = value
+})
+
+onMounted(() => {
+    initSettings(props.settings)
 })
 </script>
 
@@ -123,7 +96,7 @@ watch(illustration, (value) => {
                         md="9"
                     >
                         <VStepper
-                            v-model="step"
+                            v-model="currentStep"
                             :flat="true"
                             class="mt-4"
                             color="primary"
@@ -131,25 +104,25 @@ watch(illustration, (value) => {
                             <template #default="{ prev, next }">
                                 <VStepperHeader>
                                     <VStepperItem
-                                        :complete="step > 1"
+                                        :complete="currentStep > 1"
                                         :value="1"
                                         title="Type d'illustration"
                                     />
                                     <VDivider />
                                     <VStepperItem
-                                        :complete="step > 2"
+                                        :complete="currentStep > 2"
                                         :value="2"
                                         title="Détails"
                                     />
                                     <VDivider />
                                     <VStepperItem
-                                        :complete="step > 3"
+                                        :complete="currentStep > 3"
                                         :value="3"
                                         title="Options"
                                     />
                                     <VDivider />
                                     <VStepperItem
-                                        :complete="step === 4"
+                                        :complete="currentStep === 4"
                                         :value="4"
                                         title="Récapitulatif"
                                     />
@@ -191,7 +164,7 @@ watch(illustration, (value) => {
                                                     </VItem>
                                                     <VItem
                                                         v-slot="{ isSelected, toggle }"
-                                                        value="full"
+                                                        value="fl"
                                                     >
                                                         <VCol
                                                             cols="12"
@@ -246,7 +219,6 @@ watch(illustration, (value) => {
                                     >
                                         <component
                                             :is="detailsFormStep"
-                                            v-model:form="detailsForm"
                                             v-model:valid="detailsValid"
                                             :settings
                                         />
@@ -266,9 +238,7 @@ watch(illustration, (value) => {
                         cols="12"
                         md="3"
                     >
-                        <h2>
-                            Total
-                        </h2>
+                        <IllustrationRecap />
                     </VCol>
                 </VRow>
             </VContainer>
