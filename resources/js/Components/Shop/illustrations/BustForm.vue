@@ -87,11 +87,15 @@ watch(formValid, (value) => {
             </VCol>
         </VRow>
         <VRow>
-            <VCol>
+            <VCol
+                cols="12"
+                md="6"
+            >
                 <VCard
                     variant="outlined"
                     color="primary"
                     title="Pose"
+                    class="fill-height"
                 >
                     <template #text>
                         <VItemGroup
@@ -104,10 +108,7 @@ watch(formValid, (value) => {
                                     v-slot="{ isSelected, toggle }"
                                     value="simple"
                                 >
-                                    <VCol
-                                        cols="12"
-                                        md="4"
-                                    >
+                                    <VCol cols="12">
                                         <VCard
                                             :variant="isSelected ? 'tonal' : 'outlined'"
                                             title="Simple"
@@ -127,10 +128,7 @@ watch(formValid, (value) => {
                                     v-slot="{ isSelected, toggle }"
                                     value="complex"
                                 >
-                                    <VCol
-                                        cols="12"
-                                        md="4"
-                                    >
+                                    <VCol cols="12">
                                         <VCard
                                             :variant="isSelected ? 'tonal' : 'outlined'"
                                             color="primary"
@@ -158,11 +156,10 @@ watch(formValid, (value) => {
                     </template>
                 </VCard>
             </VCol>
-        </VRow>
-        <<<<<<< Updated upstream
-        =======
-        <VRow>
-            <VCol>
+            <VCol
+                cols="12"
+                md="6"
+            >
                 <VCard
                     variant="outlined"
                     color="primary"
@@ -179,15 +176,12 @@ watch(formValid, (value) => {
                                     v-slot="{ isSelected, toggle }"
                                     value="gradient"
                                 >
-                                    <VCol
-                                        cols="12"
-                                        md="4"
-                                    >
+                                    <VCol cols="12">
                                         <VCard
                                             :variant="isSelected ? 'tonal' : 'outlined'"
                                             color="primary"
                                             prepend-icon="mdi-gradient-vertical"
-                                            title="Gradient"
+                                            title="Dégradé / uni"
                                             @click="toggle"
                                         >
                                             <template #append>
@@ -202,10 +196,7 @@ watch(formValid, (value) => {
                                     v-slot="{ isSelected, toggle }"
                                     value="simple"
                                 >
-                                    <VCol
-                                        cols="12"
-                                        md="4"
-                                    >
+                                    <VCol cols="12">
                                         <VCard
                                             :variant="isSelected ? 'tonal' : 'outlined'"
                                             color="primary"
@@ -225,10 +216,7 @@ watch(formValid, (value) => {
                                     v-slot="{ isSelected, toggle }"
                                     value="complex"
                                 >
-                                    <VCol
-                                        cols="12"
-                                        md="4"
-                                    >
+                                    <VCol cols="12">
                                         <VCard
                                             :variant="isSelected ? 'tonal' : 'outlined'"
                                             color="primary"
@@ -250,6 +238,5 @@ watch(formValid, (value) => {
                 </VCard>
             </VCol>
         </VRow>
-        >>>>>>> Stashed changes
     </VContainer>
 </template>
