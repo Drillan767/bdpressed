@@ -58,7 +58,7 @@ const useIllustrationStore = defineStore('illustration', () => {
         fl_add_human: 0,
         fl_add_animal: 0,
         animal_base: 0,
-        annimal_add_one: 0,
+        animal_add_one: 0,
         animal_toy: 0,
         option_pose_simple: 0,
         option_pose_complex: 0,
@@ -89,7 +89,7 @@ const useIllustrationStore = defineStore('illustration', () => {
         }
 
         if (illustrationType.value === 'animal' && animalForm.value) {
-            total += illustrationSettings.value.annimal_add_one * animalForm.value.addedAnimal
+            total += illustrationSettings.value.animal_add_one * animalForm.value.addedAnimal
             total += illustrationSettings.value.animal_toy * animalForm.value.addedToy
             total += illustrationSettings.value[`option_pose_${animalForm.value.pose}`]
             total += illustrationSettings.value[`option_bg_${animalForm.value.background}`]
@@ -167,7 +167,7 @@ const useIllustrationStore = defineStore('illustration', () => {
                 list.push(
                     {
                         title: 'Compagnons ajoutés',
-                        append: `${illustrationSettings.value.annimal_add_one * animalForm.value.addedAnimal}€`,
+                        append: `${illustrationSettings.value.animal_add_one * animalForm.value.addedAnimal}€`,
                     },
                     {
                         title: 'Jouets ajoutés',

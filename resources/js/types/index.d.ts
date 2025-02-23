@@ -194,7 +194,7 @@ export interface IllustrationSettings {
     fl_add_human: number
     fl_add_animal: number
     animal_base: number
-    annimal_add_one: number
+    animal_add_one: number
     animal_toy: number
     option_pose_simple: number
     option_pose_complex: number
@@ -206,8 +206,8 @@ export interface IllustrationSettings {
 }
 
 export interface IllustrationDetailed {
-    addedHuman?: number
-    addedAnimal?: number
+    addedHuman: number
+    addedAnimal: number
     pose: 'simple' | 'complex'
     background: 'gradient' | 'simple' | 'complex'
 }

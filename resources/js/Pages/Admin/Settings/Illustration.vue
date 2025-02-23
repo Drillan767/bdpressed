@@ -19,7 +19,7 @@ interface Props {
         fl_add_human: number
         fl_add_animal: number
         animal_base: number
-        annimal_add_one: number
+        animal_add_one: number
         animal_toy: number
         option_pose_simple: number
         option_pose_complex: number
@@ -52,7 +52,7 @@ const { defineField, handleSubmit } = useForm<Props['settings']>({
         fl_add_human: 'required|integer',
         fl_add_animal: 'required|integer',
         animal_base: 'required|integer',
-        annimal_add_one: 'required|integer',
+        animal_add_one: 'required|integer',
         animal_toy: 'required|integer',
         option_pose_simple: 'required|integer',
         option_pose_complex: 'required|integer',
@@ -72,7 +72,7 @@ const [flBase, flBaseProps] = defineField('fl_base', validationConfig)
 const [flAddHuman, flAddHumanProps] = defineField('fl_add_human', validationConfig)
 const [flAddAnimal, flAddAnimalProps] = defineField('fl_add_animal', validationConfig)
 const [animalBase, animalBaseProps] = defineField('animal_base', validationConfig)
-const [annimalAddOne, annimalAddOneProps] = defineField('annimal_add_one', validationConfig)
+const [annimalAddOne, annimalAddOneProps] = defineField('animal_add_one', validationConfig)
 const [animalToy, animalToyProps] = defineField('animal_toy', validationConfig)
 const [poseSimple, poseSimpleProps] = defineField('option_pose_simple', validationConfig)
 const [poseComplex, poseComplexProps] = defineField('option_pose_complex', validationConfig)

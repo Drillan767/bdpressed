@@ -29,7 +29,7 @@ class IllustrationSettingsRequest extends FormRequest
             'fl_add_human' => ['required'],
             'fl_add_animal' => ['required'],
             'animal_base' => ['required'],
-            'annimal_add_one' => ['required'],
+            'animal_add_one' => ['required'],
             'animal_toy' => ['required'],
             'option_pose_simple' => ['required'],
             'option_pose_complex' => ['required'],
