@@ -4,6 +4,7 @@ import AnimalForm from '@/Components/Shop/illustrations/AnimalForm.vue'
 import BustForm from '@/Components/Shop/illustrations/BustForm.vue'
 import FullLengthForm from '@/Components/Shop/illustrations/FullLengthForm.vue'
 import IllustrationRecap from '@/Components/Shop/illustrations/IllustrationRecap.vue'
+import OptionsForm from '@/Components/Shop/illustrations/OptionsForm.vue'
 import VisitorsLayout from '@/Layouts/VisitorsLayout.vue'
 import validationConfig from '@/plugins/validationConfig'
 import useIllustrationStore from '@/Stores/illustrationStore'
@@ -214,9 +215,7 @@ onMounted(() => {
                                             </VContainer>
                                         </VItemGroup>
                                     </VStepperWindowItem>
-                                    <VStepperWindowItem
-                                        :value="2"
-                                    >
+                                    <VStepperWindowItem :value="2">
                                         <component
                                             :is="detailsFormStep"
                                             v-model:valid="detailsValid"
@@ -225,6 +224,9 @@ onMounted(() => {
                                         <!-- <template v-if="illustration === 'bust'">
 
                                         </template> -->
+                                    </VStepperWindowItem>
+                                    <VStepperWindowItem :value="3">
+                                        <OptionsForm />
                                     </VStepperWindowItem>
                                 </VStepperWindow>
                                 <VStepperActions
