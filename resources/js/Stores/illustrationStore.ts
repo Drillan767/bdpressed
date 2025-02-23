@@ -50,6 +50,12 @@ const useIllustrationStore = defineStore('illustration', () => {
         background: 'gradient',
     })
 
+    const optionsForm = ref<Required<IllustrationForm['options']>>({
+        description: '',
+        print: false,
+        addTracking: false,
+    })
+
     const illustrationSettings = ref<IllustrationSettings>({
         bust_base: 0,
         bust_add_human: 0,
@@ -210,6 +216,7 @@ const useIllustrationStore = defineStore('illustration', () => {
         bustForm,
         flForm,
         animalForm,
+        optionsForm,
         initSettings,
         recap,
     }
