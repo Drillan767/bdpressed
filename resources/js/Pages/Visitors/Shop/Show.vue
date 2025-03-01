@@ -31,6 +31,7 @@ function handleAddToCart(product: Catalog) {
             id: product.id,
             name: product.name,
             weight: product.weight,
+            type: 'item',
             stock: product.stock - 1,
             price: product.price,
             illustration: product.promotedImage,

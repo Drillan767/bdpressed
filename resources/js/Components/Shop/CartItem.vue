@@ -1,12 +1,21 @@
 <script setup lang="ts">
-import type { CartItem } from '@/types'
+import type { CartIllustration, CartItem } from '@/types'
 import useNumbers from '@/Composables/numbers'
 
-const { item } = defineProps<{ item: CartItem }>()
+const { item } = defineProps<{ item: CartItem | CartIllustration }>()
 const emit = defineEmits<{
     (e: 'quantity', value: 'decrease' | 'increase'): void
     (e: 'remove'): void
 }>()
+
+/*
+TODO: add a link to the illustration form that will looks like follows: illustration?id=xxxxx
+TODO: be able to fill the illustration form based on the cart item settings
+TODO: update the cart with the new values
+TODO: reset the illustration form
+TODO: determine if the illustration is paid when user checks out, or after
+TODO: handle the back end
+*/
 
 const { formatPrice } = useNumbers()
 </script>
@@ -16,7 +25,10 @@ const { formatPrice } = useNumbers()
         density="comfortable"
     >
         <div class="cart-item">
-            <div class="asset">
+            <div
+                v-if="item.type === 'item'"
+                class="asset"
+            >
                 <VImg
                     :src="item.illustration"
                     aspect-ratio="1"
@@ -29,7 +41,10 @@ const { formatPrice } = useNumbers()
                 <div class="name">
                     {{ item.name }}
                 </div>
-                <div class="quantity">
+                <div
+                    v-if="item.type === 'item'"
+                    class="quantity"
+                >
                     <VBtn
                         variant="text"
                         color="secondary"
@@ -49,12 +64,21 @@ const { formatPrice } = useNumbers()
                 </div>
             </div>
             <div class="actions">
-                <VBtn
-                    icon="mdi-trash-can-outline"
-                    variant="text"
-                    size="small"
-                    @click.prevent="emit('remove')"
-                />
+                <div>
+                    <VBtn
+                        v-if="item.type === 'illustration'"
+                        variant="text"
+                        size="small"
+                        icon="mdi-image-edit-outline"
+                    />
+                    <VBtn
+                        icon="mdi-trash-can-outline"
+                        variant="text"
+                        size="small"
+                        @click.prevent="emit('remove')"
+                    />
+                </div>
+
                 <span class="price">
                     {{ formatPrice(item.price * item.quantity) }}
                 </span>
