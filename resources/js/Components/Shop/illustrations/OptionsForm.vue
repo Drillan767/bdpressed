@@ -6,11 +6,13 @@ import { storeToRefs } from 'pinia'
 import { useForm, useIsFormValid } from 'vee-validate'
 import { watch } from 'vue'
 
+const valid = defineModel<boolean>('valid', { required: true })
+
 const { optionsForm } = storeToRefs(useIllustrationStore())
 
 const { defineField, controlledValues } = useForm<IllustrationForm['options']>({
     validationSchema: {
-        description: 'required',
+        description: 'required|min:10',
     },
     initialValues: optionsForm.value,
 })
@@ -26,8 +28,8 @@ watch(controlledValues, (value) => {
 })
 
 watch(formValid, (value) => {
-    console.log(value)
-})
+    valid.value = value
+}, { immediate: true })
 </script>
 
 <template>
@@ -70,8 +72,8 @@ watch(formValid, (value) => {
                         <VCard
                             title="Demander le suivi"
                             :prepend-icon="isSelected ? 'mdi-checkbox-marked-outline' : 'mdi-checkbox-blank-outline'"
+                            :variant="isSelected ? 'tonal' : 'outlined'"
                             color="primary"
-                            variant="tonal"
                             @click="toggle"
                         />
                     </VItem>

@@ -84,10 +84,25 @@ export interface CartItem {
     id: number
     name: string
     price: number
+    type: 'item' | 'illustration'
     quantity: number
     stock: number
     weight: number
     illustration: string
+}
+
+export interface CartIllustration extends CartItem {
+    type: 'illustration'
+    illustrationSettings: {
+        illustrationType: 'bust' | 'fl' | 'animal'
+        addedHuman: number
+        addedAnimal: number
+        pose: 'simple' | 'complex'
+        background: 'gradient' | 'simple' | 'complex'
+        description: string
+        print: boolean
+        addTracking: boolean
+    }
 }
 
 export interface AddressFields {

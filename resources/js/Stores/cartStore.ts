@@ -1,4 +1,4 @@
-import type { CartItem } from '@/types'
+import type { CartIllustration, CartItem } from '@/types'
 import useToast from '@/Composables/toast'
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
@@ -7,7 +7,7 @@ const useCartStore = defineStore('cart', () => {
     const { showError } = useToast()
     const cart = ref<CartItem[]>([])
 
-    function addItem(item: Omit<CartItem, 'quantity'>) {
+    function addItem(item: Omit<(CartIllustration | CartItem), 'quantity'>) {
         const itemIndex = cart.value.findIndex(cartItem => cartItem.id === item.id)
 
         if (itemIndex > -1) {

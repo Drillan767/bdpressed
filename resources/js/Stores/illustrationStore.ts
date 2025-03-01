@@ -101,6 +101,14 @@ const useIllustrationStore = defineStore('illustration', () => {
             total += illustrationSettings.value[`option_bg_${animalForm.value.background}`]
         }
 
+        if (optionsForm.value.addTracking) {
+            total += illustrationSettings.value.options_add_tracking
+        }
+
+        if (optionsForm.value.print) {
+            total += illustrationSettings.value.options_print
+        }
+
         return total
     })
 
@@ -191,6 +199,34 @@ const useIllustrationStore = defineStore('illustration', () => {
             }
         }
 
+        if (currentStep.value === 3) {
+            if (optionsForm.value.addTracking || optionsForm.value.print) {
+                list.push(
+                    {
+                        type: 'divider',
+                    },
+                    {
+                        type: 'subheader',
+                        title: 'Options',
+                    },
+                )
+            }
+
+            if (optionsForm.value.addTracking) {
+                list.push({
+                    title: 'Demander le suivi',
+                    append: `${illustrationSettings.value.options_print}€`,
+                })
+            }
+
+            if (optionsForm.value.print) {
+                list.push({
+                    title: 'Imprimer l\'illustration',
+                    append: `${illustrationSettings.value.options_add_tracking}€`,
+                })
+            }
+        }
+
         // Total
 
         list.push(
@@ -219,6 +255,7 @@ const useIllustrationStore = defineStore('illustration', () => {
         optionsForm,
         initSettings,
         recap,
+        total,
     }
 }, {
     persist: {
