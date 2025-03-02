@@ -61,7 +61,11 @@ class OrderRequest extends FormRequest
             'user.guest' => ['required', 'boolean'],
             ...($this->user() ? [] : $unauthenticatedRules),
 
-            'products.*.id' => ['required', 'integer', 'exists:products,id'],
+            'products.*.id' => [
+                'required',
+                'integer',
+                $this->type === 'item' ? 'exists:products,id' : '',
+            ],
             'products.*.quantity' => ['required', 'integer', 'min:1'],
 
             ...($this->has('addresses.shippingId') ? [] : $addressesRules),

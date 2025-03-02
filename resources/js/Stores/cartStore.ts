@@ -5,7 +5,7 @@ import { computed, ref } from 'vue'
 
 const useCartStore = defineStore('cart', () => {
     const { showError } = useToast()
-    const cart = ref<CartItem[]>([])
+    const cart = ref<(CartItem | CartIllustration)[]>([])
 
     function addItem(item: Omit<(CartIllustration | CartItem), 'quantity'>) {
         const itemIndex = cart.value.findIndex(cartItem => cartItem.id === item.id)
