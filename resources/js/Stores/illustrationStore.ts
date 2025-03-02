@@ -1,4 +1,4 @@
-import type { IllustrationForm, IllustrationSettings } from '@/types'
+import type { CartIllustration, IllustrationForm, IllustrationSettings } from '@/types'
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 
@@ -246,6 +246,46 @@ const useIllustrationStore = defineStore('illustration', () => {
         illustrationSettings.value = settings
     }
 
+    function fillForms(settings: CartIllustration['illustrationSettings']) {
+        illustrationType.value = settings.illustrationType
+
+        if (settings.illustrationType === 'bust') {
+            bustForm.value = {
+                addedHuman: settings.addedHuman,
+                addedAnimal: settings.addedAnimal,
+                pose: settings.pose,
+                background: settings.background,
+            }
+        }
+
+        else if (settings.illustrationType === 'fl') {
+            flForm.value = {
+                addedHuman: settings.addedHuman,
+                addedAnimal: settings.addedAnimal,
+                pose: settings.pose,
+                background: settings.background,
+            }
+        }
+
+        else if (settings.illustrationType === 'animal') {
+            animalForm.value = {
+                addedHuman: settings.addedHuman,
+                addedAnimal: settings.addedAnimal,
+                addedToy: settings.addedAnimal,
+                pose: settings.pose,
+                background: settings.background,
+            }
+        }
+
+        optionsForm.value = {
+            print: settings.print,
+            addTracking: settings.addTracking,
+            description: settings.description,
+        }
+
+        currentStep.value = 3
+    }
+
     return {
         currentStep,
         illustrationType,
@@ -254,6 +294,7 @@ const useIllustrationStore = defineStore('illustration', () => {
         animalForm,
         optionsForm,
         initSettings,
+        fillForms,
         recap,
         total,
     }

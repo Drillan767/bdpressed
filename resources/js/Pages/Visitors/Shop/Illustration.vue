@@ -29,7 +29,7 @@ useHead({
     title: 'Commander une illustration',
 })
 
-const { initSettings } = useIllustrationStore()
+const { initSettings, fillForms } = useIllustrationStore()
 const {
     currentStep,
     illustrationType,
@@ -39,7 +39,9 @@ const {
     animalForm,
     optionsForm,
 } = storeToRefs(useIllustrationStore())
-const { addItem } = useCartStore()
+
+const { addItem, removeItem } = useCartStore()
+const { cart } = storeToRefs(useCartStore())
 
 const optionsValid = ref(false)
 
@@ -136,6 +138,17 @@ const submit = handleSubmit(async (form) => {
 
     openDrawer?.()
 
+    const params = new URLSearchParams(document.location.search)
+    const illustration = params.get('illustration')
+
+    if (illustration) {
+        const deprecatedIllustration = cart.value.find(item => item.id === Number(illustration))
+
+        if (deprecatedIllustration) {
+            removeItem(deprecatedIllustration)
+        }
+    }
+
     addItem(illustrationElement)
     router.visit('/boutique')
 })
@@ -161,6 +174,23 @@ watch(illustration, (value) => {
 
 onMounted(() => {
     initSettings(props.settings)
+
+    const params = new URLSearchParams(document.location.search)
+    const illustration = params.get('illustration')
+
+    if (!illustration) {
+        return
+    }
+
+    const retrievedIllustration = cart.value.find(item => item.id === Number(illustration))
+
+    if (!retrievedIllustration || !Object.keys(retrievedIllustration).length || retrievedIllustration.type !== 'illustration') {
+        return
+    }
+
+    if ('illustrationSettings' in retrievedIllustration) {
+        fillForms(retrievedIllustration.illustrationSettings)
+    }
 })
 </script>
 

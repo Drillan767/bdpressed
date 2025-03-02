@@ -1,21 +1,14 @@
 <script setup lang="ts">
 import type { CartIllustration, CartItem } from '@/types'
 import useNumbers from '@/Composables/numbers'
+import { router } from '@inertiajs/vue3'
+import { route } from 'ziggy-js'
 
 const { item } = defineProps<{ item: CartItem | CartIllustration }>()
 const emit = defineEmits<{
     (e: 'quantity', value: 'decrease' | 'increase'): void
     (e: 'remove'): void
 }>()
-
-/*
-TODO: add a link to the illustration form that will looks like follows: illustration?id=xxxxx
-TODO: be able to fill the illustration form based on the cart item settings
-TODO: update the cart with the new values
-TODO: reset the illustration form
-TODO: determine if the illustration is paid when user checks out, or after
-TODO: handle the back end
-*/
 
 const { formatPrice } = useNumbers()
 </script>
@@ -25,16 +18,19 @@ const { formatPrice } = useNumbers()
         density="comfortable"
     >
         <div class="cart-item">
-            <div
-                v-if="item.type === 'item'"
-                class="asset"
-            >
+            <div class="asset">
                 <VImg
+                    v-if="item.type === 'item'"
                     :src="item.illustration"
                     aspect-ratio="1"
                     width="90px"
                     class="rounded-lg"
                     cover
+                />
+                <VIcon
+                    v-else
+                    color="secondary"
+                    icon="mdi-palette"
                 />
             </div>
             <div class="content">
@@ -70,6 +66,7 @@ const { formatPrice } = useNumbers()
                         variant="text"
                         size="small"
                         icon="mdi-image-edit-outline"
+                        @click="router.visit(route('shop.illustration', { illustration: item.id }))"
                     />
                     <VBtn
                         icon="mdi-trash-can-outline"
