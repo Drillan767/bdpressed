@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Address, OrderStep1Form, OrderStep2Form, User } from '@/types'
+import type { Address, CartIllustration, OrderStep1Form, OrderStep2Form, User } from '@/types'
 import CartItem from '@/Components/Shop/CartItem.vue'
 import OrderStep1 from '@/Components/Shop/OrderStep1.vue'
 import OrderStep2 from '@/Components/Shop/OrderStep2.vue'
@@ -84,11 +84,19 @@ async function submit() {
                 same: addresses.value.useSameAddress,
                 billing: addresses.value.useSameAddress ? undefined : addresses.value.billingAddress,
             }
+
     router.post(route('shop.order'), {
         user: personalInformation.value,
         products: cart.value.map(item => ({
             id: item.id,
             quantity: item.quantity,
+            type: item.type,
+            illustrationDetails: item.type === 'illustration' && 'illustrationSettings' in item
+                ? {
+                        ...item.illustrationSettings,
+                        price: item.price,
+                    }
+                : undefined,
         })),
         addresses: addressesPayload,
     })
