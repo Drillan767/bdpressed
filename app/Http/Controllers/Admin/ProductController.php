@@ -62,14 +62,16 @@ class ProductController extends Controller
         /** @var string[] $illustrationsPath */
         $illustrationsPath = [];
 
-        foreach($request->file('illustrations') as $illustration) {
-            Storage::putFileAs(
-                "articles/{$product->id}",
-                $illustration,
-                $illustration->getClientOriginalName(),
-            );
+        if ($request->hasFile('illustrations')) {
+            foreach($request->file('illustrations') as $illustration) {
+                Storage::putFileAs(
+                    "articles/{$product->id}",
+                    $illustration,
+                    $illustration->getClientOriginalName(),
+                );
 
-            $illustrationsPath[] = "/storage/articles/$product->id/{$illustration->getClientOriginalName()}";
+                $illustrationsPath[] = "/storage/articles/$product->id/{$illustration->getClientOriginalName()}";
+            }
         }
 
         $product->illustrations = $illustrationsPath;

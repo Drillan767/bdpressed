@@ -6,6 +6,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\DB;
 
 class OrderRequest extends FormRequest
 {
@@ -36,6 +37,11 @@ class OrderRequest extends FormRequest
 
         if (!$this->user()) {
             $guestEmailRule[] = 'unique:users,email';
+            $guestEmailRule[] = function ($attribute, $value, $fail) {
+                if (DB::table('guests')->where('email', $value)->exists()) {
+                    $fail('guest exists');
+                }
+            };
         }
 
         $addressesRules = [
@@ -76,6 +82,7 @@ class OrderRequest extends FormRequest
     {
         return [
             'user.email.unique' => 'email exists',
+            'guest.email.unique' => 'email exists',
         ];
     }
 }
