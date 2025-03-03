@@ -50,7 +50,7 @@ class HandleOrderAction
         $order->save();
 
         foreach ($request->get('products') as $product) {
-            if ($request->type === 'item') {
+            if ($product['type'] === 'item') {
                 $this->handleItemOrder($product, $products, $order);
             } else {
                 $this->handleIllustrationOrder($product['illustrationDetails'], $order);
@@ -78,7 +78,7 @@ class HandleOrderAction
                     $totalPrice += $product->price * $quantity;
                     $totalWeight += $product->weight * $quantity;
                 }
-            }  
+            }
         }
 
         $fees = 0.015 * $totalPrice + 0.25;
