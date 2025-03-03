@@ -2,14 +2,10 @@ import type { CartIllustration, IllustrationForm, IllustrationSettings } from '@
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 
-type ListItem = {
-    title: string
-    append: string
-} | {
-    type: 'subheader'
-    title: string
-} | {
-    type: 'divider'
+interface ListItem {
+    type?: 'subheader' | 'divider'
+    title?: string
+    append?: string
 }
 
 const translations = {
@@ -17,9 +13,6 @@ const translations = {
         bust: 'Buste',
         fl: 'Portrait en pied',
         animal: 'Votre compagnon',
-    },
-    step2: {
-
     },
 }
 
