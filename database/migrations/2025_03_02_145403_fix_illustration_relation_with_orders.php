@@ -17,7 +17,7 @@ return new class extends Migration
 
             $table->foreignId('order_id')->constrained()->onDelete('cascade');
             $table->dropColumn('nbItems');
-            $table->integer('nbHumans')->default(0);
+            $table->integer('nbHumans')->default(0)->change();
             $table->boolean('addTracking')->default(false);
             $table->boolean('print')->default(false);
             $table->string('trackingNumber')->nullable();
