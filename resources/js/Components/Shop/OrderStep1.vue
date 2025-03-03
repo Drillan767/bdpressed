@@ -10,6 +10,7 @@ interface Props {
     errors?: Record<string, string>
     authenticated: boolean
     showEmailExists: boolean
+    showGuestExists: boolean
 }
 
 const props = defineProps<Props>()
@@ -80,6 +81,24 @@ watch(() => props.errors, (value) => {
                     @click="router.visit('/connexion')"
                 >
                     Connexion
+                </VBtn>
+            </template>
+        </VAlert>
+        <VAlert
+            v-if="showGuestExists"
+            class="mb-4"
+            color="primary"
+            variant="tonal"
+            icon="mdi-email-alert"
+            text="Cette adresse email existe déjà"
+        >
+            <template #append>
+                <VBtn
+                    color="primary"
+                    variant="flat"
+                    @click="router.visit('/inscription')"
+                >
+                    Créer un compte
                 </VBtn>
             </template>
         </VAlert>

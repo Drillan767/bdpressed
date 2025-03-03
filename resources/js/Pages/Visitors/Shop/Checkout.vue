@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Address, CartIllustration, OrderStep1Form, OrderStep2Form, User } from '@/types'
+import type { Address, OrderStep1Form, OrderStep2Form, User } from '@/types'
 import CartItem from '@/Components/Shop/CartItem.vue'
 import OrderStep1 from '@/Components/Shop/OrderStep1.vue'
 import OrderStep2 from '@/Components/Shop/OrderStep2.vue'
@@ -28,6 +28,7 @@ const { handleQuantity, removeItem } = useCartStore()
 const { toParagraphs } = useStrings()
 
 const emailExists = ref(false)
+const guestExists = ref(false)
 const step = ref(1)
 const personalInformation = ref<OrderStep1Form>({
     email: props.auth.user?.email ?? '',
@@ -105,6 +106,10 @@ async function submit() {
 watch(() => props.errors?.['user.email'], (value) => {
     if (value === 'email exists') {
         emailExists.value = true
+        step.value = 1
+    }
+    else if (value === 'guest exists') {
+        guestExists.value = true
         step.value = 1
     }
 }, { immediate: true })
@@ -185,6 +190,7 @@ onMounted(() => {
                                                         v-model:valid="step1Valid"
                                                         :errors
                                                         :show-email-exists="emailExists"
+                                                        :show-guest-exists="guestExists"
                                                         :authenticated="auth.user !== null"
                                                     />
                                                 </VStepperWindowItem>
