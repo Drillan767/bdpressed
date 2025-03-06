@@ -220,6 +220,27 @@ const billingAddress = computed(() => {
                                             </template>
                                         </VListItem>
                                         <VDivider />
+                                        <template
+                                            v-for="(illustration, i) in order.illustrations"
+                                            :key="i"
+                                        >
+                                            <VListGroup :value="i" fluid>
+                                                <template #activator="{ props: illustrationProps }">
+                                                    <VListItem
+                                                        v-bind="illustrationProps"
+                                                        :title="`Illustration (${illustration.price}€)`"
+                                                    />
+                                                </template>
+                                                <VListItem
+                                                    title="Type d'illustration"
+                                                >
+                                                    <template #append>
+                                                        {{ illustration.type }}
+                                                    </template>
+                                                </VListItem>
+                                            </VListGroup>
+                                        </template>
+                                        <VDivider />
                                         <VListItem
                                             title="Frais de paiement"
                                         >

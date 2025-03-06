@@ -165,6 +165,37 @@ interface Detail {
         weigh: number
     }
 }
+/* {
+    "id":1,
+    "type":"FULL_LENGTH",
+    "nbHumans":1,
+    "nbAnimals":1,
+    "pose":"COMPLEX",
+    "background":"SIMPLE",
+    "price":113,
+    "status":"PENDING",
+    "description":"Bjr omg je suis fan",
+    "created_at":"02/03/2025 15:47",
+    "updated_at":"02/03/2025 15:47",
+    "order_id":9,
+    "addTracking":true,
+    "print":true,
+    "trackingNumber":null
+} */
+
+interface IllustrationDetail {
+    pose: 'SIMPLE' | 'COMPLEX'
+    background: 'UNIFIED' | 'GRADIENT'
+    print: boolean
+    addTracking: boolean
+    description: string
+    price: number
+    trackingNumber: string | null
+    type: 'BUST' | 'FULL_LENGTH' | 'ANIMAL'
+    nbHumans: number
+    nbAnimals: number
+    nbItems: number
+}
 
 export interface OrderDetail {
     id: number
@@ -178,6 +209,7 @@ export interface OrderDetail {
     stripeFees: number
     shipmentFees: number
     details: Detail[]
+    illustrations: IllustrationDetail[]
     guest: {
         email: string
         shipping_address: Address
