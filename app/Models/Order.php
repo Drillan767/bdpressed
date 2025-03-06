@@ -51,9 +51,9 @@ class Order extends Model
         return $this->hasMany(OrderDetail::class);
     }
 
-    public function illustration(): HasOne
+    public function illustrations(): HasMany
     {
-        return $this->hasOne(Illustration::class);
+        return $this->hasMany(Illustration::class);
     }
 
     protected $casts = [
