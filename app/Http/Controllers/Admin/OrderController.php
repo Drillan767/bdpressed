@@ -34,6 +34,7 @@ class OrderController extends Controller
             'user.shippingAddress',
             'user.billingAddress',
             'details.product:id,name,promotedImage,slug,price,weight',
+            'illustrations'
         )
             ->where('reference', $reference)
             ->firstOrFail();

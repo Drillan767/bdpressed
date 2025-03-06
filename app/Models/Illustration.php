@@ -29,6 +29,8 @@ class Illustration extends Model
     protected $casts = [
         'created_at' => 'datetime:d/m/Y H:i',
         'updated_at' => 'datetime:d/m/Y H:i',
+        'addTracking' => 'boolean',
+        'print' => 'boolean',
     ];
 
     public function order(): belongsTo
