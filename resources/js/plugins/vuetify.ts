@@ -5,7 +5,7 @@ import { VStepperVertical } from 'vuetify/labs/VStepperVertical'
 import { fr } from 'vuetify/locale'
 
 import '@mdi/font/css/materialdesignicons.css'
-import 'vuetify/styles/main.sass'
+import 'vuetify/styles'
 
 export default createVuetify({
     blueprint: md3,
