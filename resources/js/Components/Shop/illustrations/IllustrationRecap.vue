@@ -13,9 +13,3 @@ const { recap } = storeToRefs(useIllustrationStore())
         </template>
     </VList>
 </template>
-
-<style scoped>
-:deep(.v-list-subheader__text) {
-    padding: 8px 0;
-}
-</style>

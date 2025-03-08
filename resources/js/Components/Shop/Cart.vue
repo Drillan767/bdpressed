@@ -74,12 +74,6 @@ const { formatPrice } = useNumbers()
 </template>
 
 <style scoped lang="scss">
-:deep(.v-navigation-drawer__content) {
-    display: flex;
-    flex-direction: column;
-    padding-bottom: 15px;
-}
-
 .total {
     font-size: 0.825rem;
     text-align: right;
