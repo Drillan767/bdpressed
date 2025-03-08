@@ -117,7 +117,7 @@ const { toParagraphs } = useStrings()
                                     md="4"
                                 >
                                     <h2>
-                                        Information commande
+                                        Information de la commande
                                     </h2>
                                     <VList>
                                         <VListItem

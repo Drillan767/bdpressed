@@ -4,9 +4,12 @@ namespace App\Http\Controllers\Admin;
 
 use Inertia\Inertia;
 use Inertia\Response;
+use App\Models\Illustration;
+use Illuminate\Support\Collection;
 use App\Models\Order;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
+use App\Settings\IllustrationSettings;
 
 class OrderController extends Controller
 {
@@ -43,6 +46,8 @@ class OrderController extends Controller
             return $detail->product->weight;
         });
 
+        dd($this->getOrderDetail($order->illustrations));
+
         return Inertia::render('Admin/Orders/Show', compact('order', 'totalWeight'));
     }
 
@@ -50,5 +55,12 @@ class OrderController extends Controller
     {
         $orders = Order::where('status', 'NEW')->count();
         return response()->json($orders);
+    }
+
+    private function getOrderDetail(Collection $illustrations): array
+    {
+        $settings = app(IllustrationSettings::class);
+
+        dd($settings, $illustrations);
     }
 }

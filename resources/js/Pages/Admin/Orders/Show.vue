@@ -229,6 +229,7 @@ const billingAddress = computed(() => {
                                                     <VListItem
                                                         v-bind="illustrationProps"
                                                         :title="`Illustration (${illustration.price}€)`"
+                                                        color="primary"
                                                     />
                                                 </template>
                                                 <VListItem
