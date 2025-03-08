@@ -139,9 +139,3 @@ useHead({
         </VCardText>
     </VCard>
 </template>
-
-<style scoped lang="scss">
-:deep(.v-alert__content) {
-    padding: 8px 0;
-}
-</style>
