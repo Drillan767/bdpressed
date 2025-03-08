@@ -69,7 +69,9 @@ const headers: DataTableHeader[] = [
 </script>
 
 <template>
-    <h1>Commandes</h1>
+    <h1 class="mb-4">
+        Commandes
+    </h1>
     <VCard>
         <template #text>
             <VDataTable
@@ -96,12 +98,39 @@ const headers: DataTableHeader[] = [
                     </VRow>
                 </template>
                 <template #item.client="{ item }">
-                    <div v-if="item.guest">
-                        {{ item.guest.email }}
-                    </div>
-                    <div v-else-if="item.user">
-                        {{ item.user.email }}
-                    </div>
+                    <VTooltip
+                        v-if="item.guest"
+                        location="top"
+                        class="mr-2"
+                    >
+                        <template #activator="{ props: tooltip }">
+                            <VIcon
+                                v-bind="tooltip"
+                                color="primary"
+                                icon="mdi-account-clock"
+                            />
+                        </template>
+
+                        La commande a été faite par un invité.
+                    </VTooltip>
+
+                    <VTooltip
+                        v-else
+                        location="top"
+                        class="mr-2"
+                    >
+                        <template #activator="{ props: tooltip }">
+                            <VIcon
+                                v-bind="tooltip"
+                                color="primary"
+                                icon="mdi-account-check"
+                            />
+                        </template>
+
+                        La commande a été faite par un membre inscrit.
+                    </VTooltip>
+
+                    {{ item.guest ? item.guest.email : item.user?.email }}
                 </template>
                 <template #item.total="{ item }">
                     {{ formatPrice(item.total) }}
