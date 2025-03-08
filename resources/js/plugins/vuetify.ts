@@ -22,6 +22,9 @@ export default createVuetify({
     },
 
     defaults: {
+        VAlert: {
+            style: 'line-height: 2.2',
+        },
         VTextField: {
             color: 'primary',
             variant: 'outlined',
