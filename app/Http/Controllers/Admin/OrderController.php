@@ -8,6 +8,7 @@ use App\Models\Illustration;
 use Illuminate\Support\Collection;
 use App\Models\Order;
 use App\Http\Controllers\Controller;
+use App\Services\IllustrationService;
 use Illuminate\Http\JsonResponse;
 use App\Settings\IllustrationSettings;
 
@@ -29,7 +30,7 @@ class OrderController extends Controller
         return Inertia::render('Admin/Orders/Index', compact('orders'));
     }
 
-    public function show(string $reference): Response
+    public function show(string $reference, IllustrationService $illustrationService): Response
     {
         $order = Order::with(
             'guest.shippingAddress',
@@ -46,7 +47,7 @@ class OrderController extends Controller
             return $detail->product->weight;
         });
 
-        dd($this->getOrderDetail($order->illustrations));
+        $order->illustrationsList = $illustrationService->getOrderDetail($order->illustrations);
 
         return Inertia::render('Admin/Orders/Show', compact('order', 'totalWeight'));
     }
@@ -55,12 +56,5 @@ class OrderController extends Controller
     {
         $orders = Order::where('status', 'NEW')->count();
         return response()->json($orders);
-    }
-
-    private function getOrderDetail(Collection $illustrations): array
-    {
-        $settings = app(IllustrationSettings::class);
-
-        dd($settings, $illustrations);
     }
 }
