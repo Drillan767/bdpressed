@@ -145,7 +145,7 @@ const billingAddress = computed(() => {
                                             <div v-html="toParagraphs(order.additionalInfos)" />
                                         </VCol>
                                     </VRow>
-                                    <VDivider />
+                                    <VDivider class="my-4" />
                                     <VRow>
                                         <VCol
                                             v-if="shippingAddress"
@@ -221,22 +221,64 @@ const billingAddress = computed(() => {
                                         </VListItem>
                                         <VDivider />
                                         <template
-                                            v-for="(illustration, i) in order.illustrations"
+                                            v-for="(illustration, i) in order.illustrationsList"
                                             :key="i"
                                         >
-                                            <VListGroup :value="i" fluid>
+                                            <VListGroup :value="i">
                                                 <template #activator="{ props: illustrationProps }">
                                                     <VListItem
                                                         v-bind="illustrationProps"
-                                                        :title="`Illustration (${illustration.price}€)`"
+                                                        :title="`Illustration (${illustration.price.price})`"
                                                         color="primary"
                                                     />
                                                 </template>
+
+                                                <VListItem :title="illustration.type.name">
+                                                    <template #append>
+                                                        {{ illustration.type.price }}
+                                                    </template>
+                                                </VListItem>
+
                                                 <VListItem
-                                                    title="Type d'illustration"
+                                                    v-if="illustration.nbHumans"
+                                                    :title="illustration.nbHumans.name"
                                                 >
                                                     <template #append>
-                                                        {{ illustration.type }}
+                                                        {{ illustration.nbHumans.price }}
+                                                    </template>
+                                                </VListItem>
+                                                <VListItem
+                                                    v-if="illustration.nbAnimals"
+                                                    :title="illustration.nbAnimals.name"
+                                                >
+                                                    <template #append>
+                                                        {{ illustration.nbAnimals.price }}
+                                                    </template>
+                                                </VListItem>
+                                                <VListItem :title="illustration.pose.name">
+                                                    <template #append>
+                                                        {{ illustration.pose.price }}
+                                                    </template>
+                                                </VListItem>
+                                                <VListItem :title="illustration.background.name">
+                                                    <template #append>
+                                                        {{ illustration.background.price }}
+                                                    </template>
+                                                </VListItem>
+                                                <VListItem
+                                                    v-if="illustration.addTracking"
+                                                    :title="illustration.addTracking.name"
+                                                >
+                                                    <template #append>
+                                                        {{ illustration.addTracking.price }}
+                                                    </template>
+                                                </VListItem>
+                                                <VListItem
+                                                    v-if="illustration.print"
+                                                    :title="illustration.print.name"
+                                                >
+                                                    <template #append>
+                                                        {{ illustration.print.price }}
                                                     </template>
                                                 </VListItem>
                                             </VListGroup>
