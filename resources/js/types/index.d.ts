@@ -165,23 +165,22 @@ interface Detail {
         weigh: number
     }
 }
-/* {
-    "id":1,
-    "type":"FULL_LENGTH",
-    "nbHumans":1,
-    "nbAnimals":1,
-    "pose":"COMPLEX",
-    "background":"SIMPLE",
-    "price":113,
-    "status":"PENDING",
-    "description":"Bjr omg je suis fan",
-    "created_at":"02/03/2025 15:47",
-    "updated_at":"02/03/2025 15:47",
-    "order_id":9,
-    "addTracking":true,
-    "print":true,
-    "trackingNumber":null
-} */
+
+interface IllustrationRow {
+    name: string
+    price: string
+}
+
+interface IllustrationSpecs {
+    type: IllustrationRow
+    price: IllustrationRow
+    nbHumans?: IllustrationRow
+    nbAnimals?: IllustrationRow
+    pose: IllustrationRow
+    background: IllustrationRow
+    print?: IllustrationRow
+    addTracking?: IllustrationRow
+}
 
 interface IllustrationDetail {
     pose: 'SIMPLE' | 'COMPLEX'
@@ -209,7 +208,7 @@ export interface OrderDetail {
     stripeFees: number
     shipmentFees: number
     details: Detail[]
-    illustrations: IllustrationDetail[]
+    illustrationsList: IllustrationSpecs[]
     guest: {
         email: string
         shipping_address: Address
