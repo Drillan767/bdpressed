@@ -29,6 +29,9 @@ class IllustrationService
                 'price' => Number::currency($illustration->price, 'EUR', locale: 'fr'),
             ];
 
+            $result['pose'] = $this->getPose($illustration->pose, $settings);
+            $result['background'] = $this->getBackground($illustration->background, $settings);
+
             if ($illustration->addTracking) {
                 $result['addTracking'] = [
                     'name' => 'Demander le suivi',
@@ -43,15 +46,8 @@ class IllustrationService
                 ];
             }
 
-            $result['description'] = [
-                'name' => 'Informations complémentaires',
-                // TODO: Integrate description
-            ];
-
             return $result;
         });
-
-        // return $details;
     }
 
     private function getBustDetails(Illustration $illustration, IllustrationSettings $settings): array
@@ -85,7 +81,7 @@ class IllustrationService
         $result = [
             'type' => [
                 'name' => 'Portrait en pied',
-                'price' => Number::currency($settings->fl_base, 'EUR'),
+                'price' => Number::currency($settings->fl_base, 'EUR', locale: 'fr'),
             ]
         ];
 
@@ -130,5 +126,52 @@ class IllustrationService
         }
 
         return $result;
+    }
+
+    private function getPose(string $pose, IllustrationSettings $settings): array
+    {
+        switch ($pose) {
+            case 'SIMPLE':
+                return [
+                    'name' => 'Pose simple',
+                    'price' => Number::currency($settings->option_pose_simple, 'EUR', locale: 'fr'),
+                ];
+                break;
+            case 'COMPLEX':
+                return [
+                    'name' => 'Pose complexe',
+                    'price' => Number::currency($settings->option_pose_complex, 'EUR', locale: 'fr'),
+                ];
+                break;
+
+            default:
+                return [];
+        }
+    }
+
+    private function getBackground(string $background, IllustrationSettings $settings): array
+    {
+        switch ($background) {
+            case 'GRADIENT':
+                return [
+                    'name' => 'Fond gradient / uni',
+                    'price' => Number::currency($settings->option_bg_gradient, 'EUR', locale: 'fr'),
+                ];
+                break;
+            case 'SIMPLE':
+                return [
+                    'name' => 'Fond simple',
+                    'price' => Number::currency($settings->option_bg_simple, 'EUR', locale: 'fr'),
+                ];
+                break;
+            case 'COMPLEX':
+                return [
+                    'name' => 'Fond complexe',
+                    'price' => Number::currency($settings->option_bg_complex, 'EUR', locale: 'fr'),
+                ];
+                break;
+            default:
+                return [];
+        }
     }
 }
