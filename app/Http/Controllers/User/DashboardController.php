@@ -4,6 +4,7 @@ namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
 use App\Models\Order;
+use App\Services\IllustrationService;
 use Inertia\Inertia;
 use Inertia\Response;
 use Illuminate\Http\Request;
@@ -17,11 +18,13 @@ class DashboardController extends Controller
         return Inertia::render('User/Dashboard', compact('orders'));
     }
 
-    public function showOrder(string $reference): Response
+    public function showOrder(string $reference, IllustrationService $illustrationService): Response
     {
-        $order = Order::with('shippingAddress', 'billingAddress', 'details.product')
-        ->where('reference', $reference)
-        ->firstOrFail();
+        $order = Order::with('shippingAddress', 'billingAddress', 'details.product', 'illustrations')
+            ->where('reference', $reference)
+            ->firstOrFail();
+
+        $order->illustrationsList = $illustrationService->getOrderDetail($order->illustrations);
 
         return Inertia::render('User/Order/Show', compact('order'));
     }
