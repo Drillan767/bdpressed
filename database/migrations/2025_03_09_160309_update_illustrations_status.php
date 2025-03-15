@@ -2,6 +2,8 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
@@ -24,6 +26,10 @@ return new class extends Migration
                 'COMPLETED'
             ) NOT NULL DEFAULT 'PENDING';
         ");
+
+        Schema::table('addresses', function (Blueprint $table) {
+            $table->string('street2')->default('')->change();
+        });
     }
 
     /**
