@@ -7,7 +7,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\IllustrationSettingsRequest;
 use App\Http\Requests\WebsiteSettingsRequest;
 use App\Settings\WebsiteSettings;
-use App\Settings\IllustrationSettings;
+// use App\Settings\IllustrationSettings;
+use App\Models\IllustrationPrice;
 use Inertia\Response;
 use Inertia\Inertia;
 
@@ -33,8 +34,9 @@ class SettingsController extends Controller
         return redirect()->back()->with('success', 'Paramètres enregistrés');
     }
 
-    public function illustration(IllustrationSettings $settings)
+    public function illustration()
     {
+        $settings = IllustrationPrice::all();
         return Inertia::render('Admin/Settings/Illustration', compact('settings'));
     }
 
