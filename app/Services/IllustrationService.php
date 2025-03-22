@@ -4,7 +4,7 @@ namespace App\Services;
 
 use App\Enums\IllustrationType;
 use App\Models\Illustration;
-use App\Settings\IllustrationSettings;
+use App\Models\IllustrationPrice;
 use Illuminate\Support\Number;
 use Illuminate\Support\Collection;
 
@@ -12,15 +12,13 @@ class IllustrationService
 {
     public function getOrderDetail(Collection $illustrations): Collection
     {
-        $settings = app(IllustrationSettings::class);
-
-        return $illustrations->map(function (Illustration $illustration) use ($settings) {
+        return $illustrations->map(function (Illustration $illustration) {
             $type = IllustrationType::tryFrom($illustration->type);
 
             $result = match ($type) {
-                IllustrationType::BUST => $this->getBustDetails($illustration, $settings),
-                IllustrationType::FULL_LENGTH => $this->getFullLengthDetails($illustration, $settings),
-                IllustrationType::ANIMAL => $this->getAnimalDetails($illustration, $settings),
+                IllustrationType::BUST => $this->getBustDetails($illustration),
+                IllustrationType::FULL_LENGTH => $this->getFullLengthDetails($illustration),
+                IllustrationType::ANIMAL => $this->getAnimalDetails($illustration),
                 default => []
             };
 
@@ -29,20 +27,20 @@ class IllustrationService
                 'price' => Number::currency($illustration->price, 'EUR', locale: 'fr'),
             ];
 
-            $result['pose'] = $this->getPose($illustration->pose, $settings);
-            $result['background'] = $this->getBackground($illustration->background, $settings);
+            $result['pose'] = $this->getPose($illustration->pose);
+            $result['background'] = $this->getBackground($illustration->background);
 
             if ($illustration->addTracking) {
                 $result['addTracking'] = [
                     'name' => 'Demander le suivi',
-                    'price' => Number::currency($settings->options_add_tracking, 'EUR', locale: 'fr'),
+                    'price' => Number::currency($this->getPrice('options_add_tracking'), 'EUR', locale: 'fr'),
                 ];
             }
 
             if ($illustration->print) {
                 $result['print'] = [
                     'name' => 'Imprimer l\'illustration',
-                    'price' => Number::currency($settings->options_print, 'EUR', locale: 'fr'),
+                    'price' => Number::currency($this->getPrice('options_print'), 'EUR', locale: 'fr'),
                 ];
             }
 
@@ -50,128 +48,128 @@ class IllustrationService
         });
     }
 
-    private function getBustDetails(Illustration $illustration, IllustrationSettings $settings): array
+    private function getBustDetails(Illustration $illustration): array
     {
         $result = [
             'type' => [
                 'name' => 'Buste',
-                'price' => Number::currency($settings->bust_base, 'EUR', locale: 'fr'),
+                'price' => Number::currency($this->getPrice('bust_base'), 'EUR', locale: 'fr'),
             ]
         ];
 
         if ($illustration->nbHumans > 0) {
             $result['nbHumans'] = [
                 'name' => "Personnes en plus ({$illustration->nbHumans})",
-                'price' => Number::currency($settings->bust_add_human * $illustration->nbHumans, 'EUR', locale: 'fr'),
+                'price' => Number::currency($this->getPrice('bust_add_human') * $illustration->nbHumans, 'EUR', locale: 'fr'),
             ];
         }
 
         if ($illustration->nbAnimals > 0) {
             $result['nbAnimals'] = [
                 'name' => "Compagnons en plus ({$illustration->nbAnimals})",
-                'price' => Number::currency($settings->bust_add_animal * $illustration->nbAnimals, 'EUR', locale: 'fr'),
+                'price' => Number::currency($this->getPrice('bust_add_animal') * $illustration->nbAnimals, 'EUR', locale: 'fr'),
             ];
         }
 
         return $result;
     }
 
-    private function getFullLengthDetails(Illustration $illustration, IllustrationSettings $settings): array
+    private function getFullLengthDetails(Illustration $illustration): array
     {
         $result = [
             'type' => [
                 'name' => 'Portrait en pied',
-                'price' => Number::currency($settings->fl_base, 'EUR', locale: 'fr'),
+                'price' => Number::currency($this->getPrice('fl_base'), 'EUR', locale: 'fr'),
             ]
         ];
 
         if ($illustration->nbHumans > 0) {
             $result['nbHumans'] = [
                 'name' => "Personnes en plus ({$illustration->nbHumans})",
-                'price' => Number::currency($settings->fl_add_human * $illustration->nbHumans, 'EUR', locale: 'fr'),
+                'price' => Number::currency($this->getPrice('fl_add_human') * $illustration->nbHumans, 'EUR', locale: 'fr'),
             ];
         }
 
         if ($illustration->nbAnimals > 0) {
             $result['nbAnimals'] = [
                 'name' => "Compagnons en plus ({$illustration->nbAnimals})",
-                'price' => Number::currency($settings->fl_add_animal * $illustration->nbAnimals, 'EUR', locale: 'fr'),
+                'price' => Number::currency($this->getPrice('fl_add_animal') * $illustration->nbAnimals, 'EUR', locale: 'fr'),
             ];
         }
 
         return $result;
     }
 
-    private function getAnimalDetails(Illustration $illustration, IllustrationSettings $settings): array
+    private function getAnimalDetails(Illustration $illustration): array
     {
         $result = [
             'type' => [
                 'name' => 'Compagnon',
-                'price' => Number::currency($settings->animal_base, 'EUR', locale: 'fr'),
+                'price' => Number::currency($this->getPrice('animal_base'), 'EUR', locale: 'fr'),
             ]
         ];
 
         if ($illustration->nbAnimals > 0) {
             $result['nbAnimals'] = [
                 'name' => "Compagnons en plus ({$illustration->nbHumans})",
-                'price' => Number::currency($settings->animal_add_one * $illustration->nbHumans, 'EUR', locale: 'fr'),
+                'price' => Number::currency($this->getPrice('animal_add_one') * $illustration->nbHumans, 'EUR', locale: 'fr'),
             ];
         }
 
         if ($illustration->nbAnimals > 1) {
             $result['nbAnimalsToy'] = [
                 'name' => "Jouets en plus ({$illustration->nbAnimals})",
-                'price' => Number::currency($settings->animal_toy * $illustration->nbAnimals, 'EUR', locale: 'fr'),
+                'price' => Number::currency($this->getPrice('animal_toy') * $illustration->nbAnimals, 'EUR', locale: 'fr'),
             ];
         }
 
         return $result;
     }
 
-    private function getPose(string $pose, IllustrationSettings $settings): array
+    private function getPose(string $pose): array
     {
-        switch ($pose) {
-            case 'SIMPLE':
-                return [
-                    'name' => 'Pose simple',
-                    'price' => Number::currency($settings->option_pose_simple, 'EUR', locale: 'fr'),
-                ];
-                break;
-            case 'COMPLEX':
-                return [
-                    'name' => 'Pose complexe',
-                    'price' => Number::currency($settings->option_pose_complex, 'EUR', locale: 'fr'),
-                ];
-                break;
+        $key = match ($pose) {
+            'SIMPLE' => 'option_pose_simple',
+            'COMPLEX' => 'option_pose_complex',
+            default => null,
+        };
 
-            default:
-                return [];
+        if (!$key) {
+            return [];
         }
+
+        return [
+            'name' => $pose === 'SIMPLE' ? 'Pose simple' : 'Pose complexe',
+            'price' => Number::currency($this->getPrice($key), 'EUR', locale: 'fr'),
+        ];
     }
 
-    private function getBackground(string $background, IllustrationSettings $settings): array
+    private function getBackground(string $background): array
     {
-        switch ($background) {
-            case 'GRADIENT':
-                return [
-                    'name' => 'Fond gradient / uni',
-                    'price' => Number::currency($settings->option_bg_gradient, 'EUR', locale: 'fr'),
-                ];
-                break;
-            case 'SIMPLE':
-                return [
-                    'name' => 'Fond simple',
-                    'price' => Number::currency($settings->option_bg_simple, 'EUR', locale: 'fr'),
-                ];
-                break;
-            case 'COMPLEX':
-                return [
-                    'name' => 'Fond complexe',
-                    'price' => Number::currency($settings->option_bg_complex, 'EUR', locale: 'fr'),
-                ];
-                break;
-            default:
-                return [];
+        $key = match ($background) {
+            'GRADIENT' => 'option_bg_gradient',
+            'SIMPLE' => 'option_bg_simple',
+            'COMPLEX' => 'option_bg_complex',
+            default => null,
+        };
+
+        if (!$key) {
+            return [];
         }
+
+        return [
+            'name' => match ($background) {
+                'GRADIENT' => 'Fond gradient / uni',
+                'SIMPLE' => 'Fond simple',
+                'COMPLEX' => 'Fond complexe',
+                default => '',
+            },
+            'price' => Number::currency($this->getPrice($key), 'EUR', locale: 'fr'),
+        ];
+    }
+
+    private function getPrice(string $key): float
+    {
+        return IllustrationPrice::where('key', $key)->first()->price;
     }
 }
