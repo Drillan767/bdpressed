@@ -11,6 +11,7 @@ return new class extends Migration
         Schema::create('illustration_prices', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->string('category');
             $table->string('key')->unique();
             $table->decimal('price', 10, 2);
             $table->string('stripe_product_id')->nullable();
