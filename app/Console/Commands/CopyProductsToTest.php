@@ -29,9 +29,9 @@ class CopyProductsToTest extends Command
         $testClient = new StripeClient(env('STRIPE_SECRET_KEY'));
         $liveClient = new StripeClient(env('STRIPE_LIVE_SECRET_KEY'));
 
-        $price = $liveClient->prices->search([
-            'product' => 'prod_xxxx',
-            'expand' => ['data.prices'],
+        $price = $liveClient->prices->all([
+            'product' => 'prod_RpKgUc401E1bMT',
+            'expand' => ['data.product'],
         ]);
 
         $this->info(json_encode($price));
