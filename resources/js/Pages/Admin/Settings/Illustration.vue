@@ -45,7 +45,7 @@ const { defineField, handleSubmit } = useForm({
     validationSchema: Object.fromEntries(
         props.settings.map(setting => [
             setting.key,
-            'required|integer'
+            'required|numeric'
         ])
     )
 })

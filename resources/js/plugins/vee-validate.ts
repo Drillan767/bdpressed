@@ -13,9 +13,27 @@ defineRule('max', max)
 defineRule('min', min)
 defineRule('minValue', minValue)
 defineRule('required', required)
-defineRule('numeric', numeric)
-defineRule('integer', integer)
 defineRule('regex', regex)
+defineRule('integer', integer)
+
+// Custom numeric rule that handles both integers and floats
+defineRule('numeric', (value: any): boolean | string => {
+    if (value === null || value === undefined || value === '') {
+        return true
+    }
+
+    // Convert to string to handle number inputs
+    const stringValue = String(value).trim()
+    
+    // Regex for integers and floats (including negative numbers)
+    const numericRegex = /^-?\d*\.?\d+$/
+
+    if (!numericRegex.test(stringValue)) {
+        return 'Ce champ doit être un nombre'
+    }
+
+    return true
+})
 
 configure({
     generateMessage: localize('fr', {
@@ -29,6 +47,7 @@ configure({
             minValue: 'Cette valeur est trop petite',
             required: 'Ce champ est requis',
             regex: 'Cette valeur est invalide',
+            numeric: 'Ce champ doit être un nombre',
         },
     }),
 })
