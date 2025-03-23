@@ -45,9 +45,6 @@ export default createVuetify({
             mobile: null,
             hover: true,
         },
-        VCardTitle: {
-            class: 'text-h5 font-weight-bold',
-        },
         VBtn: {
             color: 'primary',
         },
