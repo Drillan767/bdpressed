@@ -88,6 +88,7 @@ const { formatPrice } = useNumbers()
 <style scoped lang="scss">
 :deep(.cart-item) {
     display: flex;
+    align-items: center;
     gap: 10px;
 
     .content {
