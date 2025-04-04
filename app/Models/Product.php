@@ -28,7 +28,7 @@ class Product extends Model
     protected $casts = [
         'created_at' => 'datetime:d/m/Y H:i',
         'updated_at' => 'datetime:d/m/Y H:i',
-        'price' => 'float',
+        'price' => 'decimal:2',
         'illustrations' => 'array',
     ];
 

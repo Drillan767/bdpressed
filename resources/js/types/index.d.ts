@@ -209,18 +209,11 @@ export interface OrderDetail {
     shipmentFees: number
     details: Detail[]
     illustrationsList: IllustrationSpecs[]
-    guest: {
+    client: {
         email: string
         shipping_address: Address
         billing_address: Address | null
-    } | null
-
-    user: {
-        email: string
-        shipping_address: Address
-        billing_address: Address | null
-        instagram: string | null
-    } | null
+    }
 }
 
 export type PageProps<
