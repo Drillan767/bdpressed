@@ -254,114 +254,20 @@ const displayEditDialog = ref(false)
                                                 </VListItem>
                                             </VListGroup>
                                         </template>
-                                    </VList>
-                                </VCol>
-                            </VRow>
-                        </VContainer>
-                    </template>
-                </VCard>
-            </VCol>
-            <!-- <VCol>
-                <VCard>
-                    <template #text>
-                        <VContainer>
-                            <VRow>
-                                <VCol
-                                    cols="12"
-                                    md="4"
-                                >
-                                    <h2>
-                                        Information commande
-                                    </h2>
-                                    <VList>
-                                        <VListItem
-                                            v-for="(detail, i) in order.details"
-                                            :key="i"
-                                            :title="`${detail.product.name} x ${detail.quantity}`"
-                                            :prepend-avatar="detail.product.promotedImage"
-                                        >
-                                            <template #append>
-                                                {{ formatPrice(detail.price) }}
-                                            </template>
-                                        </VListItem>
-                                        <VDivider />
-                                        <template
-                                            v-for="(illustration, i) in order.illustrationsList"
-                                            :key="i"
-                                        >
-                                            <VListGroup :value="i">
-                                                <template #activator="{ props: illustrationProps }">
-                                                    <VListItem
-                                                        v-bind="illustrationProps"
-                                                        :title="`Illustration (${illustration.price.price})`"
-                                                        color="primary"
-                                                    />
-                                                </template>
-
-                                                <VListItem :title="illustration.type.name">
-                                                    <template #append>
-                                                        {{ illustration.type.price }}
-                                                    </template>
-                                                </VListItem>
-
-                                                <VListItem
-                                                    v-if="illustration.nbHumans"
-                                                    :title="illustration.nbHumans.name"
-                                                >
-                                                    <template #append>
-                                                        {{ illustration.nbHumans.price }}
-                                                    </template>
-                                                </VListItem>
-                                                <VListItem
-                                                    v-if="illustration.nbAnimals"
-                                                    :title="illustration.nbAnimals.name"
-                                                >
-                                                    <template #append>
-                                                        {{ illustration.nbAnimals.price }}
-                                                    </template>
-                                                </VListItem>
-                                                <VListItem :title="illustration.pose.name">
-                                                    <template #append>
-                                                        {{ illustration.pose.price }}
-                                                    </template>
-                                                </VListItem>
-                                                <VListItem :title="illustration.background.name">
-                                                    <template #append>
-                                                        {{ illustration.background.price }}
-                                                    </template>
-                                                </VListItem>
-                                                <VListItem
-                                                    v-if="illustration.addTracking"
-                                                    :title="illustration.addTracking.name"
-                                                >
-                                                    <template #append>
-                                                        {{ illustration.addTracking.price }}
-                                                    </template>
-                                                </VListItem>
-                                                <VListItem
-                                                    v-if="illustration.print"
-                                                    :title="illustration.print.name"
-                                                >
-                                                    <template #append>
-                                                        {{ illustration.print.price }}
-                                                    </template>
-                                                </VListItem>
-                                            </VListGroup>
-                                        </template>
-                                        <VDivider />
-                                        <VListItem
-                                            title="Frais de paiement"
-                                        >
-                                            <template #append>
-                                                {{ formatPrice(order.stripeFees) }}
-                                            </template>
-                                        </VListItem>
                                         <VDivider />
                                         <VListItem
                                             :title="`Frais de port (${totalWeight} g)`"
                                         >
                                             <template #append>
                                                 {{ formatPrice(order.shipmentFees) }}
+                                            </template>
+                                        </VListItem>
+                                        <VDivider />
+                                        <VListItem
+                                            title="Frais de paiement"
+                                        >
+                                            <template #append>
+                                                {{ formatPrice(order.stripeFees) }}
                                             </template>
                                         </VListItem>
                                         <VDivider />
@@ -379,7 +285,7 @@ const displayEditDialog = ref(false)
                         </VContainer>
                     </template>
                 </VCard>
-            </VCol> -->
+            </VCol>
         </VRow>
     </VContainer>
 </template>

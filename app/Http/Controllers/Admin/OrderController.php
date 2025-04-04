@@ -4,8 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use Inertia\Inertia;
 use Inertia\Response;
-use App\Models\Illustration;
-use Illuminate\Support\Collection;
+use App\Settings\WebsiteSettings;
 use App\Models\Order;
 use App\Http\Controllers\Controller;
 use App\Services\IllustrationService;
@@ -33,6 +32,7 @@ class OrderController extends Controller
 
     public function show(string $reference, IllustrationService $illustrationService): Response
     {
+        $websiteSettings = app(WebsiteSettings::class);
         $order = Order::with([
             'details.product:id,name,promotedImage,slug,price,weight',
             'illustrations'
@@ -54,6 +54,9 @@ class OrderController extends Controller
         $totalWeight = $order->details->sum(function ($detail) {
             return $detail->product->weight;
         });
+
+        $totalWeight += $order->illustrations->count() * $websiteSettings->illustration_weight;
+        $totalWeight += $websiteSettings->shipping_default_weight;
 
         $order->illustrationsList = $illustrationService->getOrderDetail($order->illustrations);
 
