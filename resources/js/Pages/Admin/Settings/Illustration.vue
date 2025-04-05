@@ -6,10 +6,8 @@ import validationConfig from '@/plugins/validationConfig'
 import { router } from '@inertiajs/vue3'
 import { useHead } from '@vueuse/head'
 import { useForm, useIsFormDirty, useIsFormValid } from 'vee-validate'
-import { watch } from 'vue'
-import { VTextField } from 'vuetify/components'
+import { ref, watch } from 'vue'
 import { route } from 'ziggy-js'
-import { ref } from 'vue'
 
 interface Setting {
     name: string
@@ -39,23 +37,23 @@ const { defineField, handleSubmit } = useForm({
     initialValues: Object.fromEntries(
         props.settings.map(setting => [
             setting.key,
-            setting.price
-        ])
+            setting.price,
+        ]),
     ),
     validationSchema: Object.fromEntries(
         props.settings.map(setting => [
             setting.key,
-            'required|numeric'
-        ])
-    )
+            'required|numeric',
+        ]),
+    ),
 })
 
 // Create field bindings for each setting
 const fields = ref(Object.fromEntries(
-    props.settings.map(setting => {
+    props.settings.map((setting) => {
         const [modelValue, fieldProps] = defineField(setting.key, validationConfig)
         return [setting.key, { modelValue, fieldProps }]
-    })
+    }),
 ))
 
 const formDirty = useIsFormDirty()

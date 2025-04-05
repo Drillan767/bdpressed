@@ -7,7 +7,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\IllustrationSettingsRequest;
 use App\Http\Requests\WebsiteSettingsRequest;
 use App\Settings\WebsiteSettings;
-// use App\Settings\IllustrationSettings;
 use App\Models\IllustrationPrice;
 use Inertia\Response;
 use Inertia\Inertia;
@@ -40,10 +39,20 @@ class SettingsController extends Controller
         return Inertia::render('Admin/Settings/Illustration', compact('settings'));
     }
 
-    public function updateIllustration(IllustrationSettingsRequest $request, IllustrationSettings $settings)
+    public function updateIllustration(IllustrationSettingsRequest $request)
     {
-        $settings->fill($request->validated());
-        $settings->save();
+        $data = $request->all();
+        
+        // Get all illustration prices
+        $settings = IllustrationPrice::all();
+        
+        // Update only the values that have changed
+        foreach ($settings as $setting) {
+            if (isset($data[$setting->key]) && $data[$setting->key] != $setting->price) {
+                $setting->price = $data[$setting->key];
+                $setting->save();
+            }
+        }
 
         return redirect()->back()->with('success', 'Paramètres enregistrés');
     }
