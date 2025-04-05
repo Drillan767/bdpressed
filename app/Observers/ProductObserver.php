@@ -14,7 +14,8 @@ class ProductObserver implements ShouldHandleEventsAfterCommit
      */
     public function created(Product $product): void
     {
-        //
+        $stripeService = new StripeService();
+        $stripeService->createProduct($product);
     }
 
     /**
@@ -22,6 +23,16 @@ class ProductObserver implements ShouldHandleEventsAfterCommit
      */
     public function updated(Product $product): void
     {
-        new StripeService()->retrieveProduct();
+        $stripeService = new StripeService();
+        $stripeService->updateProduct($product);
+    }
+
+    /**
+     * Handle the Product "deleted" event.
+     */
+    public function deleted(Product $product): void
+    {
+        $stripeService = new StripeService();
+        $stripeService->deleteProduct($product);
     }
 }
