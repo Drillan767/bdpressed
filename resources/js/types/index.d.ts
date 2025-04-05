@@ -208,6 +208,7 @@ export interface OrderDetail {
     stripeFees: number
     shipmentFees: number
     details: Detail[]
+    guest_id: number | null
     illustrationsList: IllustrationSpecs[]
     client: {
         email: string
