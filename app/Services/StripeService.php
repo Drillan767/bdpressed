@@ -24,7 +24,6 @@ class StripeService
         if ($stripeProductId) {
             try {
                 $product = $this->client->products->retrieve($stripeProductId);
-                Log::info('Retrieved Stripe product: ' . json_encode($product));
                 return $product;
             } catch (\Exception $e) {
                 Log::error('Error retrieving Stripe product: ' . $e->getMessage());
@@ -32,7 +31,6 @@ class StripeService
             }
         } else {
             $allProducts = $this->client->products->all();
-            Log::info('Retrieved all Stripe products: ' . json_encode($allProducts->data));
             return $allProducts;
         }
     }
@@ -95,7 +93,6 @@ class StripeService
             $product->stripe_link = $stripeProduct->id;
             $product->save(['timestamps' => false]);
 
-            Log::info('Created Stripe product: ' . json_encode($stripeProduct));
             return $stripeProduct;
         } catch (\Exception $e) {
             Log::error('Error creating Stripe product: ' . $e->getMessage());
@@ -137,7 +134,6 @@ class StripeService
             // Update the price if needed
             $this->updateProductPrice($product);
 
-            Log::info('Updated Stripe product: ' . json_encode($stripeProduct));
             return $stripeProduct;
         } catch (\Exception $e) {
             Log::error('Error updating Stripe product: ' . $e->getMessage());
@@ -163,8 +159,8 @@ class StripeService
                 $currentAmount = $currentPrice->unit_amount / 100; // Convert from cents to euros
                 
                 // Only update if the price has changed
-                if (abs($currentAmount - $product->price) > 0.01) { // Use a small epsilon for float comparison
-                    Log::info("Price changed from {$currentAmount} to {$product->price}, updating in Stripe");
+                // Use a small epsilon for float comparison
+                if (abs($currentAmount - $product->price) > 0.01) { 
                     
                     // Archive the current price
                     $this->client->prices->update($currentPrice->id, ['active' => false]);
@@ -176,21 +172,14 @@ class StripeService
                         'currency' => 'eur',
                     ]);
                     
-                    Log::info('Created new price in Stripe: ' . json_encode($newPrice));
-                } else {
-                    Log::info("Price unchanged ({$currentAmount}), no update needed");
                 }
             } else {
-                // No active prices found, create a new one
-                Log::info("No active prices found for product, creating new price");
-                
+                // No active prices found, create a new one                
                 $newPrice = $this->client->prices->create([
                     'product' => $product->stripe_link,
                     'unit_amount' => (int)($product->price * 100), // Convert to cents
                     'currency' => 'eur',
                 ]);
-                
-                Log::info('Created new price in Stripe: ' . json_encode($newPrice));
             }
         } catch (\Exception $e) {
             Log::error('Error updating product price in Stripe: ' . $e->getMessage());
@@ -216,7 +205,6 @@ class StripeService
 
             // Delete the product
             $deletedProduct = $this->client->products->delete($product->stripe_link);
-            Log::info('Deleted Stripe product: ' . json_encode($deletedProduct));
             return $deletedProduct;
         } catch (\Exception $e) {
             Log::error('Error deleting Stripe product: ' . $e->getMessage());
