@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Product;
+use App\Models\IllustrationPrice;
 use Illuminate\Support\Facades\Log;
 use Stripe\StripeClient;
 use Illuminate\Support\Facades\URL;
@@ -209,6 +210,179 @@ class StripeService
         } catch (\Exception $e) {
             Log::error('Error deleting Stripe product: ' . $e->getMessage());
             return null;
+        }
+    }
+
+    /**
+     * Create a Stripe product for an illustration price
+     */
+    public function createIllustrationPriceProduct(IllustrationPrice $illustrationPrice)
+    {
+        try {
+            $productData = [
+                'name' => $illustrationPrice->name,
+                'description' => "Illustration price configuration for {$illustrationPrice->name}",
+                'metadata' => [
+                    'price_key' => $illustrationPrice->key,
+                    'category' => explode('_', $illustrationPrice->key)[0] ?? 'default',
+                    'type' => 'illustration_price'
+                ]
+            ];
+            
+            return $this->client->products->create($productData);
+        } catch (\Exception $e) {
+            Log::error('Error creating Stripe product for illustration price: ' . $e->getMessage());
+            throw $e;
+        }
+    }
+
+    /**
+     * Create a Stripe price for an illustration price product
+     */
+    public function createIllustrationPrice(string $productId, float $amount)
+    {
+        try {
+            return $this->client->prices->create([
+                'product' => $productId,
+                'unit_amount' => (int)($amount * 100), // Convert to cents
+                'currency' => 'eur',
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error creating Stripe price for illustration price: ' . $e->getMessage());
+            throw $e;
+        }
+    }
+
+    /**
+     * Get the Stripe client instance
+     */
+    public function getClient(): StripeClient
+    {
+        return $this->client;
+    }
+
+    /**
+     * Handle all Stripe operations for a new illustration price
+     */
+    public function handleIllustrationPriceCreation(IllustrationPrice $illustrationPrice): bool
+    {
+        try {
+            // Create the product in Stripe
+            $productData = [
+                'name' => $illustrationPrice->name,
+                'description' => "Illustration price configuration for {$illustrationPrice->name}",
+                'metadata' => [
+                    'price_key' => $illustrationPrice->key,
+                    'category' => explode('_', $illustrationPrice->key)[0] ?? 'default',
+                    'type' => 'illustration_price'
+                ]
+            ];
+            
+            $stripeProduct = $this->client->products->create($productData);
+            Log::info('Stripe product created:', ['id' => $stripeProduct->id]);
+            
+            // Create the price in Stripe
+            $stripePrice = $this->client->prices->create([
+                'product' => $stripeProduct->id,
+                'unit_amount' => (int)($illustrationPrice->price * 100),
+                'currency' => 'eur',
+            ]);
+            Log::info('Stripe price created:', ['id' => $stripePrice->id]);
+
+            // Update the model with Stripe IDs
+            $illustrationPrice->stripe_product_id = $stripeProduct->id;
+            $illustrationPrice->stripe_price_id = $stripePrice->id;
+            
+            return $illustrationPrice->saveQuietly();
+        } catch (\Exception $e) {
+            Log::error('Error handling Stripe operations for illustration price: ' . $e->getMessage(), [
+                'illustration_price_id' => $illustrationPrice->id ?? null,
+                'exception' => $e
+            ]);
+            return false;
+        }
+    }
+
+    /**
+     * Handle all Stripe operations for updating an illustration price
+     */
+    public function handleIllustrationPriceUpdate(IllustrationPrice $illustrationPrice): bool
+    {
+        try {
+            if ($illustrationPrice->stripe_product_id) {
+                // Update the product in Stripe
+                $this->client->products->update(
+                    $illustrationPrice->stripe_product_id,
+                    [
+                        'name' => $illustrationPrice->name,
+                        'metadata' => [
+                            'price_key' => $illustrationPrice->key,
+                            'category' => explode('_', $illustrationPrice->key)[0] ?? 'default',
+                            'type' => 'illustration_price'
+                        ]
+                    ]
+                );
+
+                // If price changed, create new price and archive old one
+                if ($illustrationPrice->wasChanged('price')) {
+                    // Archive old price
+                    if ($illustrationPrice->stripe_price_id) {
+                        $this->client->prices->update(
+                            $illustrationPrice->stripe_price_id,
+                            ['active' => false]
+                        );
+                    }
+
+                    // Create new price
+                    $newPrice = $this->client->prices->create([
+                        'product' => $illustrationPrice->stripe_product_id,
+                        'unit_amount' => (int)($illustrationPrice->price * 100),
+                        'currency' => 'eur',
+                    ]);
+
+                    // Update model with new price ID
+                    $illustrationPrice->stripe_price_id = $newPrice->id;
+                    return $illustrationPrice->saveQuietly();
+                }
+            }
+            return true;
+        } catch (\Exception $e) {
+            Log::error('Error handling Stripe update for illustration price: ' . $e->getMessage(), [
+                'illustration_price_id' => $illustrationPrice->id ?? null,
+                'exception' => $e
+            ]);
+            return false;
+        }
+    }
+
+    /**
+     * Handle all Stripe operations for deleting an illustration price
+     */
+    public function handleIllustrationPriceDeletion(IllustrationPrice $illustrationPrice): bool
+    {
+        try {
+            if ($illustrationPrice->stripe_product_id) {
+                // Archive the price
+                if ($illustrationPrice->stripe_price_id) {
+                    $this->client->prices->update(
+                        $illustrationPrice->stripe_price_id,
+                        ['active' => false]
+                    );
+                }
+
+                // Archive the product
+                $this->client->products->update(
+                    $illustrationPrice->stripe_product_id,
+                    ['active' => false]
+                );
+            }
+            return true;
+        } catch (\Exception $e) {
+            Log::error('Error handling Stripe deletion for illustration price: ' . $e->getMessage(), [
+                'illustration_price_id' => $illustrationPrice->id ?? null,
+                'exception' => $e
+            ]);
+            return false;
         }
     }
 }
