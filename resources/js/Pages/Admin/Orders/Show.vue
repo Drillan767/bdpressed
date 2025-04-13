@@ -5,7 +5,7 @@ import useStatus from '@/Composables/status'
 import useStrings from '@/Composables/strings'
 import AdminLayout from '@/Layouts/AdminLayout.vue'
 import { useHead } from '@vueuse/head'
-import { computed, ref } from 'vue'
+import { ref } from 'vue'
 
 interface Props {
     order: OrderDetail
@@ -25,33 +25,6 @@ const { getStatus } = useStatus()
 const { toParagraphs } = useStrings()
 
 const displayEditDialog = ref(false)
-
-const shippingAddress = computed(() => {
-    if (props.order.guest) {
-        return props.order.guest.shipping_address
-    }
-    else if (props.order.user) {
-        return props.order.user.shipping_address
-    }
-    else {
-        return undefined
-    }
-})
-
-const billingAddress = computed(() => {
-    if (props.order.useSameAddress) {
-        return undefined
-    }
-    else if (props.order.guest) {
-        return props.order.guest.billing_address ?? undefined
-    }
-    else if (props.order.user) {
-        return props.order.user.billing_address ?? undefined
-    }
-    else {
-        return undefined
-    }
-})
 </script>
 
 <template>
@@ -80,13 +53,13 @@ const billingAddress = computed(() => {
                 <VCard>
                     <template #text>
                         <VAlert
-                            v-if="order.guest"
+                            v-if="order.guest_id"
                             variant="outlined"
                             color="primary"
                             icon="mdi-information"
                         >
                             <template
-                                v-if="order.guest.email === 'anonyme@rgpd.fr'"
+                                v-if="order.client.email === 'anonyme@rgpd.fr'"
                                 #text
                             >
                                 Les données de l'utilisateur à l'origine de cette commande ont été anonymisées.
@@ -114,19 +87,14 @@ const billingAddress = computed(() => {
                                             </h2>
                                             <p>
                                                 <b class="mr-2">Adresse e-mail :</b>
-                                                <span v-if="order.user">
-                                                    {{ order.user.email }}
-                                                </span>
-                                                <span v-else-if="order.guest">
-                                                    {{ order.guest.email }}
-                                                </span>
+                                                {{ order.client.email }}
                                             </p>
-                                            <template v-if="order.user?.instagram">
+                                            <template v-if="order.client?.instagram">
                                                 <p class="font-weight-bold">
                                                     Instagram :
 
                                                     <VChip
-                                                        :text="order.user.instagram"
+                                                        :text="order.client.instagram"
                                                         :href="`https://instagram.com/${order.user.instagram}`"
                                                         target="_blank"
                                                         color="secondary"
@@ -137,7 +105,10 @@ const billingAddress = computed(() => {
                                             </template>
                                         </VCol>
                                     </VRow>
-                                    <VRow no-gutters>
+                                    <VRow
+                                        v-if="order.additionalInfos"
+                                        no-gutters
+                                    >
                                         <VCol>
                                             <p class="font-weight-bold">
                                                 Demande :
@@ -145,10 +116,9 @@ const billingAddress = computed(() => {
                                             <div v-html="toParagraphs(order.additionalInfos)" />
                                         </VCol>
                                     </VRow>
-                                    <VDivider class="my-4" />
                                     <VRow>
                                         <VCol
-                                            v-if="shippingAddress"
+                                            v-if="order.client.shipping_address"
                                             cols="12"
                                             md="6"
                                         >
@@ -156,25 +126,25 @@ const billingAddress = computed(() => {
                                                 Adresse de livraison
                                             </h2>
                                             <p class="mb-1">
-                                                {{ shippingAddress.firstName }} {{ shippingAddress.lastName }}
+                                                {{ order.client.shipping_address.firstName }} {{ order.client.shipping_address.lastName }}
                                             </p>
                                             <p class="mb-1">
-                                                {{ shippingAddress.street }}
+                                                {{ order.client.shipping_address.street }}
                                             </p>
                                             <p
-                                                v-if="shippingAddress.street2.length > 1"
+                                                v-if="order.client.shipping_address.street2"
                                                 class="mb-1"
                                             >
-                                                {{ shippingAddress.street2 }}
+                                                {{ order.client.shipping_address.street2 }}
                                             </p>
                                             <p class="mb-1">
-                                                {{ shippingAddress.zipCode }}
-                                                {{ shippingAddress.city }} -
-                                                {{ shippingAddress.country }}
+                                                {{ order.client.shipping_address.zipCode }}
+                                                {{ order.client.shipping_address.city }} -
+                                                {{ order.client.shipping_address.country }}
                                             </p>
                                         </VCol>
                                         <VCol
-                                            v-if="billingAddress"
+                                            v-if="order.client.billing_address"
                                             cols="12"
                                             md="6"
                                         >
@@ -182,21 +152,21 @@ const billingAddress = computed(() => {
                                                 Adresse de facturation
                                             </h2>
                                             <p class="mb-1">
-                                                {{ billingAddress.firstName }} {{ billingAddress.lastName }}
+                                                {{ order.client.billing_address.firstName }} {{ order.client.billing_address.lastName }}
                                             </p>
                                             <p class="mb-1">
-                                                {{ billingAddress.street }}
+                                                {{ order.client.billing_address.street }}
                                             </p>
                                             <p
-                                                v-if="billingAddress.street2.length > 1"
+                                                v-if="order.client.billing_address.street2"
                                                 class="mb-1"
                                             >
-                                                {{ billingAddress.street2 }}
+                                                {{ order.client.billing_address.street2 }}
                                             </p>
                                             <p class="mb-1">
-                                                {{ billingAddress.zipCode }}
-                                                {{ billingAddress.city }} -
-                                                {{ billingAddress.country }}
+                                                {{ order.client.billing_address.zipCode }}
+                                                {{ order.client.billing_address.city }} -
+                                                {{ order.client.billing_address.country }}
                                             </p>
                                         </VCol>
                                     </VRow>
@@ -216,15 +186,16 @@ const billingAddress = computed(() => {
                                             :prepend-avatar="detail.product.promotedImage"
                                         >
                                             <template #append>
-                                                {{ formatPrice(detail.price) }}
+                                                {{ detail.price }}
                                             </template>
                                         </VListItem>
-                                        <VDivider />
-                                        <template
-                                            v-for="(illustration, i) in order.illustrationsList"
-                                            :key="i"
-                                        >
-                                            <VListGroup :value="i">
+                                        <template v-if="order.illustrationsList.length > 0">
+                                            <VDivider />
+
+                                            <VListGroup
+                                                v-for="(illustration, i) in order.illustrationsList"
+                                                :key="i"
+                                            >
                                                 <template #activator="{ props: illustrationProps }">
                                                     <VListItem
                                                         v-bind="illustrationProps"
@@ -285,18 +256,18 @@ const billingAddress = computed(() => {
                                         </template>
                                         <VDivider />
                                         <VListItem
-                                            title="Frais de paiement"
-                                        >
-                                            <template #append>
-                                                {{ formatPrice(order.stripeFees) }}
-                                            </template>
-                                        </VListItem>
-                                        <VDivider />
-                                        <VListItem
                                             :title="`Frais de port (${totalWeight} g)`"
                                         >
                                             <template #append>
                                                 {{ formatPrice(order.shipmentFees) }}
+                                            </template>
+                                        </VListItem>
+                                        <VDivider />
+                                        <VListItem
+                                            title="Frais de paiement"
+                                        >
+                                            <template #append>
+                                                {{ formatPrice(order.stripeFees) }}
                                             </template>
                                         </VListItem>
                                         <VDivider />

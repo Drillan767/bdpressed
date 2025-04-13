@@ -3,7 +3,6 @@ import type { AdminProduct, AdminProductList, DataTableHeader } from '@/types'
 import CreateArticleDialog from '@/Components/Admin/Articles/CreateArticleDialog.vue'
 import DeleteArticleDialog from '@/Components/Admin/Articles/DeleteArticleDialog.vue'
 import EditArticleDialog from '@/Components/Admin/Articles/EditArticleDialog.vue'
-import useNumbers from '@/Composables/numbers'
 import useToast from '@/Composables/toast'
 import AdminLayout from '@/Layouts/AdminLayout.vue'
 import { router } from '@inertiajs/vue3'
@@ -29,6 +28,9 @@ const headers: DataTableHeader[] = [
         title: 'Prix',
         key: 'price',
         sortable: true,
+        cellProps: {
+            class: 'text-no-wrap',
+        },
     },
     {
         title: 'Poids',
@@ -62,7 +64,6 @@ const headers: DataTableHeader[] = [
     },
 ]
 
-const { formatPrice } = useNumbers()
 const { showSuccess } = useToast()
 
 const editedProduct = ref<AdminProduct>()
@@ -121,7 +122,7 @@ useHead({
             </div>
         </template>
         <template #item.price="{ item }">
-            {{ formatPrice(item.price) }}
+            {{ item.price }} €
         </template>
         <template #item.weight="{ item }">
             {{ item.weight }} g.

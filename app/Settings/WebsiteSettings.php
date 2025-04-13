@@ -13,6 +13,8 @@ class WebsiteSettings extends Settings
     public string $shop_subtitle;
     public string $contact_image_url;
     public string $contact_text;
+    public int $shipping_default_weight;
+    public int $illustration_weight;
 
     public static function group(): string
     {

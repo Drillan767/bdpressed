@@ -18,6 +18,8 @@ interface Props {
         shop_subtitle: string
         contact_image_url: string
         contact_text: string
+        shipping_default_weight: number
+        illustration_weight: number
     }
     flash: {
         success: string | null
@@ -31,6 +33,8 @@ interface SettingsProps {
     shop_subtitle: string
     contact_image_url: File
     contact_text: string
+    shipping_default_weight: number
+    illustration_weight: number
 }
 
 defineOptions({ layout: AdminLayout })
@@ -50,12 +54,16 @@ const { defineField, handleSubmit } = useForm<SettingsProps>({
         shop_title: 'required',
         shop_subtitle: 'required',
         contact_text: 'required',
+        shipping_default_weight: 'required',
+        illustration_weight: 'required',
     },
     initialValues: {
         comics_text: props.settings.comics_text,
         shop_title: props.settings.shop_title,
         shop_subtitle: props.settings.shop_subtitle,
         contact_text: props.settings.contact_text,
+        shipping_default_weight: props.settings.shipping_default_weight,
+        illustration_weight: props.settings.illustration_weight,
     },
 })
 
@@ -65,6 +73,8 @@ const [shopTitle, shopTitleProps] = defineField('shop_title', validationConfig)
 const [shopSubtitle, shopSubtitleProps] = defineField('shop_subtitle', validationConfig)
 const [contactImage, contactImageProps] = defineField('contact_image_url', validationConfig)
 const [contactText, contactTextProps] = defineField('contact_text', validationConfig)
+const [shippingWeight, shippingWeightProps] = defineField('shipping_default_weight', validationConfig)
+const [illustrationWeight, illustrationWeightProps] = defineField('illustration_weight', validationConfig)
 
 const formValid = useIsFormValid()
 const formDirty = useIsFormDirty()
@@ -206,6 +216,37 @@ watch(() => props.flash.success, (value) => {
                                 label="Texte de la page contact"
                             />
                         </vcol>
+                    </VRow>
+                </VContainer>
+            </template>
+        </VCard>
+        <VCard
+            class="mt-4"
+            variant="outlined"
+            title="Illustrations & envois"
+        >
+            <template #text>
+                <VContainer>
+                    <VRow>
+                        <VCol cols="12" md="6">
+                            <VTextField
+                                v-bind="shippingWeightProps"
+                                v-model="shippingWeight"
+                                type="number"
+                                label="Poids initial d'un envoi"
+                                hint="Indiquer le poids de l'enveloppe avec la sucette sans la commande"
+                                suffix="grammes"
+                            />
+                        </VCol>
+                        <VCol cols="12" md="6">
+                            <VTextField
+                                v-bind="illustrationWeightProps"
+                                v-model="illustrationWeight"
+                                type="number"
+                                label="Poids d'une illustration"
+                                suffix="grammes"
+                            />
+                        </VCol>
                     </VRow>
                 </VContainer>
             </template>

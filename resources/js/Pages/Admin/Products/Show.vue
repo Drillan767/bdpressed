@@ -3,7 +3,6 @@ import type { AdminProduct } from '@/types'
 import DeleteArticleDialog from '@/Components/Admin/Articles/DeleteArticleDialog.vue'
 import EditArticleDialog from '@/Components/Admin/Articles/EditArticleDialog.vue'
 import EditIllustrationsForm from '@/Components/Admin/Articles/EditIllustrationsForm.vue'
-import useNumbers from '@/Composables/numbers'
 import useStrings from '@/Composables/strings'
 import useToast from '@/Composables/toast'
 import AdminLayout from '@/Layouts/AdminLayout.vue'
@@ -18,7 +17,6 @@ interface Props {
 
 defineOptions({ layout: AdminLayout })
 const props = defineProps<Props>()
-const { formatPrice } = useNumbers()
 const { toParagraphs } = useStrings()
 const { showSuccess } = useToast()
 
@@ -57,7 +55,7 @@ useHead({
             >
                 <h1>
                     <VIcon icon="mdi-package-variant" />
-                    {{ product.name }} ({{ formatPrice(product.price) }})
+                    {{ product.name }} ({{ product.price }} €)
                 </h1>
             </VCol>
             <VCol

@@ -2,9 +2,11 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Support\Facades\Storage;
+use App\Observers\ProductObserver;
 
 /**
  * @property int $id
@@ -20,12 +22,13 @@ use Illuminate\Support\Facades\Storage;
  * @property \DateTime $created_at
  * @property \DateTime $updated_at
  */
+#[ObservedBy(ProductObserver::class)]
 class Product extends Model
 {
     protected $casts = [
         'created_at' => 'datetime:d/m/Y H:i',
         'updated_at' => 'datetime:d/m/Y H:i',
-        'price' => 'float',
+        'price' => 'decimal:2',
         'illustrations' => 'array',
     ];
 

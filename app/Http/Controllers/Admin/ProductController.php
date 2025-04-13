@@ -53,7 +53,7 @@ class ProductController extends Controller
         $product->quickDescription = $request->get('quickDescription');
         $product->description = $request->get('description');
         $product->promotedImage = '';
-        $product->illustrations = '';
+        $product->illustrations = [];
         $product->save();
 
         $promotedImage = $request->file('promotedImage');
@@ -100,6 +100,23 @@ class ProductController extends Controller
             $product->promotedImage = "/storage/articles/$product->id/{$promotedImage->getClientOriginalName()}";
         }
 
+        // Handle illustrations if they are provided
+        if ($request->hasFile('illustrations')) {
+            $illustrationsPath = [];
+            
+            foreach($request->file('illustrations') as $illustration) {
+                Storage::putFileAs(
+                    "articles/{$product->id}",
+                    $illustration,
+                    $illustration->getClientOriginalName(),
+                );
+
+                $illustrationsPath[] = "/storage/articles/$product->id/{$illustration->getClientOriginalName()}";
+            }
+            
+            $product->illustrations = $illustrationsPath;
+        }
+
         $product->save();
     }
 
@@ -112,9 +129,11 @@ class ProductController extends Controller
 
     public function addMedia(Request $request, Product $product): JsonResponse
     {
-        $illustrations = $product->illustrations;
-
-        $illustrationsPaths = array_column($illustrations, 'path');
+        // Get current illustrations or initialize as empty array if null
+        $illustrations = $product->illustrations ?? [];
+        
+        // Extract paths from illustrations if they exist
+        $illustrationsPaths = is_array($illustrations) ? array_column($illustrations, 'path') : [];
 
         foreach ($request->file('illustrations') as $illustration) {
             Storage::putFileAs(
@@ -134,14 +153,21 @@ class ProductController extends Controller
 
     public function removeMedia(Request $request, Product $product): JsonResponse
     {
-
         $realPath = str_replace('/storage/', '', $request->get('illustration'));
         $base = basename($realPath);
-        $illustrationsList = array_column($product->illustrations, 'path');
+        
+        // Get current illustrations or initialize as empty array if null
+        $illustrations = $product->illustrations ?? [];
+        
+        // Extract paths from illustrations if they exist
+        $illustrationsList = is_array($illustrations) ? array_column($illustrations, 'path') : [];
+        
         $index = array_search("/storage/articles/$product->id/$base", $illustrationsList);
-        unset($illustrationsList[$index]);
+        if ($index !== false) {
+            unset($illustrationsList[$index]);
+        }
 
-        $product->illustrations = $illustrationsList;
+        $product->illustrations = array_values($illustrationsList); // Re-index the array
         $product->save();
 
         Storage::delete($realPath);
