@@ -20,7 +20,7 @@ class StripeService
     /**
      * Retrieve a product from Stripe by ID
      */
-    public function retrieveProduct(string $stripeProductId = null)
+    public function retrieveProduct(?string $stripeProductId)
     {
         if ($stripeProductId) {
             try {
@@ -107,7 +107,6 @@ class StripeService
     public function updateProduct(Product $product)
     {
         if (empty($product->stripe_link)) {
-            Log::warning('Product does not have a Stripe ID, creating new product');
             return $this->createProduct($product);
         }
 
@@ -193,7 +192,6 @@ class StripeService
     public function deleteProduct(Product $product)
     {
         if (empty($product->stripe_link)) {
-            Log::warning('Product does not have a Stripe ID, nothing to delete');
             return null;
         }
 
