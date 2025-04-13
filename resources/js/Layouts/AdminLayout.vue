@@ -98,6 +98,15 @@ onMounted(async () => {
                         />
                     </template>
                 </VListItem>
+                <VDivider class="my-2" />
+                <VListItem
+                    :active="$page.url.includes('/comics')"
+                    prepend-icon="mdi-draw"
+                    title="Bédés"
+                    nav
+                    @click="router.visit(route('comics.index'))"
+                />
+                <VDivider class="my-2" />
                 <VListItem
                     :active="$page.url.includes('/parametres')"
                     prepend-icon="mdi-cog-outline"
