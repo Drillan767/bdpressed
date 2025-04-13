@@ -39,7 +39,10 @@ class IllustrationPriceSeeder extends Seeder
             ['name' => 'Suivi de commande', 'category' => 'Options', 'key' => 'options_add_tracking', 'price' => 4],
         ];
 
-        foreach ($prices as $price) {
+        foreach ($prices as $i => $price) {
+            $current = $i + 1;
+            $total = count($prices);
+            $this->command->outputComponents()->info("Creating \"{$price['category']} - {$price['name']}\" ($current / $total)");
             IllustrationPrice::create($price);
         }
     }

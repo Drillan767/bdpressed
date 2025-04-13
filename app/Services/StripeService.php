@@ -176,7 +176,7 @@ class StripeService
                 }
             } else {
                 // No active prices found, create a new one                
-                $newPrice = $this->client->prices->create([
+                $this->client->prices->create([
                     'product' => $product->stripe_link,
                     'unit_amount' => (int)($product->price * 100), // Convert to cents
                     'currency' => 'eur',
@@ -269,7 +269,7 @@ class StripeService
         try {
             // Create the product in Stripe
             $productData = [
-                'name' => $illustrationPrice->name,
+                'name' => "$illustrationPrice->category - $illustrationPrice->name",
                 'description' => "Illustration price configuration for {$illustrationPrice->name}",
                 'metadata' => [
                     'price_key' => $illustrationPrice->key,
@@ -314,7 +314,7 @@ class StripeService
                 $this->client->products->update(
                     $illustrationPrice->stripe_product_id,
                     [
-                        'name' => $illustrationPrice->name,
+                        'name' => "$illustrationPrice->category - $illustrationPrice->name",
                         'metadata' => [
                             'price_key' => $illustrationPrice->key,
                             'category' => explode('_', $illustrationPrice->key)[0] ?? 'default',
