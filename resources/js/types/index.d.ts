@@ -212,6 +212,7 @@ export interface OrderDetail {
     illustrationsList: IllustrationSpecs[]
     client: {
         email: string
+        instagram: string | null
         shipping_address: Address
         billing_address: Address | null
     }

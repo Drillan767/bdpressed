@@ -95,7 +95,7 @@ const displayEditDialog = ref(false)
 
                                                     <VChip
                                                         :text="order.client.instagram"
-                                                        :href="`https://instagram.com/${order.user.instagram}`"
+                                                        :href="`https://instagram.com/${order.client.instagram}`"
                                                         target="_blank"
                                                         color="secondary"
                                                         prepend-icon="mdi-open-in-new"
