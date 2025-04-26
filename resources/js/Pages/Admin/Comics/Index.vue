@@ -1,17 +1,15 @@
 <script setup lang="ts">
 import type { Comic, DataTableHeader } from '@/types'
-import CreateComicDialog from '@/Components/Admin/Comics/CreateComicDialog.vue'
 import AdminLayout from '@/Layouts/AdminLayout.vue'
+import { router } from '@inertiajs/vue3'
 import { useHead } from '@vueuse/head'
-import { ref } from 'vue'
+import { route } from 'ziggy-js'
 
 defineOptions({ layout: AdminLayout })
 
 defineProps<{
     comics: Comic[]
 }>()
-
-const displayCreateDialog = ref(false)
 
 const headers: DataTableHeader[] = [
     {
@@ -59,7 +57,8 @@ useHead({
                         <VBtn
                             variant="outlined"
                             color="primary"
-                            @click="displayCreateDialog = true"
+                            append-icon="mdi-plus"
+                            @click="router.visit(route('comics.create'))"
                         >
                             Créer une BD
                         </VBtn>
@@ -68,7 +67,4 @@ useHead({
             </VDataTable>
         </template>
     </VCard>
-    <CreateComicDialog
-        v-model="displayCreateDialog"
-    />
 </template>
