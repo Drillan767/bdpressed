@@ -12,12 +12,17 @@ interface Form {
 }
 
 const drag = ref(false)
+const tempFiles = ref<File[]>([])
+const fileInput = ref<HTMLInputElement | null>(null)
 
 const { defineField, controlledValues, setErrors } = useForm<Form>({
     validationSchema: {
         title: 'required',
         description: 'required',
         instagram_url: 'required',
+    },
+    initialValues: {
+        images: [],
     },
 })
 
@@ -28,15 +33,26 @@ const [images, imagesProps] = defineField('images', validationConfig)
 
 const isFormValid = useIsFormValid()
 
-/*
-    TODO:
-    - Create a ref of arrays
-    - This array would contain the file, its name and its order
-    - When the user upload a file, it should be added to the array
-    - It would also not keep the uploaded file(s) in the input
-    - When clicking on the image, it should open a dialog with the image and the ability to delete it
+function handleImages(files: File | File[]) {
+    if (!Array.isArray(files)) {
+        images.value.push(files)
+    }
+    else {
+        files.forEach((file) => {
+            images.value.push(file)
+        })
+    }
 
-*/
+    tempFiles.value = []
+}
+
+function removeImage(index: number) {
+    images.value.splice(index, 1)
+}
+
+function getImageUrl(file: File): string {
+    return URL.createObjectURL(file)
+}
 </script>
 
 <template>
@@ -62,27 +78,51 @@ const isFormValid = useIsFormValid()
         <VRow>
             <VCol cols="12">
                 <VFileInput
-                    v-bind="imagesProps"
-                    v-model="images"
+                    ref="fileInput"
+                    v-model="tempFiles"
+                    :hint="images.length > 0 ? 'Ajouter d\'autres images pour les mettres à la suite de celles présentes' : undefined"
                     prepend-icon="mdi-image-multiple"
                     label="Images"
                     multiple
+                    @update:model-value="handleImages"
                 />
             </VCol>
             <VCol>
+                <p v-if="images.length > 0">
+                    Glisser / déposer les images pour changer l'ordre des cases.
+                </p>
                 <draggable
                     v-model="images"
+                    item-key="name"
+                    class="v-row"
                     @start="drag = true"
                     @end="drag = false"
                 >
-                    <template #item="{ element }">
-                        <VChip>
-                            {{ element.name }}
-                        </VChip>
+                    <template #item="{ element, index }">
+                        <VCol cols="2">
+                            <VCard>
+                                <VImg
+                                    :src="getImageUrl(element)"
+                                    :width="300"
+                                    max-height="200"
+                                    aspect-ratio="1/1"
+                                    cover
+                                />
+                                <VCardActions>
+                                    <VSpacer />
+                                    <VBtn
+                                        icon
+                                        color="error"
+                                        @click="removeImage(index)"
+                                    >
+                                        <VIcon>mdi-delete</VIcon>
+                                    </VBtn>
+                                </VCardActions>
+                            </VCard>
+                        </VCol>
                     </template>
                 </draggable>
             </VCol>
         </VRow>
     </VContainer>
-    {{ images }}
 </template>

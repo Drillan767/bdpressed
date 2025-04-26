@@ -55,7 +55,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
             Route::controller(ComicController::class)->group(function () {
                 Route::get('/comics', 'index')->name('comics.index');
-                Route::get('/comic/create', 'create')->name('comics.create');
+                Route::get('/comic/nouveau', 'create')->name('comics.create');
                 Route::post('/comic', 'store')->name('comics.store');
             });
 

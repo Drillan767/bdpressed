@@ -16,6 +16,11 @@ class ComicController extends Controller
         return Inertia::render('Admin/Comics/Index', compact('comics'));
     }
 
+    public function create(): Response
+    {
+        return Inertia::render('Admin/Comics/Create');
+    }
+
     public function store(ComicRequest $request)
     {
         
