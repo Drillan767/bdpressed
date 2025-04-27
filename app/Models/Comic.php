@@ -11,6 +11,15 @@ class Comic extends Model
         'is_published' => 'boolean',
     ];
 
+    protected $fillable = [
+        'title',
+        'slug',
+        'description',
+        'preview',
+        'is_published',
+        'instagram_url',
+    ];
+
     public function pages(): HasMany
     {
         return $this->hasMany(ComicPage::class);
