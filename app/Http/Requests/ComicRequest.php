@@ -11,7 +11,7 @@ class ComicRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return $this->user()->hasRole('admin');
     }
 
     /**
@@ -22,7 +22,13 @@ class ComicRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'title' => ['required', 'string'],
+            'description' => ['required', 'string'],
+            'instagram_url' => ['required', 'string'],
+            'images' => ['required', 'array', 'min:1'],
+            'images.*' => ['required', 'image'],
+            'is_published' => ['required', 'boolean'],
+            'preview' => ['required', 'image'],
         ];
     }
 }

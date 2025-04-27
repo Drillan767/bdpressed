@@ -1,15 +1,22 @@
 <script setup lang="ts">
 import type { Comic, DataTableHeader } from '@/types'
+import useToast from '@/Composables/toast'
 import AdminLayout from '@/Layouts/AdminLayout.vue'
 import { router } from '@inertiajs/vue3'
 import { useHead } from '@vueuse/head'
+import { watch } from 'vue'
 import { route } from 'ziggy-js'
 
 defineOptions({ layout: AdminLayout })
 
-defineProps<{
+const props = defineProps<{
     comics: Comic[]
+    flash: {
+        success: string | null
+    }
 }>()
+
+const { showSuccess } = useToast()
 
 const headers: DataTableHeader[] = [
     {
@@ -39,6 +46,11 @@ const headers: DataTableHeader[] = [
 useHead({
     title: 'Bédés',
 })
+
+watch(() => props.flash.success, (value) => {
+    if (value)
+        showSuccess(value)
+}, { immediate: true })
 </script>
 
 <template>
