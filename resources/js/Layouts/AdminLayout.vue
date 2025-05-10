@@ -104,7 +104,7 @@ onMounted(async () => {
                     prepend-icon="mdi-draw"
                     title="Bédés"
                     nav
-                    @click="router.visit(route('comics.index'))"
+                    @click="router.visit(route('admin.comics.index'))"
                 />
                 <VDivider class="my-2" />
                 <VListItem

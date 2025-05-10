@@ -54,9 +54,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
             });
 
             Route::controller(ComicController::class)->group(function () {
-                Route::get('/comics', 'index')->name('comics.index');
-                Route::get('/comic/nouveau', 'create')->name('comics.create');
-                Route::post('/comic', 'store')->name('comics.store');
+                Route::get('/comics', 'index')->name('admin.comics.index');
+                Route::get('/comic/nouveau', 'create')->name('admin.comics.create');
+                Route::get('/comic/{slug}', 'edit')->name('admin.comics.edit');
+                Route::post('/comic', 'store')->name('admin.comics.store');
+                Route::put('/comic/{comic}', 'update')->name('admin.comics.update');
+                Route::delete('/comic/{comic}', 'destroy')->name('admin.comics.destroy');
             });
 
             Route::controller(SettingsController::class)->prefix('/parametres')->group(function () {
