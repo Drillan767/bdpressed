@@ -4,7 +4,7 @@ import useToast from '@/Composables/toast'
 import AdminLayout from '@/Layouts/AdminLayout.vue'
 import { router } from '@inertiajs/vue3'
 import { useHead } from '@vueuse/head'
-import { watch } from 'vue'
+import { ref, watch } from 'vue'
 import { route } from 'ziggy-js'
 
 defineOptions({ layout: AdminLayout })
@@ -18,6 +18,9 @@ const props = defineProps<{
 
 const { showSuccess } = useToast()
 
+const showPreview = ref(false)
+const preview = ref<string>()
+
 const headers: DataTableHeader[] = [
     {
         title: 'Titre',
@@ -29,7 +32,7 @@ const headers: DataTableHeader[] = [
     },
     {
         title: 'Nombre de pages',
-        key: 'pages',
+        key: 'pages_count',
     },
     {
         title: 'Date de création',
@@ -46,6 +49,11 @@ const headers: DataTableHeader[] = [
 useHead({
     title: 'Bédés',
 })
+
+function displayPreview(image: string) {
+    showPreview.value = true
+    preview.value = image
+}
 
 watch(() => props.flash.success, (value) => {
     if (value)
@@ -76,7 +84,42 @@ watch(() => props.flash.success, (value) => {
                         </VBtn>
                     </div>
                 </template>
+                <template #item.preview="{ item }">
+                    <VImg
+                        :src="item.preview"
+                        :width="50"
+                        :height="50"
+                        rounded="lg"
+                        class="my-2 cursor-pointer"
+                        @click="displayPreview(item.preview)"
+                    />
+                </template>
+                <template #item.actions="{ item }">
+                    <VBtn
+                        variant="outlined"
+                        color="primary"
+                        icon="mdi-pencil"
+                        class="mr-2"
+                        size="small"
+                        @click="router.visit(route('admin.comics.edit', item.slug))"
+                    />
+                    <VBtn
+                        variant="outlined"
+                        color="error"
+                        icon="mdi-trash-can-outline"
+                        size="small"
+                    />
+                    <!-- @click="router.visit(route('admin.comics.destroy', item.slug))" -->
+                </template>
             </VDataTable>
         </template>
     </VCard>
+    <VDialog
+        v-model="showPreview"
+        width="500"
+    >
+        <VImg
+            :src="preview"
+        />
+    </VDialog>
 </template>

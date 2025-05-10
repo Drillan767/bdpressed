@@ -17,7 +17,7 @@ class ComicController extends Controller
 {
     public function index(): Response
     {
-        $comics = Comic::all();
+        $comics = Comic::withCount('pages')->get();
         return Inertia::render('Admin/Comics/Index', compact('comics'));
     }
 
@@ -45,7 +45,6 @@ class ComicController extends Controller
             'preview.' . $preview->getClientOriginalExtension(),
         );
 
-        $comic->preview = "storage/comics/{$comic->id}/preview.{$preview->getClientOriginalExtension()}";
         $comic->save();
 
         foreach ($request->file('images') as $i => $image) {
@@ -53,7 +52,7 @@ class ComicController extends Controller
 
             ComicPage::create([
                 'comic_id' => $comic->id,
-                'image' => "storage/comics/{$comic->id}/{$fileName}",
+                'image' => "/storage/comics/{$comic->id}/{$fileName}",
                 'order' => $i + 1,
             ]);
 
@@ -64,7 +63,18 @@ class ComicController extends Controller
             );
         }
 
-        return redirect()->route('comics.index')->with('success', 'Bédé créée avec succès');
+        return redirect()->route('admin.comics.index')->with('success', 'Bédé créée avec succès');
     }
-    
+
+    public function edit(string $slug): Response
+    {
+        $comic = Comic::where('slug', $slug)
+            ->with(['pages' => function($query) {
+                $query->orderBy('order');
+            }])
+            ->firstOrFail();
+
+        return Inertia::render('Admin/Comics/Edit', compact('comic'));
+    }
+
 }

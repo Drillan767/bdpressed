@@ -9,6 +9,8 @@ class Comic extends Model
 {
     protected $casts = [
         'is_published' => 'boolean',
+        'created_at' => 'datetime:d/m/Y H:i',
+        'updated_at' => 'datetime:d/m/Y H:i',
     ];
 
     protected $fillable = [

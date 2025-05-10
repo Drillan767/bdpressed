@@ -33,6 +33,7 @@ const displayPreview = ref(false)
 const { defineField, handleSubmit } = useForm<Form>({
     validationSchema: {
         title: 'required',
+        preview: 'required',
         description: 'required',
         instagram_url: 'required',
     },
@@ -214,6 +215,7 @@ function openPreview() {
                                 </VBtn>
                                 <VBtn
                                     :disabled="loading || !isFormValid"
+                                    variant="flat"
                                     @click="save"
                                 >
                                     Enregister comme brouillon
@@ -221,6 +223,7 @@ function openPreview() {
                                 <VBtn
                                     color="secondary"
                                     :disabled="loading || !isFormValid"
+                                    variant="flat"
                                     @click="saveAndPublish"
                                 >
                                     Enregistrer et publier
