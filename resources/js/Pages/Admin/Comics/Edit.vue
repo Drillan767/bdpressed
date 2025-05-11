@@ -18,6 +18,13 @@ interface EditForm {
     images: File[]
 }
 
+interface NewImage {
+    file: File
+    id: string
+    isNew: boolean
+    image: string
+}
+
 defineOptions({ layout: AdminLayout })
 
 const props = defineProps<{
@@ -50,89 +57,29 @@ useHead({
     title: () => `Modifier "${props.comic.title}"`,
 })
 
+const fileInput = ref<HTMLInputElement | null>(null)
+const displayPreview = ref(false)
 const loading = ref(false)
 const drag = ref(false)
 const tempFiles = ref<File[]>([])
-const fileInput = ref<HTMLInputElement | null>(null)
 const imagePreview = ref<string>()
-const displayPreview = ref(false)
-const existingPages = ref([...props.comic.pages])
+const imagesList = ref<(NewImage | ComicPage)[]>([])
 
-/*
-{
-  title: "Comic 1",
-  description: "Description du comic 1",
-  instagram_url: "https://www.instagram.com/comic1",
-  preview: File | undefined,
-  images: [
-    File,
-  ],
-  imagesDetails: [
-    {
-        name: 'image1',
-        type: 'existing',
-    },
-    {
-        name: File.name,
-        type: 'new',
-    },
-    {
-        name: 'image2',
-        type: 'existing',
-    },
-    {
-        name: 'image3',
-        type: 'existing',
-    },
-  ]
-}
-*/
-
-// Create a reactive array for the draggable component
-const displayImages = ref<{ type: 'existing' | 'new', url: string, index: number }[]>([])
-
-// Update displayImages whenever existingPages or images change
-function updateDisplayImages() {
-    displayImages.value = [
-        ...existingPages.value.map((page, index) => ({
-            type: 'existing',
-            url: page.image,
-            index,
-        })),
-        ...images.value.map((file, index) => ({
-            type: 'new',
-            url: URL.createObjectURL(file),
-            index,
-        })),
-    ]
-}
-
-// Initialize display images
 onMounted(() => {
+    imagesList.value = props.comic.pages
     imagePreview.value = props.comic.preview
-    updateDisplayImages()
 })
 
-const save = handleSubmit((_values) => {
-    // TODO: Implement save logic
-})
+function handleImages() {
 
-const saveAndPublish = handleSubmit((_values) => {
-    // TODO: Implement save and publish logic
-})
+}
 
-function handleImages(files: File | File[]) {
-    if (!Array.isArray(files)) {
-        images.value.push(files)
-    }
-    else {
-        files.forEach((file) => {
-            images.value.push(file)
-        })
-    }
+function removeImage(index: number) {
 
-    tempFiles.value = []
-    updateDisplayImages()
+}
+
+function handleReorder() {
+
 }
 
 function generatePreviewUrl(file: File | File[]) {
@@ -145,34 +92,6 @@ function generatePreviewUrl(file: File | File[]) {
         })
     }
 }
-
-function removeImage(index: number) {
-    const item = displayImages.value[index]
-    if (item.type === 'existing') {
-        existingPages.value.splice(item.index, 1)
-    }
-    else {
-        images.value.splice(item.index, 1)
-    }
-    updateDisplayImages()
-}
-
-function handleReorder(newOrder: { type: 'existing' | 'new', url: string, index: number }[]) {
-    // Update existing pages
-    const existingItems = newOrder.filter(item => item.type === 'existing')
-    existingPages.value = existingItems.map(item =>
-        existingPages.value[item.index],
-    )
-
-    // Update new files
-    const newItems = newOrder.filter(item => item.type === 'new')
-    images.value = newItems.map(item =>
-        images.value[item.index],
-    )
-
-    // Update display images
-    updateDisplayImages()
-}
 </script>
 
 <template>
@@ -181,129 +100,116 @@ function handleReorder(newOrder: { type: 'existing' | 'new', url: string, index:
         Modifier "{{ comic.title }}"
     </h1>
     <VCard>
-        <template #text>
-            <VContainer>
-                <VRow>
-                    <VCol cols="12" md="6">
-                        <VTextField
-                            v-bind="titleProps"
-                            v-model="title"
-                            label="Titre"
-                        />
-                    </VCol>
-                    <VCol cols="12" md="6">
-                        <VTextField
-                            v-bind="instagramUrlProps"
-                            v-model="instagramUrl"
-                            label="Lien vers Instagram"
-                        />
-                    </VCol>
-                </VRow>
-                <VRow>
-                    <VCol>
-                        <VFileInput
-                            v-bind="previewProps"
-                            v-model="preview"
-                            :multiple="false"
-                            prepend-icon="mdi-image-frame"
-                            label="Image de présentation"
-                            accept="image/*"
-                            @update:model-value="generatePreviewUrl"
-                        >
-                            <template #append-inner>
-                                <VAvatar
-                                    :image="imagePreview"
-                                    class="cursor-pointer"
-                                    @click.stop.prevent="displayPreview = true"
-                                />
-                            </template>
-                        </VFileInput>
-                    </VCol>
-                    <VCol cols="12" md="6">
-                        <VFileInput
-                            ref="fileInput"
-                            v-model="tempFiles"
-                            :hint="images.length > 0 ? 'Ajouter d\'autres images pour les mettres à la suite de celles présentes' : undefined"
-                            prepend-icon="mdi-image-multiple"
-                            label="Images"
-                            multiple
-                            @update:model-value="handleImages"
-                        />
-                    </VCol>
-                    <VCol cols="12">
-                        <p v-if="images.length > 0">
-                            Glisser / déposer les images pour changer l'ordre des cases.
-                        </p>
-                        <draggable
-                            v-model="displayImages"
-                            item-key="index"
-                            class="v-row"
-                            @start="drag = true"
-                            @end="drag = false"
-                            @update:model-value="handleReorder"
-                        >
-                            <template #item="{ element }">
-                                <VCol cols="2">
-                                    <VCard>
-                                        <VImg
-                                            :src="element.url"
-                                            :width="300"
-                                            max-height="200"
-                                            aspect-ratio="1/1"
-                                            cover
-                                        />
-                                        <VCardActions>
-                                            <VSpacer />
-                                            <VBtn
-                                                icon
-                                                color="error"
-                                                @click="removeImage(element.index)"
-                                            >
-                                                <VIcon>mdi-delete</VIcon>
-                                            </VBtn>
-                                        </VCardActions>
-                                    </VCard>
-                                </VCol>
-                            </template>
-                        </draggable>
-                    </VCol>
-                </VRow>
-                <VRow>
-                    <VCol>
-                        <VTextarea
-                            v-bind="descriptionProps"
-                            v-model="description"
-                            label="Description"
-                        />
-                    </VCol>
-                </VRow>
-                <VRow>
-                    <VCol class="d-flex justify-end ga-2">
-                        <VBtn
-                            variant="text"
-                            @click="router.visit(route('admin.comics.index'))"
-                        >
-                            Annuler
-                        </VBtn>
-                        <VBtn
-                            :disabled="loading || !isFormValid"
-                            variant="flat"
-                            @click="save"
-                        >
-                            Enregister comme brouillon
-                        </VBtn>
-                        <VBtn
-                            color="secondary"
-                            :disabled="loading || !isFormValid"
-                            variant="flat"
-                            @click="saveAndPublish"
-                        >
-                            Enregistrer et publier
-                        </VBtn>
-                    </VCol>
-                </VRow>
-            </VContainer>
-        </template>
+        <VContainer>
+            <VRow>
+                <VCol cols="12" md="6">
+                    <VTextField
+                        v-bind="titleProps"
+                        v-model="title"
+                        label="Titre"
+                    />
+                </VCol>
+                <VCol cols="12" md="6">
+                    <VTextField
+                        v-bind="instagramUrlProps"
+                        v-model="instagramUrl"
+                        label="Lien vers Instagram"
+                    />
+                </VCol>
+            </VRow>
+            <VRow>
+                <VCol>
+                    <VFileInput
+                        v-bind="previewProps"
+                        v-model="preview"
+                        :multiple="false"
+                        prepend-icon="mdi-image-frame"
+                        label="Image de présentation"
+                        accept="image/*"
+                        @update:model-value="generatePreviewUrl"
+                    >
+                        <template #append-inner>
+                            <VAvatar
+                                :image="imagePreview"
+                                class="cursor-pointer"
+                                @click.stop.prevent="displayPreview = true"
+                            />
+                        </template>
+                    </VFileInput>
+                </VCol>
+                <VCol cols="12" md="6">
+                    <VFileInput
+                        ref="fileInput"
+                        v-model="tempFiles"
+                        :hint="images.length > 0 ? 'Ajouter d\'autres images pour les mettres à la suite de celles présentes' : undefined"
+                        prepend-icon="mdi-image-multiple"
+                        label="Images"
+                        multiple
+                        @update:model-value="handleImages"
+                    />
+                </VCol>
+                <VCol cols="12">
+                    <p v-if="images.length > 0">
+                        Glisser / déposer les images pour changer l'ordre des cases.
+                    </p>
+                    <draggable
+                        v-model="imagesList"
+                        item-key="index"
+                        class="v-row"
+                        @start="drag = true"
+                        @end="drag = false"
+                        @update:model-value="handleReorder"
+                    >
+                        <template #item="{ element }">
+                            <VCol cols="2">
+                                <VCard>
+                                    <VImg
+                                        :src="element.image"
+                                        :width="300"
+                                        max-height="200"
+                                        aspect-ratio="1/1"
+                                        cover
+                                    />
+                                    <VCardActions>
+                                        <VSpacer />
+                                        <VBtn
+                                            icon
+                                            color="error"
+                                            @click="removeImage(element.index)"
+                                        >
+                                            <VIcon icon="mdi-delete" />
+                                        </VBtn>
+                                    </VCardActions>
+                                </VCard>
+                            </VCol>
+                        </template>
+                    </draggable>
+                </VCol>
+            </VRow>
+            <VRow>
+                <VCol class="d-flex justify-end ga-2">
+                    <VBtn
+                        variant="text"
+                        @click="router.visit(route('admin.comics.index'))"
+                    >
+                        Annuler
+                    </VBtn>
+                    <VBtn
+                        :disabled="loading || !isFormValid"
+                        variant="flat"
+                    >
+                        Enregister comme brouillon
+                    </VBtn>
+                    <VBtn
+                        color="secondary"
+                        :disabled="loading || !isFormValid"
+                        variant="flat"
+                    >
+                        Enregistrer et publier
+                    </VBtn>
+                </VCol>
+            </VRow>
+        </VContainer>
     </VCard>
     <VDialog
         v-model="displayPreview"
