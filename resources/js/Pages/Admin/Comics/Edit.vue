@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import type { Comic, ComicPage } from '@/types'
+import useToast from '@/Composables/toast'
 import AdminLayout from '@/Layouts/AdminLayout.vue'
 import validationConfig from '@/plugins/validationConfig'
 import { router } from '@inertiajs/vue3'
 import { useHead } from '@vueuse/head'
 import { useForm, useIsFormValid } from 'vee-validate'
-import { computed, onMounted, ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import draggable from 'vuedraggable'
 import { route } from 'ziggy-js'
 
@@ -29,9 +30,12 @@ defineOptions({ layout: AdminLayout })
 
 const props = defineProps<{
     comic: Comic
+    flash: {
+        success: string | null
+    }
 }>()
 
-const { defineField, handleSubmit } = useForm<EditForm>({
+const { defineField, handleSubmit, resetForm } = useForm<EditForm>({
     validationSchema: {
         title: 'required',
         description: 'required',
@@ -52,6 +56,7 @@ const [preview, previewProps] = defineField('preview', validationConfig)
 const [images] = defineField('images', validationConfig)
 
 const isFormValid = useIsFormValid()
+const { showSuccess } = useToast()
 
 useHead({
     title: () => `Modifier "${props.comic.title}"`,
@@ -61,8 +66,11 @@ const fileInput = ref<HTMLInputElement | null>(null)
 const displayPreview = ref(false)
 const loading = ref(false)
 const drag = ref(false)
+const displayDeleteDialog = ref(false)
 const tempFiles = ref<File[]>([])
 const imagePreview = ref<string>()
+const imgIndex = ref<number>()
+const deletedPages = ref<ComicPage[]>([])
 const imagesList = ref<(NewImage | ComicPage)[]>([])
 
 onMounted(() => {
@@ -70,16 +78,44 @@ onMounted(() => {
     imagePreview.value = props.comic.preview
 })
 
-function handleImages() {
-
+function handleImages(files: File | File[]) {
+    if (!Array.isArray(files)) {
+        imagesList.value.push({
+            file: files,
+            id: Date.now().toString(),
+            isNew: true,
+            image: URL.createObjectURL(files),
+        })
+    }
+    else {
+        files.forEach((file, i) => {
+            imagesList.value.push({
+                file,
+                id: Date.now().toString() + i,
+                isNew: true,
+                image: URL.createObjectURL(file),
+            })
+        })
+    }
 }
 
-function removeImage(index: number) {
-
+function removeImage(page: ComicPage | NewImage, index: number) {
+    if (Object.hasOwn(page, 'isNew')) {
+        imagesList.value = imagesList.value.filter(p => p.id !== page.id)
+    }
+    else {
+        imgIndex.value = index
+        displayDeleteDialog.value = true
+    }
 }
 
-function handleReorder() {
+function handleDeletePage() {
+    if (!imgIndex.value)
+        return
 
+    deletedPages.value.push(imagesList.value[imgIndex.value])
+    imagesList.value = imagesList.value.filter(p => p.id !== deletedPages.value[0].id)
+    displayDeleteDialog.value = false
 }
 
 function generatePreviewUrl(file: File | File[]) {
@@ -92,6 +128,21 @@ function generatePreviewUrl(file: File | File[]) {
         })
     }
 }
+
+function handlePublish() {
+    router.post(route('admin.comics.toggle-publish', props.comic.id))
+}
+
+function reset() {
+    resetForm()
+    imagesList.value = props.comic.pages
+    imagePreview.value = props.comic.preview
+}
+
+watch(() => props.flash.success, (value) => {
+    if (value)
+        showSuccess(value)
+}, { immediate: true })
 </script>
 
 <template>
@@ -158,7 +209,6 @@ function generatePreviewUrl(file: File | File[]) {
                         class="v-row"
                         @start="drag = true"
                         @end="drag = false"
-                        @update:model-value="handleReorder"
                     >
                         <template #item="{ element }">
                             <VCol cols="2">
@@ -175,7 +225,7 @@ function generatePreviewUrl(file: File | File[]) {
                                         <VBtn
                                             icon
                                             color="error"
-                                            @click="removeImage(element.index)"
+                                            @click="removeImage(element, element.index)"
                                         >
                                             <VIcon icon="mdi-delete" />
                                         </VBtn>
@@ -187,6 +237,25 @@ function generatePreviewUrl(file: File | File[]) {
                 </VCol>
             </VRow>
             <VRow>
+                <VCol>
+                    <VTextarea
+                        v-bind="descriptionProps"
+                        v-model="description"
+                        label="Description"
+                    />
+                </VCol>
+            </VRow>
+            <VRow>
+                <VCol>
+                    <VBtn
+                        color="secondary"
+                        variant="flat"
+                        @click="handlePublish"
+                    >
+                        {{ comic.is_published ? 'Dépublier' : 'Publier' }}
+                    </VBtn>
+                </VCol>
+                <VSpacer />
                 <VCol class="d-flex justify-end ga-2">
                     <VBtn
                         variant="text"
@@ -195,17 +264,17 @@ function generatePreviewUrl(file: File | File[]) {
                         Annuler
                     </VBtn>
                     <VBtn
-                        :disabled="loading || !isFormValid"
-                        variant="flat"
+                        variant="text"
+                        color="secondary"
+                        @click="reset"
                     >
-                        Enregister comme brouillon
+                        Réinitialiser
                     </VBtn>
                     <VBtn
-                        color="secondary"
                         :disabled="loading || !isFormValid"
                         variant="flat"
                     >
-                        Enregistrer et publier
+                        Mettre à jour
                     </VBtn>
                 </VCol>
             </VRow>
@@ -219,5 +288,26 @@ function generatePreviewUrl(file: File | File[]) {
             :src="imagePreview"
             max-height="80vh"
         />
+    </VDialog>
+    <VDialog
+        v-model="displayDeleteDialog"
+        :width="500"
+    >
+        <VCard
+            title="Supprimer la page ?"
+        >
+            <template #text>
+                La page ne sera pas supprimée tant que les modifications ne seront pas enregistrées.<br>
+                Cependant, elle ne sera plus visible dans le formulaire. Pour revenir en arrière, cliquez sur "Annuler" ou "Réinitialiser".
+            </template>
+            <template #actions>
+                <VBtn
+                    color="error"
+                    @click="handleDeletePage"
+                >
+                    Supprimer
+                </VBtn>
+            </template>
+        </VCard>
     </VDialog>
 </template>

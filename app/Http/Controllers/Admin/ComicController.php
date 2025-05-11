@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Admin;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
-use App\Http\Requests\ComicRequest;
+use App\Http\Requests\CreateComicRequest;
 use App\Http\Controllers\Controller;
 use App\Models\Comic;
 use App\Models\ComicPage;
@@ -26,7 +26,7 @@ class ComicController extends Controller
         return Inertia::render('Admin/Comics/Create');
     }
 
-    public function store(ComicRequest $request)
+    public function store(CreateComicRequest $request)
     {
         $comic = Comic::create([
             'title' => $request->get('title'),
@@ -75,6 +75,23 @@ class ComicController extends Controller
             ->firstOrFail();
 
         return Inertia::render('Admin/Comics/Edit', compact('comic'));
+    }
+
+    public function update(Request $request, string $slug)
+    {
+        dd($request);
+        $comic = Comic::where('slug', $slug)->firstOrFail();
+
+        $comic->update($request->all());
+    }
+
+    public function togglePublish(Comic $comic)
+    {
+        $status = $comic->is_published ? false : true;
+        $comic->is_published = !$comic->is_published;
+        $comic->save();
+
+        return redirect()->back()->with('success', "Bédé " . ($status ? 'publiée' : 'dépubliée') . " avec succès");
     }
 
 }
