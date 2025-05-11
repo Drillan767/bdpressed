@@ -7,6 +7,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ShopController;
 use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\User\AddressesController;
+use App\Http\Controllers\Admin\ComicController;
 use App\Http\Controllers\VisitorsController;
 use App\Http\Controllers\User\DashboardController as UserDashboardController;
 use Illuminate\Support\Facades\Route;
@@ -50,6 +51,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
                 Route::get('/commandes', 'index')->name('orders.index');
                 Route::get('/commandes/pending-orders', 'pendingOrders')->name('orders.pending');
                 Route::get('/commande/{reference}', 'show')->name('orders.show');
+            });
+
+            Route::controller(ComicController::class)->group(function () {
+                Route::get('/comics', 'index')->name('admin.comics.index');
+                Route::get('/comic/nouveau', 'create')->name('admin.comics.create');
+                Route::get('/comic/{slug}', 'edit')->name('admin.comics.edit');
+                Route::post('/comic', 'store')->name('admin.comics.store');
+                Route::put('/comic/{comic}', 'update')->name('admin.comics.update');
+                Route::delete('/comic/{comic}', 'destroy')->name('admin.comics.destroy');
+                Route::post('/comic/{comic}/toggle-publish', 'togglePublish')->name('admin.comics.toggle-publish');
             });
 
             Route::controller(SettingsController::class)->prefix('/parametres')->group(function () {

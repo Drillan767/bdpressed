@@ -253,6 +253,24 @@ export interface IllustrationDetailed {
     background: 'gradient' | 'simple' | 'complex'
 }
 
+export interface ComicPage {
+    id: number
+    order: number
+    image: string
+    comic_id: number
+}
+
+export interface Comic {
+    id: number
+    title: string
+    slug: string
+    description: string
+    preview: string
+    is_published: boolean
+    instagram_url: string
+    pages: ComicPage[]
+}
+
 export interface IllustrationForm {
     illustrationType: 'bust' | 'fl' | 'animal'
     bustDetails: IllustrationDetailed
