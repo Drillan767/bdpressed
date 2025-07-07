@@ -79,19 +79,94 @@ class ComicController extends Controller
 
     public function update(Request $request, string $slug)
     {
-        dd($request);
         $comic = Comic::where('slug', $slug)->firstOrFail();
 
-        $comic->update($request->all());
+        // Update comic basic info
+        $comic->update([
+            'title' => $request->get('title'),
+            'description' => $request->get('description'),
+            'instagram_url' => $request->get('instagram_url'),
+        ]);
+
+        // Handle preview image update
+        if ($request->hasFile('preview')) {
+            $preview = $request->file('preview');
+            $previewPath = "/storage/comics/{$comic->id}/preview." . $preview->getClientOriginalExtension();
+
+            Storage::putFileAs(
+                "comics/{$comic->id}",
+                $preview,
+                'preview.' . $preview->getClientOriginalExtension(),
+            );
+
+            $comic->update(['preview' => $previewPath]);
+        }
+
+        // Handle deleted pages
+        if ($request->has('deleted_pages')) {
+            $deletedPageIds = $request->get('deleted_pages');
+            ComicPage::whereIn('id', $deletedPageIds)->delete();
+        }
+
+        // Handle existing pages reordering
+        if ($request->has('existing_images')) {
+            $existingImages = $request->get('existing_images');
+            $existingImagesOrder = $request->get('existing_images_order');
+
+            foreach ($existingImages as $index => $pageId) {
+                ComicPage::where('id', $pageId)->update([
+                    'order' => $existingImagesOrder[$index]
+                ]);
+            }
+        }
+
+        // Handle new images
+        if ($request->hasFile('new_images')) {
+            $newImages = $request->file('new_images');
+            $newImagesOrder = $request->get('new_images_order', []);
+
+            foreach ($newImages as $index => $image) {
+                $fileName = 'page-' . time() . '-' . $index . '.' . $image->getClientOriginalExtension();
+                $order = $newImagesOrder[$index] ?? ($comic->pages()->max('order') + 1);
+
+                ComicPage::create([
+                    'comic_id' => $comic->id,
+                    'image' => "/storage/comics/{$comic->id}/{$fileName}",
+                    'order' => $order,
+                ]);
+
+                Storage::putFileAs(
+                    "comics/{$comic->id}",
+                    $image,
+                    $fileName,
+                );
+            }
+        }
+
+        return redirect()->route('admin.comics.index')->with('success', 'Bédé mise à jour avec succès');
     }
 
-    public function togglePublish(Comic $comic)
+    public function togglePublish(string $slug)
     {
+        $comic = Comic::where('slug', $slug)->firstOrFail();
         $status = $comic->is_published ? false : true;
         $comic->is_published = !$comic->is_published;
         $comic->save();
 
         return redirect()->back()->with('success', "Bédé " . ($status ? 'publiée' : 'dépubliée') . " avec succès");
+    }
+
+    public function destroy(string $slug)
+    {
+        $comic = Comic::where('slug', $slug)->firstOrFail();
+
+        // Delete all pages
+        $comic->pages()->delete();
+
+        // Delete the comic
+        $comic->delete();
+
+        return redirect()->route('admin.comics.index')->with('success', 'Bédé supprimée avec succès');
     }
 
 }

@@ -58,9 +58,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
                 Route::get('/comic/nouveau', 'create')->name('admin.comics.create');
                 Route::get('/comic/{slug}', 'edit')->name('admin.comics.edit');
                 Route::post('/comic', 'store')->name('admin.comics.store');
-                Route::put('/comic/{comic}', 'update')->name('admin.comics.update');
-                Route::delete('/comic/{comic}', 'destroy')->name('admin.comics.destroy');
-                Route::post('/comic/{comic}/toggle-publish', 'togglePublish')->name('admin.comics.toggle-publish');
+                Route::put('/comic/{slug}', 'update')->name('admin.comics.update');
+                Route::delete('/comic/{slug}', 'destroy')->name('admin.comics.destroy');
+                Route::post('/comic/{slug}/toggle-publish', 'togglePublish')->name('admin.comics.toggle-publish');
             });
 
             Route::controller(SettingsController::class)->prefix('/parametres')->group(function () {

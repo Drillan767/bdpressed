@@ -16,14 +16,11 @@ interface EditForm {
     instagram_url: string
     is_published: boolean
     preview: File
-    images: File[]
 }
 
-interface NewImage {
-    file: File
-    id: string
-    isNew: boolean
-    image: string
+interface ImageItem extends ComicPage {
+    isNew?: boolean
+    file?: File
 }
 
 defineOptions({ layout: AdminLayout })
@@ -45,7 +42,6 @@ const { defineField, handleSubmit, resetForm } = useForm<EditForm>({
         title: props.comic.title,
         description: props.comic.description,
         instagram_url: props.comic.instagram_url,
-        images: [],
     },
 })
 
@@ -53,7 +49,6 @@ const [title, titleProps] = defineField('title', validationConfig)
 const [description, descriptionProps] = defineField('description', validationConfig)
 const [instagramUrl, instagramUrlProps] = defineField('instagram_url', validationConfig)
 const [preview, previewProps] = defineField('preview', validationConfig)
-const [images] = defineField('images', validationConfig)
 
 const isFormValid = useIsFormValid()
 const { showSuccess } = useToast()
@@ -71,10 +66,13 @@ const tempFiles = ref<File[]>([])
 const imagePreview = ref<string>()
 const imgIndex = ref<number>()
 const deletedPages = ref<ComicPage[]>([])
-const imagesList = ref<(NewImage | ComicPage)[]>([])
+const imagesList = ref<ImageItem[]>([])
 
 onMounted(() => {
-    imagesList.value = props.comic.pages
+    imagesList.value = props.comic.pages.map(page => ({
+        ...page,
+        isNew: false,
+    }))
     imagePreview.value = props.comic.preview
 })
 
@@ -82,25 +80,29 @@ function handleImages(files: File | File[]) {
     if (!Array.isArray(files)) {
         imagesList.value.push({
             file: files,
-            id: Date.now().toString(),
+            id: imagesList.value.length + 1,
             isNew: true,
             image: URL.createObjectURL(files),
-        })
+            comic_id: props.comic.id,
+            order: imagesList.value.length + 1,
+        } as ImageItem)
     }
     else {
         files.forEach((file, i) => {
             imagesList.value.push({
                 file,
-                id: Date.now().toString() + i,
+                id: imagesList.value.length + 1 + i,
                 isNew: true,
                 image: URL.createObjectURL(file),
-            })
+                comic_id: props.comic.id,
+                order: imagesList.value.length + 1,
+            } as ImageItem)
         })
     }
 }
 
-function removeImage(page: ComicPage | NewImage, index: number) {
-    if (Object.hasOwn(page, 'isNew')) {
+function removeImage(page: ImageItem, index: number) {
+    if (page.isNew) {
         imagesList.value = imagesList.value.filter(p => p.id !== page.id)
     }
     else {
@@ -110,12 +112,16 @@ function removeImage(page: ComicPage | NewImage, index: number) {
 }
 
 function handleDeletePage() {
-    if (!imgIndex.value)
+    if (imgIndex.value === undefined)
         return
 
-    deletedPages.value.push(imagesList.value[imgIndex.value])
-    imagesList.value = imagesList.value.filter(p => p.id !== deletedPages.value[0].id)
+    const pageToDelete = imagesList.value[imgIndex.value]
+    if (!pageToDelete.isNew) {
+        deletedPages.value.push(pageToDelete as ComicPage)
+    }
+    imagesList.value = imagesList.value.filter((_, index) => index !== imgIndex.value)
     displayDeleteDialog.value = false
+    imgIndex.value = undefined
 }
 
 function generatePreviewUrl(file: File | File[]) {
@@ -135,9 +141,66 @@ function handlePublish() {
 
 function reset() {
     resetForm()
-    imagesList.value = props.comic.pages
+    imagesList.value = props.comic.pages.map(page => ({
+        ...page,
+        isNew: false,
+    }))
     imagePreview.value = props.comic.preview
+    deletedPages.value = []
 }
+
+function updateOrder() {
+    drag.value = false
+    // Update order based on current array position
+    imagesList.value.forEach((item, index) => {
+        item.order = index + 1
+    })
+}
+
+const submitForm = handleSubmit(async (form) => {
+    loading.value = true
+
+    // Create FormData for file upload
+    const formData = new FormData()
+    formData.append('title', form.title)
+    formData.append('description', form.description)
+    formData.append('instagram_url', form.instagram_url)
+
+    if (form.preview) {
+        formData.append('preview', form.preview)
+    }
+
+    // Add new images
+    const newImages = imagesList.value.filter(img => img.isNew && img.file)
+    newImages.forEach((img, index) => {
+        if (img.file) {
+            formData.append(`new_images[${index}]`, img.file)
+            formData.append(`new_images_order[${index}]`, img.order.toString())
+        }
+    })
+
+    // Add existing images order
+    const existingImages = imagesList.value.filter(img => !img.isNew)
+    existingImages.forEach((img, index) => {
+        formData.append(`existing_images[${index}]`, img.id.toString())
+        formData.append(`existing_images_order[${index}]`, img.order.toString())
+    })
+
+    // Add deleted pages
+    deletedPages.value.forEach((page, index) => {
+        formData.append(`deleted_pages[${index}]`, page.id.toString())
+    })
+
+    formData.append('_method', 'PUT')
+    router.post(route('admin.comics.update', props.comic.slug), formData, {
+        onSuccess: () => {
+            loading.value = false
+        },
+        onError: () => {
+            loading.value = false
+        },
+    })
+})
 
 watch(() => props.flash.success, (value) => {
     if (value)
@@ -192,7 +255,7 @@ watch(() => props.flash.success, (value) => {
                     <VFileInput
                         ref="fileInput"
                         v-model="tempFiles"
-                        :hint="images.length > 0 ? 'Ajouter d\'autres images pour les mettres à la suite de celles présentes' : undefined"
+                        :hint="imagesList.length > 0 ? 'Ajouter d\'autres images pour les mettres à la suite de celles présentes' : undefined"
                         prepend-icon="mdi-image-multiple"
                         label="Images"
                         multiple
@@ -200,17 +263,17 @@ watch(() => props.flash.success, (value) => {
                     />
                 </VCol>
                 <VCol cols="12">
-                    <p v-if="images.length > 0">
+                    <p v-if="imagesList.length > 0">
                         Glisser / déposer les images pour changer l'ordre des cases.
                     </p>
                     <draggable
                         v-model="imagesList"
-                        item-key="index"
+                        item-key="id"
                         class="v-row"
                         @start="drag = true"
-                        @end="drag = false"
+                        @end="updateOrder"
                     >
-                        <template #item="{ element }">
+                        <template #item="{ element, index }">
                             <VCol cols="2">
                                 <VCard>
                                     <VImg
@@ -225,7 +288,7 @@ watch(() => props.flash.success, (value) => {
                                         <VBtn
                                             icon
                                             color="error"
-                                            @click="removeImage(element, element.index)"
+                                            @click="removeImage(element, index)"
                                         >
                                             <VIcon icon="mdi-delete" />
                                         </VBtn>
@@ -273,6 +336,7 @@ watch(() => props.flash.success, (value) => {
                     <VBtn
                         :disabled="loading || !isFormValid"
                         variant="flat"
+                        @click="submitForm"
                     >
                         Mettre à jour
                     </VBtn>
