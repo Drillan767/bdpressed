@@ -19,6 +19,8 @@ const props = defineProps<{
 const { showSuccess } = useToast()
 
 const showPreview = ref(false)
+const showDeleteDialog = ref(false)
+const deleteComic = ref<Comic>()
 const preview = ref<string>()
 
 const headers: DataTableHeader[] = [
@@ -55,6 +57,17 @@ function displayPreview(image: string) {
     preview.value = image
 }
 
+function displayDeleteDialog(comic: Comic) {
+    showDeleteDialog.value = true
+    deleteComic.value = comic
+}
+
+function handleDeleteComic() {
+    router.delete(route('admin.comics.destroy', deleteComic.value?.slug))
+    showDeleteDialog.value = false
+    deleteComic.value = undefined
+}
+
 watch(() => props.flash.success, (value) => {
     if (value)
         showSuccess(value)
@@ -78,7 +91,7 @@ watch(() => props.flash.success, (value) => {
                             variant="outlined"
                             color="primary"
                             append-icon="mdi-plus"
-                            @click="router.visit(route('comics.create'))"
+                            @click="router.visit(route('admin.comics.create'))"
                         >
                             Créer une BD
                         </VBtn>
@@ -108,6 +121,7 @@ watch(() => props.flash.success, (value) => {
                         color="error"
                         icon="mdi-trash-can-outline"
                         size="small"
+                        @click="displayDeleteDialog(item)"
                     />
                     <!-- @click="router.visit(route('admin.comics.destroy', item.slug))" -->
                 </template>
@@ -121,5 +135,27 @@ watch(() => props.flash.success, (value) => {
         <VImg
             :src="preview"
         />
+    </VDialog>
+
+    <VDialog
+        v-model="showDeleteDialog"
+        :width="500"
+    >
+        <VCard
+            title="Supprimer la BD ?"
+        >
+            <template #text>
+                La BD ainsi que toutes ses pages seront supprimées.<br>
+                Cette action est irréversible.
+            </template>
+            <template #actions>
+                <VBtn
+                    color="error"
+                    @click="handleDeleteComic"
+                >
+                    Supprimer
+                </VBtn>
+            </template>
+        </VCard>
     </VDialog>
 </template>

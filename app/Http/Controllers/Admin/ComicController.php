@@ -7,11 +7,10 @@ use Inertia\Inertia;
 use Inertia\Response;
 use App\Http\Requests\CreateComicRequest;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Storage;
 use App\Models\Comic;
 use App\Models\ComicPage;
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Storage;
-
 
 class ComicController extends Controller
 {
@@ -162,6 +161,9 @@ class ComicController extends Controller
 
         // Delete all pages
         $comic->pages()->delete();
+
+        // Delete all files in the comic's directory
+        Storage::deleteDirectory("comics/{$comic->id}");
 
         // Delete the comic
         $comic->delete();

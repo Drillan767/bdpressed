@@ -72,14 +72,14 @@ function getImageUrl(file: File): string {
 }
 
 const save = handleSubmit((values) => {
-    router.post(route('comics.store'), {
+    router.post(route('admin.comics.store'), {
         ...values,
         is_published: false,
     })
 })
 
 const saveAndPublish = handleSubmit((values) => {
-    router.post(route('comics.store'), {
+    router.post(route('admin.comics.store'), {
         ...values,
         is_published: true,
     })
@@ -183,12 +183,10 @@ function openPreview() {
                                                 <VCardActions>
                                                     <VSpacer />
                                                     <VBtn
-                                                        icon
                                                         color="error"
+                                                        icon="mdi-delete"
                                                         @click="removeImage(index)"
-                                                    >
-                                                        <VIcon>mdi-delete</VIcon>
-                                                    </VBtn>
+                                                    />
                                                 </VCardActions>
                                             </VCard>
                                         </VCol>
