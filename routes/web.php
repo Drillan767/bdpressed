@@ -12,6 +12,11 @@ use App\Http\Controllers\VisitorsController;
 use App\Http\Controllers\User\DashboardController as UserDashboardController;
 use Illuminate\Support\Facades\Route;
 
+// Health check route for deployment
+Route::get('/health', function () {
+    return response()->json(['status' => 'ok', 'timestamp' => now()]);
+});
+
 Route::controller(VisitorsController::class)->group(function() {
     Route::get('/', 'landing')->name('landing');
     Route::get('/contact', 'contact')->name('contact');
