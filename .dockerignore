@@ -2,15 +2,10 @@
 node_modules
 vendor
 
-# Build artifacts
-/public/build
-/public/hot
-/public/storage
-/storage/*.key
-/storage/logs/*
-/storage/framework/cache/*
-/storage/framework/sessions/*
-/storage/framework/views/*
+# Build outputs
+public/build
+public/hot
+public/storage
 
 # Environment files
 .env
@@ -31,39 +26,32 @@ Thumbs.db
 .git
 .gitignore
 
+# Docker
+Dockerfile
+.dockerignore
+docker-compose*.yml
+
+# Logs
+*.log
+storage/logs/*
+
+# Cache
+storage/framework/cache/*
+storage/framework/sessions/*
+storage/framework/views/*
+
 # Testing
-/tests
-phpunit.xml
 .phpunit.result.cache
+coverage
+
+# Temporary files
+*.tmp
+*.temp
 
 # Documentation
 README.md
 *.md
 
-# Docker
-Dockerfile
-docker-compose.yml
-docker-compose.prod.yml
-.dockerignore
-
-# Nixpacks
-nixpacks.toml
-
-# Logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-# Runtime data
-pids
-*.pid
-*.seed
-*.pid.lock
-
-# Coverage directory used by tools like istanbul
-coverage
-
-# Temporary folders
-tmp/
-temp/
+# Database
+*.sqlite
+*.sqlite3
