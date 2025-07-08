@@ -24,6 +24,6 @@ class Comic extends Model
 
     public function pages(): HasMany
     {
-        return $this->hasMany(ComicPage::class);
+        return $this->hasMany(ComicPage::class)->orderBy('order');
     }
 }

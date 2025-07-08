@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Route;
 Route::controller(VisitorsController::class)->group(function() {
     Route::get('/', 'landing')->name('landing');
     Route::get('/contact', 'contact')->name('contact');
+    Route::get('/comic/{comic}', 'comicDetail')->name('comic.details');
 });
 
 Route::controller(ShopController::class)->group(function() {
