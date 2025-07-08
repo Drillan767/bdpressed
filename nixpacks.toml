@@ -8,6 +8,8 @@ nixPkgs = [
     "git",
     "unzip",
     "nginx",
+    "nodejs_22",
+    "yarn",
     "php84",
     "php84Extensions.opcache",
     "php84Extensions.pdo",
