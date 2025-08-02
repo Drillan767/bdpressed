@@ -186,7 +186,7 @@ const displayEditDialog = ref(false)
                                             :prepend-avatar="detail.product.promotedImage"
                                         >
                                             <template #append>
-                                                {{ detail.price }}
+                                                {{ formatPrice(detail.price) }}
                                             </template>
                                         </VListItem>
                                         <template v-if="order.illustrationsList.length > 0">
