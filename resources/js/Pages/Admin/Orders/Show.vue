@@ -33,28 +33,28 @@ const { toParagraphs } = useStrings()
 <template>
     <VContainer>
         <VRow>
+            <VCol class="d-flex align-center flex-shrink-1 flex-grow-0">
+                <VBtn
+                    href="/administration/commandes"
+                    prepend-icon="mdi-arrow-left"
+                >
+                    Retour
+                </VBtn>
+            </VCol>
+            <VCol>
+                <h1>
+                    Commande {{ order.reference }}
+                </h1>
+                <p>
+                    Placée le {{ order.created_at }}
+                </p>
+            </VCol>
+        </VRow>
+        <VRow>
             <VCol
                 cols="12"
                 md="8"
             >
-                <VRow>
-                    <VCol class="d-flex align-center flex-shrink-1 flex-grow-0">
-                        <VBtn
-                            href="/admin/commandes"
-                            prepend-icon="mdi-arrow-left"
-                        >
-                            Retour
-                        </VBtn>
-                    </VCol>
-                    <VCol>
-                        <h1>
-                            Commande {{ order.reference }}
-                        </h1>
-                        <p>
-                            Placée le {{ order.created_at }}
-                        </p>
-                    </VCol>
-                </VRow>
                 <VRow>
                     <VCol>
                         <VCard
@@ -86,30 +86,6 @@ const { toParagraphs } = useStrings()
                                 </VBtn>
                             </template>
                         </VCard>
-                    </VCol>
-                </VRow>
-                <VRow v-if="order.guest_id">
-                    <VCol>
-                        <VAlert
-                            variant="outlined"
-                            color="primary"
-                            icon="mdi-information"
-                        >
-                            <template
-                                v-if="order.client.email === 'anonyme@rgpd.fr'"
-                                #text
-                            >
-                                Les données de l'utilisateur à l'origine de cette commande ont été anonymisées.
-                            </template>
-                            <template
-                                v-else
-                                #text
-                            >
-                                Cette commande a été faite par un utilisateur qui n'a pas souhaité créer de compte. <br>
-                                Une anonymisation de ses données personnelles (addresse email et postale) sera effectuée
-                                automatiquement si la commande est annulée ou 2 semaines après qu'elle soit terminée.
-                            </template>
-                        </VAlert>
                     </VCol>
                 </VRow>
                 <VRow>
@@ -206,272 +182,112 @@ const { toParagraphs } = useStrings()
                         </VCard>
                     </VCol>
                 </VRow>
+                <VRow>
+                    <VCol>
+                        <VCard
+                            title="Informations client"
+                        >
+                            <template #text>
+                                <VAlert
+                                    v-if="order.guest_id"
+                                    variant="outlined"
+                                    color="primary"
+                                    icon="mdi-information"
+                                >
+                                    <template
+                                        v-if="order.client.email === 'anonyme@rgpd.fr'"
+                                        #text
+                                    >
+                                        Les données de l'utilisateur à l'origine de cette commande ont été anonymisées.
+                                    </template>
+                                    <template
+                                        v-else
+                                        #text
+                                    >
+                                        Cette commande a été faite par un utilisateur qui n'a pas souhaité créer de compte. <br>
+                                        Une anonymisation de ses données personnelles (addresse email et postale) sera effectuée
+                                        automatiquement si la commande est annulée ou 2 semaines après qu'elle soit terminée.
+                                    </template>
+                                </VAlert>
+                                <h4 class="my-4">
+                                    Détails
+                                </h4>
+                                <VCard variant="tonal">
+                                    <template #text>
+                                        <p>
+                                            <b>Adresse e-mail :</b>
+                                            {{ order.client.email }}
+                                        </p>
+                                        <p v-if="order.client.instagram">
+                                            <b>Instagram :</b>
+                                            {{ order.client.instagram }}
+                                        </p>
+                                    </template>
+                                </VCard>
+                                <h4 class="my-4">
+                                    Informations additionnelles
+                                </h4>
+                                <VCard variant="tonal">
+                                    <template #text>
+                                        <div v-html="toParagraphs(order.additionalInfos)" />
+                                    </template>
+                                </VCard>
+                            </template>
+                        </VCard>
+                    </VCol>
+                </VRow>
             </VCol>
             <VCol
                 cols="12"
                 md="4"
-            />
-        </VRow>
-
-        <!--
-        <VRow>
-            <VCol>
-                <h1>
-                    <VIcon icon="mdi-package-variant-closed" />
-                    Commande {{ order.reference }}
-                    <VChip
-                        v-bind="getOrderStatus(order.status)"
-                        class="ml-2"
-                    />
-                </h1>
-            </VCol>
-            <VCol class="text-end">
-                <VBtn
-                    variant="outlined"
-                    icon="mdi-pencil"
-                    @click="displayEditDialog = true"
-                />
-            </VCol>
-        </VRow>
-        <VRow>
-            <VCol>
-                <VCard>
-                    <template #text>
-                        <VAlert
-                            v-if="order.guest_id"
-                            variant="outlined"
-                            color="primary"
-                            icon="mdi-information"
+            >
+                <VRow>
+                    <VCol>
+                        <VCard
+                            title="Adresse de livraison"
                         >
-                            <template
-                                v-if="order.client.email === 'anonyme@rgpd.fr'"
-                                #text
-                            >
-                                Les données de l'utilisateur à l'origine de cette commande ont été anonymisées.
+                            <template #text>
+                                <p>
+                                    {{ order.client.shipping_address.firstName }} {{ order.client.shipping_address.lastName }}
+                                </p>
+                                <p>
+                                    {{ order.client.shipping_address.street }}
+                                </p>
+                                <p>
+                                    {{ order.client.shipping_address.street2 }}
+                                </p>
+                                <p>
+                                    {{ order.client.shipping_address.zipCode }}
+                                    {{ order.client.shipping_address.city }} -
+                                    {{ order.client.shipping_address.country }}
+                                </p>
                             </template>
-                            <template
-                                v-else
-                                #text
-                            >
-                                Cette commande a été faite par un utilisateur qui n'a pas souhaité créer de compte. <br>
-                                Une anonymisation de ses données personnelles (addresse email et postale) sera effectuée
-                                automatiquement si la commande est annulée ou 2 semaines après qu'elle soit terminée.
+                        </VCard>
+                    </VCol>
+                </VRow>
+                <VRow v-if="order.client.billing_address">
+                    <VCol>
+                        <VCard title="Adresse de facturation">
+                            <template #text>
+                                <p v-if="order.client.billing_address">
+                                    {{ order.client.billing_address.firstName }} {{ order.client.billing_address.lastName }}
+                                </p>
+                                <p v-if="order.client.billing_address.street">
+                                    {{ order.client.billing_address.street }}
+                                </p>
+                                <p v-if="order.client.billing_address.street2">
+                                    {{ order.client.billing_address.street2 }}
+                                </p>
+                                <p v-if="order.client.billing_address.zipCode">
+                                    {{ order.client.billing_address.zipCode }}
+                                    {{ order.client.billing_address.city }} -
+                                    {{ order.client.billing_address.country }}
+                                </p>
                             </template>
-                        </VAlert>
-
-                        <VContainer>
-                            <VRow>
-                                <VCol
-                                    cols="12"
-                                    md="8"
-                                >
-                                    <VRow no-gutters>
-                                        <VCol>
-                                            <h2 class="mb-4">
-                                                Informations personnelles
-                                            </h2>
-                                            <p>
-                                                <b class="mr-2">Adresse e-mail :</b>
-                                                {{ order.client.email }}
-                                            </p>
-                                            <template v-if="order.client?.instagram">
-                                                <p class="font-weight-bold">
-                                                    Instagram :
-
-                                                    <VChip
-                                                        :text="order.client.instagram"
-                                                        :href="`https://instagram.com/${order.client.instagram}`"
-                                                        target="_blank"
-                                                        color="secondary"
-                                                        prepend-icon="mdi-open-in-new"
-                                                        class="ml-2"
-                                                    />
-                                                </p>
-                                            </template>
-                                        </VCol>
-                                    </VRow>
-                                    <VRow
-                                        v-if="order.additionalInfos"
-                                        no-gutters
-                                    >
-                                        <VCol>
-                                            <p class="font-weight-bold">
-                                                Demande :
-                                            </p>
-                                            <div v-html="toParagraphs(order.additionalInfos)" />
-                                        </VCol>
-                                    </VRow>
-                                    <VRow>
-                                        <VCol
-                                            v-if="order.client.shipping_address"
-                                            cols="12"
-                                            md="6"
-                                        >
-                                            <h2 class="mb-4">
-                                                Adresse de livraison
-                                            </h2>
-                                            <p class="mb-1">
-                                                {{ order.client.shipping_address.firstName }} {{ order.client.shipping_address.lastName }}
-                                            </p>
-                                            <p class="mb-1">
-                                                {{ order.client.shipping_address.street }}
-                                            </p>
-                                            <p
-                                                v-if="order.client.shipping_address.street2"
-                                                class="mb-1"
-                                            >
-                                                {{ order.client.shipping_address.street2 }}
-                                            </p>
-                                            <p class="mb-1">
-                                                {{ order.client.shipping_address.zipCode }}
-                                                {{ order.client.shipping_address.city }} -
-                                                {{ order.client.shipping_address.country }}
-                                            </p>
-                                        </VCol>
-                                        <VCol
-                                            v-if="order.client.billing_address"
-                                            cols="12"
-                                            md="6"
-                                        >
-                                            <h2 class="mb-4">
-                                                Adresse de facturation
-                                            </h2>
-                                            <p class="mb-1">
-                                                {{ order.client.billing_address.firstName }} {{ order.client.billing_address.lastName }}
-                                            </p>
-                                            <p class="mb-1">
-                                                {{ order.client.billing_address.street }}
-                                            </p>
-                                            <p
-                                                v-if="order.client.billing_address.street2"
-                                                class="mb-1"
-                                            >
-                                                {{ order.client.billing_address.street2 }}
-                                            </p>
-                                            <p class="mb-1">
-                                                {{ order.client.billing_address.zipCode }}
-                                                {{ order.client.billing_address.city }} -
-                                                {{ order.client.billing_address.country }}
-                                            </p>
-                                        </VCol>
-                                    </VRow>
-                                </VCol>
-                                <VCol
-                                    cols="12"
-                                    md="4"
-                                >
-                                    <h2>
-                                        Information commande
-                                    </h2>
-                                    <VList>
-                                        <VListItem
-                                            v-for="(detail, i) in order.details"
-                                            :key="i"
-                                            :title="`${detail.product.name} x ${detail.quantity}`"
-                                            :prepend-avatar="detail.product.promotedImage"
-                                        >
-                                            <template #append>
-                                                {{ formatPrice(detail.price) }}
-                                            </template>
-                                        </VListItem>
-                                        <template v-if="order.illustrationsList.length > 0">
-                                            <VDivider />
-
-                                            <VListGroup
-                                                v-for="(illustration, i) in order.illustrationsList"
-                                                :key="i"
-                                            >
-                                                <template #activator="{ props: illustrationProps }">
-                                                    <VListItem
-                                                        v-bind="illustrationProps"
-                                                        :title="`Illustration (${illustration.price.price})`"
-                                                        color="primary"
-                                                    />
-                                                </template>
-
-                                                <VListItem :title="illustration.type.name">
-                                                    <template #append>
-                                                        {{ illustration.type.price }}
-                                                    </template>
-                                                </VListItem>
-
-                                                <VListItem
-                                                    v-if="illustration.nbHumans"
-                                                    :title="illustration.nbHumans.name"
-                                                >
-                                                    <template #append>
-                                                        {{ illustration.nbHumans.price }}
-                                                    </template>
-                                                </VListItem>
-                                                <VListItem
-                                                    v-if="illustration.nbAnimals"
-                                                    :title="illustration.nbAnimals.name"
-                                                >
-                                                    <template #append>
-                                                        {{ illustration.nbAnimals.price }}
-                                                    </template>
-                                                </VListItem>
-                                                <VListItem :title="illustration.pose.name">
-                                                    <template #append>
-                                                        {{ illustration.pose.price }}
-                                                    </template>
-                                                </VListItem>
-                                                <VListItem :title="illustration.background.name">
-                                                    <template #append>
-                                                        {{ illustration.background.price }}
-                                                    </template>
-                                                </VListItem>
-                                                <VListItem
-                                                    v-if="illustration.addTracking"
-                                                    :title="illustration.addTracking.name"
-                                                >
-                                                    <template #append>
-                                                        {{ illustration.addTracking.price }}
-                                                    </template>
-                                                </VListItem>
-                                                <VListItem
-                                                    v-if="illustration.print"
-                                                    :title="illustration.print.name"
-                                                >
-                                                    <template #append>
-                                                        {{ illustration.print.price }}
-                                                    </template>
-                                                </VListItem>
-                                            </VListGroup>
-                                        </template>
-                                        <VDivider />
-                                        <VListItem
-                                            :title="`Frais de port (${totalWeight} g)`"
-                                        >
-                                            <template #append>
-                                                {{ formatPrice(order.shipmentFees) }}
-                                            </template>
-                                        </VListItem>
-                                        <VDivider />
-                                        <VListItem
-                                            title="Frais de paiement"
-                                        >
-                                            <template #append>
-                                                {{ formatPrice(order.stripeFees) }}
-                                            </template>
-                                        </VListItem>
-                                        <VDivider />
-                                        <VListItem>
-                                            <template #title>
-                                                <b>Total</b>
-                                            </template>
-                                            <template #append>
-                                                <b>{{ formatPrice(order.total) }}</b>
-                                            </template>
-                                        </VListItem>
-                                    </VList>
-                                </VCol>
-                            </VRow>
-                        </VContainer>
-                    </template>
-                </VCard>
+                        </VCard>
+                    </VCol>
+                </VRow>
             </VCol>
         </VRow>
-        -->
     </VContainer>
 </template>
