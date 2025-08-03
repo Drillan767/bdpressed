@@ -22,7 +22,7 @@ useHead({
 })
 
 const { formatPrice } = useNumbers()
-const { getStatus } = useStatus()
+const { getOrderStatus } = useStatus()
 const { toParagraphs } = useStrings()
 </script>
 
@@ -33,7 +33,7 @@ const { toParagraphs } = useStrings()
                 <h1>
                     Commande {{ order.reference }}
                     <VChip
-                        v-bind="getStatus(order.status)"
+                        v-bind="getOrderStatus(order.status)"
                         class="ml-2"
                     />
                 </h1>

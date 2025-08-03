@@ -19,7 +19,7 @@ useHead({
     title: 'Historique des commandes',
 })
 
-const { getStatus } = useStatus()
+const { getOrderStatus } = useStatus()
 const { formatPrice } = useNumbers()
 
 const headers: DataTableHeader[] = [
@@ -75,7 +75,7 @@ const headers: DataTableHeader[] = [
                             :items-per-page="10"
                         >
                             <template #item.status="{ item }">
-                                <VChip v-bind="getStatus(item.status)" />
+                                <VChip v-bind="getOrderStatus(item.status)" />
                             </template>
                             <template #item.total="{ item }">
                                 {{ formatPrice(item.total) }}
