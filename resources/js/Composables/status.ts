@@ -1,19 +1,7 @@
-enum OrderStatus {
-    NEW = 'NEW',
-    ILLUSTRATION_DEPOSIT_PENDING = 'ILLUSTRATION_DEPOSIT_PENDING',
-    ILLUSTRATION_DEPOSIT_PAID = 'ILLUSTRATION_DEPOSIT_PAID',
-    PENDING_CLIENT_REVIEW = 'PENDING_CLIENT_REVIEW',
-    IN_PROGRESS = 'IN_PROGRESS',
-    PAYMENT_PENDING = 'PAYMENT_PENDING',
-    PAID = 'PAID',
-    TO_SHIP = 'TO_SHIP',
-    SHIPPED = 'SHIPPED',
-    DONE = 'DONE',
-    CANCELLED = 'CANCELLED',
-}
+import { IllustrationStatus, OrderStatus } from '@/types/enums'
 
 export default function useStatus() {
-    const status = [
+    const orderStatus = [
         {
             internal: OrderStatus.NEW,
             text: '🤩 Nouveau',
@@ -66,11 +54,36 @@ export default function useStatus() {
         },
     ]
 
-    function getStatus(label: OrderStatus) {
-        return status.find(item => item.internal === label)
+    const illustrationStatus = [
+        {
+            internal: IllustrationStatus.PENDING,
+            text: '🤩 Nouveau',
+            color: '#4CAF50',
+        },
+        {
+            internal: IllustrationStatus.IN_PROGRESS,
+            text: '✍️ En cours',
+            color: '#FF6F00',
+        },
+        {
+            internal: IllustrationStatus.DONE,
+            text: '✅ Terminé',
+            color: '#4CAF50',
+        },
+    ]
+
+    function getOrderStatus(label: OrderStatus) {
+        return orderStatus.find(item => item.internal === label)
+    }
+
+    function getIllustrationStatus(label: IllustrationStatus) {
+        return illustrationStatus.find(item => item.internal === label)
     }
 
     return {
-        getStatus,
+        orderStatus,
+        getOrderStatus,
+        illustrationStatus,
+        getIllustrationStatus,
     }
 }

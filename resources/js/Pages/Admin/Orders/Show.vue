@@ -4,8 +4,9 @@ import useNumbers from '@/Composables/numbers'
 import useStatus from '@/Composables/status'
 import useStrings from '@/Composables/strings'
 import AdminLayout from '@/Layouts/AdminLayout.vue'
+import { router } from '@inertiajs/vue3'
 import { useHead } from '@vueuse/head'
-import { ref } from 'vue'
+import { route } from 'ziggy-js'
 
 interface Props {
     order: OrderDetail
@@ -20,22 +21,206 @@ useHead({
     title: () => `Commande ${props.order.reference}`,
 })
 
-const { formatPrice } = useNumbers()
-const { getStatus } = useStatus()
-const { toParagraphs } = useStrings()
+function updateStatus() {
+    console.log('updateStatus')
+}
 
-const displayEditDialog = ref(false)
+const { formatPrice } = useNumbers()
+const { orderStatus, getOrderStatus, getIllustrationStatus } = useStatus()
+const { toParagraphs } = useStrings()
 </script>
 
 <template>
     <VContainer>
+        <VRow>
+            <VCol
+                cols="12"
+                md="8"
+            >
+                <VRow>
+                    <VCol class="d-flex align-center flex-shrink-1 flex-grow-0">
+                        <VBtn
+                            href="/admin/commandes"
+                            prepend-icon="mdi-arrow-left"
+                        >
+                            Retour
+                        </VBtn>
+                    </VCol>
+                    <VCol>
+                        <h1>
+                            Commande {{ order.reference }}
+                        </h1>
+                        <p>
+                            Placée le {{ order.created_at }}
+                        </p>
+                    </VCol>
+                </VRow>
+                <VRow>
+                    <VCol>
+                        <VCard
+                            title="Statut de la commande"
+                        >
+                            <template #append>
+                                <VChip v-bind="getOrderStatus(order.status)" />
+                            </template>
+                            <template #text>
+                                <VSelect
+                                    :items="orderStatus"
+                                    item-title="text"
+                                    item-value="internal"
+                                    :model-value="order.status"
+                                    variant="outlined"
+                                    density="compact"
+                                    hide-details
+                                    label="Changer le statut"
+                                />
+                            </template>
+                            <template #actions>
+                                <VSpacer />
+                                <VBtn
+                                    color="primary"
+                                    variant="flat"
+                                    @click="updateStatus"
+                                >
+                                    Enregistrer
+                                </VBtn>
+                            </template>
+                        </VCard>
+                    </VCol>
+                </VRow>
+                <VRow v-if="order.guest_id">
+                    <VCol>
+                        <VAlert
+                            variant="outlined"
+                            color="primary"
+                            icon="mdi-information"
+                        >
+                            <template
+                                v-if="order.client.email === 'anonyme@rgpd.fr'"
+                                #text
+                            >
+                                Les données de l'utilisateur à l'origine de cette commande ont été anonymisées.
+                            </template>
+                            <template
+                                v-else
+                                #text
+                            >
+                                Cette commande a été faite par un utilisateur qui n'a pas souhaité créer de compte. <br>
+                                Une anonymisation de ses données personnelles (addresse email et postale) sera effectuée
+                                automatiquement si la commande est annulée ou 2 semaines après qu'elle soit terminée.
+                            </template>
+                        </VAlert>
+                    </VCol>
+                </VRow>
+                <VRow>
+                    <VCol>
+                        <VCard
+                            title="Articles"
+                        >
+                            <template #text>
+                                <VCard
+                                    v-for="(detail, i) in order.details"
+                                    :key="i"
+                                    :title="detail.product.name"
+                                    :subtitle="`${detail.quantity} x ${formatPrice(detail.price)}`"
+                                    variant="tonal"
+                                    class="mb-4"
+                                >
+                                    <template #prepend>
+                                        <VImg
+                                            :src="detail.product.promotedImage"
+                                            :alt="detail.product.name"
+                                            width="100"
+                                            height="100"
+                                            rounded="lg"
+                                            cover
+                                        />
+                                    </template>
+                                    <template #append>
+                                        {{ formatPrice(detail.price * detail.quantity) }}
+                                    </template>
+                                </VCard>
+                                <VCard
+                                    v-for="(illustration, i) in order.illustrations"
+                                    :key="i"
+                                    :title="`Illustration n°${i + 1}`"
+                                    variant="tonal"
+                                    class="mb-4"
+                                >
+                                    <template #prepend>
+                                        <VImg
+                                            src="/assets/images/yell.png"
+                                            width="100"
+                                            height="100"
+                                            rounded="lg"
+                                            cover
+                                        />
+                                    </template>
+
+                                    <template #subtitle>
+                                        <VChip
+                                            v-bind="getIllustrationStatus(illustration.status)"
+                                            class="mr-2"
+                                        />
+                                    </template>
+                                    <template #append>
+                                        <div class="d-flex flex-column ga-2">
+                                            <span class="text-end">
+                                                {{ formatPrice(illustration.price) }}
+                                            </span>
+                                            <VBtn
+                                                :href="route('admin.illustrations.show', { illustration: illustration.id })"
+                                                append-icon="mdi-magnify"
+                                                variant="text"
+                                                size="small"
+                                            >
+                                                Détails
+                                            </VBtn>
+                                        </div>
+                                    </template>
+                                </VCard>
+                                <VDivider class="my-4" />
+                                <VList>
+                                    <VListItem title="Sous-total">
+                                        <template #append>
+                                            {{ formatPrice(order.total) }}
+                                        </template>
+                                    </VListItem>
+                                    <VListItem title="Frais de port + paiement">
+                                        <template #append>
+                                            {{ formatPrice(order.shipmentFees + order.stripeFees) }}
+                                        </template>
+                                    </VListItem>
+                                    <VListItem>
+                                        <template #title>
+                                            <b>Total</b>
+                                        </template>
+                                        <template #append>
+                                            <b class="text-primary">
+                                                {{ formatPrice(order.total) }}
+                                            </b>
+                                        </template>
+                                    </VListItem>
+                                </VList>
+                            </template>
+                        </VCard>
+                    </VCol>
+                </VRow>
+            </VCol>
+            <VCol
+                cols="12"
+                md="4"
+            />
+        </VRow>
+
+        <!--
         <VRow>
             <VCol>
                 <h1>
                     <VIcon icon="mdi-package-variant-closed" />
                     Commande {{ order.reference }}
                     <VChip
-                        v-bind="getStatus(order.status)"
+                        v-bind="getOrderStatus(order.status)"
                         class="ml-2"
                     />
                 </h1>
@@ -287,5 +472,6 @@ const displayEditDialog = ref(false)
                 </VCard>
             </VCol>
         </VRow>
+        -->
     </VContainer>
 </template>

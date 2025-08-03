@@ -26,7 +26,7 @@ useHead({
     title: 'Commandes',
 })
 
-const { getStatus } = useStatus()
+const { getOrderStatus } = useStatus()
 const { formatPrice } = useNumbers()
 
 const search = ref<string>()
@@ -136,7 +136,7 @@ const headers: DataTableHeader[] = [
                     {{ formatPrice(item.total) }}
                 </template>
                 <template #item.status="{ item }">
-                    <VChip v-bind="getStatus(item.status)" />
+                    <VChip v-bind="getOrderStatus(item.status)" />
                 </template>
                 <template #item.actions="{ item }">
                     <div class="d-flex justify-end">
