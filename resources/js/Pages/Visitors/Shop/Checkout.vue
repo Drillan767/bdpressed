@@ -3,8 +3,8 @@ import type { Address, OrderStep1Form, OrderStep2Form, User } from '@/types'
 import CartItem from '@/Components/Shop/CartItem.vue'
 import OrderStep1 from '@/Components/Shop/OrderStep1.vue'
 import OrderStep2 from '@/Components/Shop/OrderStep2.vue'
+import OrderSummary from '@/Components/Shop/OrderSummary.vue'
 import useNumbers from '@/Composables/numbers'
-import useStrings from '@/Composables/strings'
 import VisitorsLayout from '@/Layouts/VisitorsLayout.vue'
 import useCartStore from '@/Stores/cartStore'
 import { router } from '@inertiajs/vue3'
@@ -25,7 +25,6 @@ const props = defineProps<{
 const { cart, tax, totalPrice, totalWeight } = storeToRefs(useCartStore())
 const { formatPrice } = useNumbers()
 const { handleQuantity, removeItem } = useCartStore()
-const { toParagraphs } = useStrings()
 
 const emailExists = ref(false)
 const guestExists = ref(false)
@@ -211,144 +210,34 @@ onMounted(() => {
                                                     :value="3"
                                                     class="py-2"
                                                 >
-                                                    <VRow>
-                                                        <VCol
-                                                            cols="12"
-                                                            md="6"
-                                                        >
-                                                            <p>
-                                                                Création de compte :
-                                                                <b>
-                                                                    {{ personalInformation.guest ? 'Non' : 'Oui' }}
-                                                                </b>
-                                                            </p>
-                                                            <p v-if="personalInformation.instagram">
-                                                                Identifiant Instagram :
-                                                                <b>
-                                                                    {{ personalInformation.instagram }}
-                                                                </b>
-                                                            </p>
-                                                        </VCol>
-                                                        <VCol
-                                                            v-if="personalInformation.additionalInfos.length > 0"
-                                                            cols="12"
-                                                            md="6"
-                                                        >
-                                                            <p class="font-weight-bold">
-                                                                Informartions complémentaires
-                                                            </p>
+                                                    <VContainer>
+                                                        <OrderSummary
+                                                            :personal-information="personalInformation"
+                                                            :shipping-address="auth.user && selectedShipping || addresses.shippingAddress"
+                                                            :billing-address="auth.user && selectedBilling || addresses.billingAddress"
+                                                            :same-address="addresses.useSameAddress"
+                                                        />
 
-                                                            <div v-html="toParagraphs(personalInformation.additionalInfos)" />
-                                                        </VCol>
-                                                    </VRow>
-                                                    <VDivider class="my-4" />
-                                                    <VRow>
-                                                        <VCol
-                                                            cols="12"
-                                                            md="3"
-                                                            offset-md="3"
-                                                        >
-                                                            <h3 class="mb-2">
-                                                                Adresse de livraison
-                                                            </h3>
-                                                            <template v-if="auth.user && selectedShipping">
-                                                                <p>
-                                                                    {{ selectedShipping.firstName }}
-                                                                    {{ selectedShipping.lastName }}
-                                                                </p>
-                                                                <p>
-                                                                    {{ selectedShipping.street }}
-                                                                </p>
-                                                                <p v-if="selectedShipping.street2">
-                                                                    {{ selectedShipping.street2 }}
-                                                                </p>
-                                                                <p>
-                                                                    {{ selectedShipping.city }}
-                                                                    {{ selectedShipping.zipCode }}
-                                                                    {{ selectedShipping.country }}
-                                                                </p>
-                                                            </template>
-                                                            <template v-else>
-                                                                <p>
-                                                                    {{ addresses.shippingAddress.firstName }}
-                                                                    {{ addresses.shippingAddress.lastName }}
-                                                                </p>
-                                                                <p>
-                                                                    {{ addresses.shippingAddress.street }}
-                                                                </p>
-                                                                <p v-if="addresses.shippingAddress.street2">
-                                                                    {{ addresses.shippingAddress.street2 }}
-                                                                </p>
-                                                                <p>
-                                                                    {{ addresses.shippingAddress.city }}
-                                                                    {{ addresses.shippingAddress.zipCode }}
-                                                                    {{ addresses.shippingAddress.country }}
-                                                                </p>
-                                                            </template>
-                                                        </VCol>
-                                                        <VCol
-                                                            v-if="addresses.billingAddress || auth.user && selectedBilling"
-                                                            cols="12"
-                                                            md="6"
-                                                        >
-                                                            <h3 class="mb-2">
-                                                                Adresse de facturation
-                                                            </h3>
-                                                            <template v-if="auth.user && selectedBilling">
-                                                                <p>
-                                                                    {{ selectedBilling.firstName }}
-                                                                    {{ selectedBilling.lastName }}
-                                                                </p>
-                                                                <p>
-                                                                    {{ selectedBilling.street }}
-                                                                </p>
-                                                                <p v-if="selectedBilling.street2">
-                                                                    {{ selectedBilling.street2 }}
-                                                                </p>
-                                                                <p>
-                                                                    {{ selectedBilling.city }}
-                                                                    {{ selectedBilling.zipCode }}
-                                                                    {{ selectedBilling.country }}
-                                                                </p>
-                                                            </template>
-                                                            <template v-else-if="addresses.billingAddress">
-                                                                <p>
-                                                                    {{ addresses.billingAddress.firstName }}
-                                                                    {{ addresses.billingAddress.lastName }}
-                                                                </p>
-                                                                <p>
-                                                                    {{ addresses.billingAddress.street }}
-                                                                </p>
-                                                                <p v-if="addresses.billingAddress.street2">
-                                                                    {{ addresses.billingAddress.street2 }}
-                                                                </p>
-                                                                <p>
-                                                                    {{ addresses.billingAddress.city }}
-                                                                    {{ addresses.billingAddress.zipCode }}
-                                                                    {{ addresses.billingAddress.country }}
-                                                                </p>
-                                                            </template>
-                                                        </VCol>
-                                                    </VRow>
-                                                    <VRow>
-                                                        <VCol class="d-flex justify-space-between">
-                                                            <VBtn
-                                                                color="primary"
-                                                                variant="text"
-                                                                @click="prev"
-                                                            >
-                                                                Précédent
-                                                            </VBtn>
+                                                        <VRow>
+                                                            <VCol class="d-flex justify-space-between">
+                                                                <VBtn
+                                                                    color="primary"
+                                                                    variant="text"
+                                                                    @click="prev"
+                                                                >
+                                                                    Précédent
+                                                                </VBtn>
 
-                                                            <VBtn
-                                                                color="secondary"
-                                                                variant="flat"
-                                                                @click="submit"
-                                                            >
-                                                                ¥ Passer commande ¥
-                                                            </VBtn>
-                                                        </VCol>
-                                                    </VRow>
+                                                                <VBtn
+                                                                    color="secondary"
+                                                                    variant="flat"
+                                                                    @click="submit"
+                                                                >
+                                                                    ¥ Passer commande ¥
+                                                                </VBtn>
+                                                            </VCol>
+                                                        </VRow>
+                                                    </VContainer>
                                                 </VStepperWindowItem>
                                             </VStepperWindow>
                                             <VStepperActions

@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\User\AddressesController;
 use App\Http\Controllers\Admin\ComicController;
 use App\Http\Controllers\VisitorsController;
+use App\Http\Controllers\Admin\IllustrationsController;
 use App\Http\Controllers\User\DashboardController as UserDashboardController;
 use Illuminate\Support\Facades\Route;
 
@@ -57,6 +58,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
                 Route::get('/commandes', 'index')->name('orders.index');
                 Route::get('/commandes/pending-orders', 'pendingOrders')->name('orders.pending');
                 Route::get('/commande/{reference}', 'show')->name('orders.show');
+            });
+
+            Route::controller(IllustrationsController::class)->group(function () {
+                Route::get('/illustrations', 'index')->name('admin.illustrations.index');
+                Route::get('/illustration/{illustration}', 'show')->name('admin.illustrations.show');
             });
 
             Route::controller(ComicController::class)->group(function () {

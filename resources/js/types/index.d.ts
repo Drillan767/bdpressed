@@ -14,6 +14,12 @@ export enum OrderStatus {
     CANCELLED = 'CANCELLED',
 }
 
+export enum IllustrationStatus {
+    PENDING = 'PENDING',
+    IN_PROGRESS = 'IN_PROGRESS',
+    DONE = 'DONE',
+}
+
 export interface User {
     id: number
     name: string
@@ -196,6 +202,24 @@ interface IllustrationDetail {
     nbItems: number
 }
 
+interface Illustration {
+    id: number
+    type: 'BUST' | 'FULL_LENGTH' | 'ANIMAL'
+    nbHumans: number
+    nbAnimals: number
+    pose: 'SIMPLE' | 'COMPLEX'
+    background: 'SIMPLE' | 'GRADIENT' | 'COMPLEX'
+    price: number
+    status: IllustrationStatus
+    description: string
+    created_at: string
+    updated_at: string
+    order_id: number
+    addTracking: boolean
+    print: boolean
+    trackingNumber: string | null
+}
+
 export interface OrderDetail {
     id: number
     additionalInfos: string
@@ -210,6 +234,7 @@ export interface OrderDetail {
     details: Detail[]
     guest_id: number | null
     illustrationsList: IllustrationSpecs[]
+    illustrations: Illustration[]
     client: {
         email: string
         instagram: string | null

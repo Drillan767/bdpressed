@@ -36,6 +36,11 @@ onMounted(() => {
             <p>
                 À très vite !
             </p>
+            <div class="d-flex justify-center mt-4">
+                <VBtn href="/boutique">
+                    Retourner à la boutique
+                </VBtn>
+            </div>
         </VCardText>
     </VCard>
 </template>

@@ -34,28 +34,27 @@ class HandleAddressesAction
         $billingId = null;
 
         $useSame = $request->get('addresses')['same'];
+        $addresses = $request->get('addresses');
 
-        if ($this->guest) {
+        // Handle shipping address
+        if (!$this->guest && isset($addresses['shipping_id'])) {
+            // User is logged in and selected existing shipping address
+            $shippingId = $addresses['shipping_id'];
+        } else {
+            // User is guest or filled shipping fields - create new shipping address
             $shippingId = $this->storeAddress($request, AddressType::SHIPPING);
-
-            if (!$useSame) {
-                $billingId = $this->storeAddress($request, AddressType::BILLING);
-            }
         }
 
-        // TODO: Implement case where user is authenticated
-        else {
-            if ($request->has('shipping_id')) {
-                $shippingId = $request->get('shipping_id');
-            } else {
-                $shippingId = $this->storeAddress($request, AddressType::SHIPPING);
-            }
-
-            if ($request->has('billing_id')) {
-                $billingId = $request->get('billing_id');
-            } else {
-                $billingId = $this->storeAddress($request, AddressType::BILLING);
-            }
+        // Handle billing address
+        if ($useSame) {
+            // Use same address for billing (shipping address)
+            $billingId = $shippingId;
+        } elseif (!$this->guest && isset($addresses['billing_id'])) {
+            // User is logged in and selected existing billing address
+            $billingId = $addresses['billing_id'];
+        } else {
+            // User is guest or filled billing fields - create new billing address
+            $billingId = $this->storeAddress($request, AddressType::BILLING);
         }
 
         return [

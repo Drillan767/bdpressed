@@ -13,7 +13,10 @@ class DashboardController extends Controller
 {
     public function index(Request $request): Response
     {
-        $orders = Order::where(['user_id' => $request->user()->id])->get(['id', 'reference', 'status', 'total', 'created_at', 'updated_at']);
+        // $orders = Order::where(['user_id' => $request->user()->id])->get(['id', 'reference', 'status', 'total', 'created_at', 'updated_at']);
+        $orders = Order::with('shippingAddress', 'billingAddress', 'details.product', 'illustrations')
+            ->where('user_id', $request->user()->id)
+            ->get();
 
         return Inertia::render('User/Dashboard', compact('orders'));
     }
