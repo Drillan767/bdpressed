@@ -21,38 +21,6 @@ useHead({
 
 const { getOrderStatus } = useStatus()
 const { formatPrice } = useNumbers()
-
-const headers: DataTableHeader[] = [
-    {
-        title: 'Référence',
-        key: 'reference',
-    },
-    {
-        title: 'Statut',
-        key: 'status',
-        sortable: true,
-    },
-    {
-        title: 'Total',
-        key: 'total',
-    },
-    {
-        title: 'Date de commande',
-        key: 'created_at',
-        sortable: true,
-    },
-    {
-        title: 'Date de mise à jour',
-        key: 'updated_at',
-        sortable: true,
-    },
-    {
-        title: 'Actions',
-        key: 'actions',
-        sortable: false,
-        align: 'end',
-    },
-]
 </script>
 
 <template>
@@ -65,34 +33,42 @@ const headers: DataTableHeader[] = [
                 </h1>
             </VCol>
         </VRow>
-        <VRow>
+        <VRow
+            v-for="order in orders"
+            :key="order.reference"
+        >
             <VCol>
-                <VCard>
-                    <VCardText>
-                        <VDataTable
-                            :headers="headers"
-                            :items="orders"
-                            :items-per-page="10"
-                        >
-                            <template #item.status="{ item }">
-                                <VChip v-bind="getOrderStatus(item.status)" />
-                            </template>
-                            <template #item.total="{ item }">
-                                {{ formatPrice(item.total) }}
-                            </template>
-                            <template #item.actions="{ item }">
-                                <div class="d-flex justify-end">
-                                    <VBtn
-                                        variant="text"
-                                        color="blue"
-                                        icon="mdi-eye"
-                                        @click="router.visit(route('user.order.show', { reference: item.reference }))"
-                                    />
-                                </div>
-                            </template>
-                        </VDataTable>
-                    </VCardText>
+                <VCard
+                    :title="`Commande #${order.reference}`"
+                >
+                    <template #subtitle>
+                        <span>
+                            <VIcon
+                                icon="mdi-calendar-outline"
+                                size="small"
+                            />
+                            {{ order.created_at }}
+                        </span>
+                        <span>
+                            <VICon
+                                icon="mdi-package-variant"
+                                size="small"
+                            />
+                            3 articles
+                        </span>
+                    </template>
+                    <template #append>
+                        <VChip v-bind="getOrderStatus(order.status)" />
+                    </template>
                 </VCard>
+            </VCol>
+        </VRow>
+        <VRow v-if="orders.length === 0">
+            <VCol>
+                <VEmptyState
+                    title="Aucune commande trouvée"
+                    description="Vous n'avez pas encore passé de commande."
+                />
             </VCol>
         </VRow>
     </VContainer>
