@@ -1,16 +1,56 @@
 <script setup lang="ts">
-import type { Address, OrderDetail } from '@/types'
+import type { Address, IllustrationStatus, OrderStatus } from '@/types'
 import useNumbers from '@/Composables/numbers'
 import useStatus from '@/Composables/status'
 import useStrings from '@/Composables/strings'
 import UserLayout from '@/Layouts/UserLayout.vue'
 import { useHead } from '@vueuse/head'
+import { ref } from 'vue'
+
+interface IllustrationDetail {
+    name: string
+    price: string
+}
+
+interface ArticleItem {
+    type: 'product'
+    id: number
+    title: string
+    description: string
+    price: number
+    quantity: number
+    totalPrice: number
+    image: string
+}
+
+interface IllustrationItem {
+    type: 'illustration'
+    id: number
+    title: string
+    description: string
+    price: number
+    image: string
+    totalPrice: number
+    details: Record<string, IllustrationDetail>
+    status: IllustrationStatus
+}
+
+interface OrderDetail {
+    id: number
+    total: number
+    shipmentFees: number
+    stripeFees: number
+    reference: string
+    addionalInfos?: string
+    created_at: string
+    shippingAddress: Address
+    billingAddress: Address
+    status: OrderStatus
+    items: (ArticleItem | IllustrationItem)[]
+}
 
 interface Props {
-    order: Omit<OrderDetail, 'user' | 'guest'> & {
-        shipping_address: Address
-        billing_address?: Address
-    }
+    order: OrderDetail
 }
 
 defineOptions({ layout: UserLayout })
@@ -22,265 +62,284 @@ useHead({
 })
 
 const { formatPrice } = useNumbers()
-const { getOrderStatus } = useStatus()
+const { getOrderStatus, getIllustrationStatus } = useStatus()
 const { toParagraphs } = useStrings()
+
+const illustrationDetails = ref<IllustrationItem['details']>()
+const illustrationPrice = ref()
+const openDetails = ref(false)
+
+function openIllustrationDetails(illustration: IllustrationItem) {
+    delete illustration.details.price
+    illustrationDetails.value = illustration.details
+    illustrationPrice.value = formatPrice(illustration.totalPrice)
+    openDetails.value = true
+}
 </script>
 
 <template>
     <VContainer>
         <VRow>
-            <VCol>
+            <VCol
+                cols="12"
+                class="d-flex ga-2"
+            >
+                <VBtn
+                    :href="route('user.dashboard')"
+                    icon="mdi-arrow-left"
+                    variant="flat"
+                />
                 <h1>
-                    Commande {{ order.reference }}
-                    <VChip
-                        v-bind="getOrderStatus(order.status)"
-                        class="ml-2"
-                    />
+                    Commande #{{ order.reference }}
                 </h1>
+            </VCol>
+            <VCol cols="12">
+                <VIcon
+                    icon="mdi-calendar-outline"
+                    size="small"
+                />
+                <span class="text-caption">
+                    Passée le {{ order.created_at }}
+                </span>
+                <VChip
+                    v-bind="getOrderStatus(order.status)"
+                    size="small"
+                    class="ml-md-2"
+                />
             </VCol>
         </VRow>
         <VRow>
-            <VCol>
-                <VCard>
+            <VCol
+                cols="12"
+                md="8"
+            >
+                <VCard
+                    prepend-icon="mdi-package-variant-closed"
+                    title="Articles"
+                    class="mb-4"
+                >
                     <template #text>
-                        <VContainer>
-                            <VRow>
-                                <VCol
-                                    cols="12"
-                                    md="8"
-                                >
-                                    <template v-if="order.additionalInfos">
-                                        <VRow no-gutters>
-                                            <VCol>
-                                                <p class="font-weight-bold">
-                                                    Demande :
-                                                </p>
-                                                <div v-html="toParagraphs(order.additionalInfos)" />
-                                            </VCol>
-                                        </VRow>
-                                        <VDivider class="my-4" />
-                                    </template>
-                                    <VRow>
-                                        <VCol
-                                            cols="12"
-                                            md="6"
-                                        >
-                                            <h2 class="mb-4">
-                                                Adresse de livraison
-                                            </h2>
-                                            <p class="mb-1">
-                                                {{ order.shipping_address.firstName }} {{ order.shipping_address.lastName }}
-                                            </p>
-                                            <p class="mb-1">
-                                                {{ order.shipping_address.street }}
-                                            </p>
-                                            <p
-                                                v-if="order.shipping_address.street2.length > 1"
-                                                class="mb-1"
-                                            >
-                                                {{ order.shipping_address.street2 }}
-                                            </p>
-                                            <p class="mb-1">
-                                                {{ order.shipping_address.zipCode }}
-                                                {{ order.shipping_address.city }} -
-                                                {{ order.shipping_address.country }}
-                                            </p>
+                        <VRow
+                            v-for="(item, index) in order.items"
+                            :key="index"
+                        >
+                            <VCol>
+                                <VCard variant="outlined">
+                                    <VRow no-gutters>
+                                        <VCol cols="auto">
+                                            <VImg
+                                                :src="item.image"
+                                                :alt="item.title"
+                                                width="120"
+                                                height="120"
+                                                rounded="lg"
+                                                cover
+                                                class="ma-3"
+                                            />
                                         </VCol>
-                                        <VCol
-                                            v-if="order.billing_address"
-                                            cols="12"
-                                            md="6"
-                                        >
-                                            <h2 class="mb-4">
-                                                Adresse de facturation
-                                            </h2>
-                                            <p class="mb-1">
-                                                {{ order.billing_address.firstName }} {{ order.billing_address.lastName }}
-                                            </p>
-                                            <p class="mb-1">
-                                                {{ order.billing_address.street }}
-                                            </p>
-                                            <p
-                                                v-if="order.billing_address.street2.length > 1"
-                                                class="mb-1"
-                                            >
-                                                {{ order.billing_address.street2 }}
-                                            </p>
-                                            <p class="mb-1">
-                                                {{ order.billing_address.zipCode }}
-                                                {{ order.billing_address.city }} -
-                                                {{ order.billing_address.country }}
-                                            </p>
+                                        <VCol>
+                                            <VCardText class="pb-2">
+                                                <div class="d-flex justify-space-between align-start mb-2">
+                                                    <div>
+                                                        <h3 class="text-h6 mb-1">
+                                                            {{ item.title }}
+                                                        </h3>
+                                                        <p class="text-body-2 text-medium-emphasis mb-2">
+                                                            {{ item.description }}
+                                                        </p>
+                                                        <div class="d-flex align-center gap-2 mb-2">
+                                                            <VChip
+                                                                v-if="item.type === 'product'"
+                                                                size="small"
+                                                                variant="outlined"
+                                                                prepend-icon="mdi-package-variant"
+                                                            >
+                                                                {{ item.quantity }} x {{ formatPrice(item.price) }}
+                                                            </VChip>
+                                                            <VChip
+                                                                v-else
+                                                                size="small"
+                                                                variant="outlined"
+                                                                prepend-icon="mdi-palette"
+                                                            >
+                                                                Illustration
+                                                            </VChip>
+                                                            <VChip
+                                                                v-if="item.type === 'illustration'"
+                                                                v-bind="getIllustrationStatus(item.status)"
+                                                                size="small"
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                    <div class="text-right">
+                                                        <div class="font-weight-bold mb-2">
+                                                            {{ formatPrice(item.totalPrice) }}
+                                                        </div>
+                                                        <VBtn
+                                                            v-if="item.type === 'illustration'"
+                                                            size="small"
+                                                            variant="outlined"
+                                                            prepend-icon="mdi-eye"
+                                                            @click="openIllustrationDetails(item)"
+                                                        >
+                                                            Voir détails
+                                                        </VBtn>
+                                                    </div>
+                                                </div>
+                                            </VCardText>
                                         </VCol>
                                     </VRow>
-                                </VCol>
-                                <VDivider vertical />
-                                <VCol
-                                    cols="12"
-                                    md="4"
-                                >
-                                    <h2>
-                                        Information de la commande
-                                    </h2>
-                                    <VList>
-                                        <template
-                                            v-for="(illustration, i) in order.illustrationsList"
-                                            :key="i"
-                                        >
-                                            <VListGroup :value="i">
-                                                <template #activator="{ props: illustrationProps }">
-                                                    <VListItem
-                                                        v-bind="illustrationProps"
-                                                        :title="`Illustration (${illustration.price.price})`"
-                                                        color="primary"
-                                                    />
-                                                </template>
-
-                                                <VListItem :title="illustration.type.name">
-                                                    <template #append>
-                                                        {{ illustration.type.price }}
-                                                    </template>
-                                                </VListItem>
-
-                                                <VListItem
-                                                    v-if="illustration.nbHumans"
-                                                    :title="illustration.nbHumans.name"
-                                                >
-                                                    <template #append>
-                                                        {{ illustration.nbHumans.price }}
-                                                    </template>
-                                                </VListItem>
-                                                <VListItem
-                                                    v-if="illustration.nbAnimals"
-                                                    :title="illustration.nbAnimals.name"
-                                                >
-                                                    <template #append>
-                                                        {{ illustration.nbAnimals.price }}
-                                                    </template>
-                                                </VListItem>
-                                                <VListItem :title="illustration.pose.name">
-                                                    <template #append>
-                                                        {{ illustration.pose.price }}
-                                                    </template>
-                                                </VListItem>
-                                                <VListItem :title="illustration.background.name">
-                                                    <template #append>
-                                                        {{ illustration.background.price }}
-                                                    </template>
-                                                </VListItem>
-                                                <VListItem
-                                                    v-if="illustration.addTracking"
-                                                    :title="illustration.addTracking.name"
-                                                >
-                                                    <template #append>
-                                                        {{ illustration.addTracking.price }}
-                                                    </template>
-                                                </VListItem>
-                                                <VListItem
-                                                    v-if="illustration.print"
-                                                    :title="illustration.print.name"
-                                                >
-                                                    <template #append>
-                                                        {{ illustration.print.price }}
-                                                    </template>
-                                                </VListItem>
-                                            </VListGroup>
-                                        </template>
-                                        <VListItem
-                                            v-for="(detail, i) in order.details"
-                                            :key="i"
-                                            :title="`${detail.product.name} x ${detail.quantity}`"
-                                            :prepend-avatar="detail.product.promotedImage"
-                                        >
-                                            <template #append>
-                                                {{ formatPrice(detail.price) }}
-                                            </template>
-                                        </VListItem>
-                                        <VDivider />
-                                        <VListItem
-                                            title="Frais de paiement"
-                                        >
-                                            <template #append>
-                                                {{ formatPrice(order.stripeFees) }}
-                                            </template>
-                                        </VListItem>
-                                        <VDivider />
-                                        <VListItem
-                                            title="Frais de port (estimés)"
-                                        >
-                                            <template #append>
-                                                {{ formatPrice(order.shipmentFees) }}
-                                            </template>
-                                        </VListItem>
-                                        <VDivider />
-                                        <VListItem>
-                                            <template #title>
-                                                <b>Total</b>
-                                            </template>
-                                            <template #append>
-                                                <b>{{ formatPrice(order.total) }}</b>
-                                            </template>
-                                        </VListItem>
-                                    </VList>
-                                </VCol>
-                            </VRow>
-                        </VContainer>
+                                </VCard>
+                            </VCol>
+                        </VRow>
                     </template>
                 </VCard>
-                <!-- <VCard>
+                <VCard
+                    v-if="order.addionalInfos"
+                    title="Requête spéciale"
+                    prepend-icon="mdi-comment-outline"
+                >
                     <template #text>
-                        <VContainer>
-                            <VRow>
-                                <VCol
-                                    cols="12"
-                                    md="4"
-                                >
-                                    <h2>
-                                        Information de la commande
-                                    </h2>
-                                    <VList>
-                                        <VListItem
-                                            v-for="(detail, i) in order.details"
-                                            :key="i"
-                                            :title="`${detail.product.name} x ${detail.quantity}`"
-                                            :prepend-avatar="detail.product.promotedImage"
-                                        >
-                                            <template #append>
-                                                {{ formatPrice(detail.price) }}
-                                            </template>
-                                        </VListItem>
-                                        <VDivider />
-                                        <VListItem
-                                            title="Frais de paiement"
-                                        >
-                                            <template #append>
-                                                {{ formatPrice(order.stripeFees) }}
-                                            </template>
-                                        </VListItem>
-                                        <VDivider />
-                                        <VListItem
-                                            title="Frais de port (estimés)"
-                                        >
-                                            <template #append>
-                                                {{ formatPrice(order.shipmentFees) }}
-                                            </template>
-                                        </VListItem>
-                                        <VDivider />
-                                        <VListItem>
-                                            <template #title>
-                                                <b>Total</b>
-                                            </template>
-                                            <template #append>
-                                                <b>{{ formatPrice(order.total) }}</b>
-                                            </template>
-                                        </VListItem>
-                                    </VList>
-                                </VCol>
-                            </VRow>
-                        </VContainer>
+                        <div v-html="toParagraphs(order.addionalInfos)" />
                     </template>
-                </VCard> -->
+                </VCard>
+            </VCol>
+            <VCol
+                cols="12"
+                md="4"
+            >
+                <VRow>
+                    <VCol>
+                        <VCard
+                            title="Résumé de la commande"
+                            prepend-icon="mdi-credit-card-outline"
+                        >
+                            <template #text>
+                                <VList>
+                                    <VListItem
+                                        title="Sous-total"
+                                    >
+                                        <template #append>
+                                            {{ formatPrice(order.total - order.stripeFees - order.shipmentFees) }}
+                                        </template>
+                                    </VListItem>
+                                    <VListItem
+                                        title="Frais de port"
+                                    >
+                                        <template #append>
+                                            {{ formatPrice(order.shipmentFees + order.stripeFees) }}
+                                        </template>
+                                    </VListItem>
+                                    <VDivider />
+                                    <VListItem class="font-weight-bold">
+                                        <template #title>
+                                            <b>Total</b>
+                                        </template>
+                                        <template #append>
+                                            <b>{{ formatPrice(order.total) }}</b>
+                                        </template>
+                                    </VListItem>
+                                </VList>
+                            </template>
+                        </VCard>
+                    </VCol>
+                </VRow>
+                <VRow>
+                    <VCol>
+                        <VCard
+                            title="Adresse de livraison"
+                            prepend-icon="mdi-map-marker-outline"
+                        >
+                            <template #text>
+                                <p>
+                                    {{ order.shippingAddress.firstName }} {{ order.shippingAddress.lastName }}
+                                </p>
+                                <p>
+                                    {{ order.shippingAddress.street }}
+                                </p>
+                                <p
+                                    v-if="order.shippingAddress.street2.length > 1"
+                                    class="mb-1"
+                                >
+                                    {{ order.shippingAddress.street2 }}
+                                </p>
+                                <p>
+                                    {{ order.shippingAddress.zipCode }}
+                                    {{ order.shippingAddress.city }} -
+                                    {{ order.shippingAddress.country }}
+                                </p>
+                            </template>
+                        </VCard>
+                    </VCol>
+                </VRow>
+                <VRow>
+                    <VCol>
+                        <VCard
+                            title="Adresse de facturation"
+                            prepend-icon="mdi-receipt-text-outline"
+                        >
+                            <template #text>
+                                <p>
+                                    {{ order.billingAddress.firstName }} {{ order.billingAddress.lastName }}
+                                </p>
+                                <p>
+                                    {{ order.billingAddress.street }}
+                                </p>
+                                <p
+                                    v-if="order.billingAddress.street2.length > 1"
+                                    class="mb-1"
+                                >
+                                    {{ order.billingAddress.street2 }}
+                                </p>
+                                <p>
+                                    {{ order.billingAddress.zipCode }}
+                                    {{ order.billingAddress.city }} -
+                                    {{ order.billingAddress.country }}
+                                </p>
+                            </template>
+                        </VCard>
+                    </VCol>
+                </VRow>
             </VCol>
         </VRow>
+        <VDialog
+            v-model="openDetails"
+            width="600"
+        >
+            <VCard title="Détails de l'illustration">
+                <template #text>
+                    <VList>
+                        <VListItem
+                            v-for="(detail, key) in illustrationDetails"
+                            :key="key"
+                            :title="detail.name"
+                        >
+                            <template #append>
+                                {{ detail.price }}
+                            </template>
+                        </VListItem>
+                        <VDivider />
+                        <VListItem
+                            class="font-weight-bold"
+                            title="Prix total"
+                        >
+                            <template #append>
+                                {{ illustrationPrice }}
+                            </template>
+                        </VListItem>
+                    </VList>
+                </template>
+                <template #actions>
+                    <VSpacer />
+                    <VBtn
+                        color="primary"
+                        variant="text"
+                        @click="openDetails = false"
+                    >
+                        Fermer
+                    </VBtn>
+                </template>
+            </VCard>
+        </VDialog>
     </VContainer>
 </template>

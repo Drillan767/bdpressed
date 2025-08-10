@@ -63,10 +63,13 @@ class DashboardController extends Controller
             'total' => (float) $rawOrder->total,
             'reference' => $rawOrder->reference,
             'status' => $rawOrder->status,
-            'shipmentFees' => (float) $rawOrder->shipment_fees,
-            'stripeFees' => (float) $rawOrder->stripe_fees,
+            'shipmentFees' => (float) $rawOrder->shipmentFees,
+            'stripeFees' => (float) $rawOrder->stripeFees,
             'created_at' => $rawOrder->created_at->format('d/m/Y à H:i'),
+            'addionalInfos' => $rawOrder->additionalInfos,
             'itemCount' => $items->count(),
+            'shippingAddress' => $rawOrder->shippingAddress,
+            'billingAddress' => $rawOrder->billingAddress,
             'items' => $items->values()->toArray(),
         ];
 
