@@ -11,10 +11,10 @@ use Illuminate\Http\Request;
 
 class DashboardController extends Controller
 {
-    public function index(Request $request): Response
+    public function index(Request $request, IllustrationService $illustrationService): Response
     {
         // $orders = Order::where(['user_id' => $request->user()->id])->get(['id', 'reference', 'status', 'total', 'created_at', 'updated_at']);
-        $orders = Order::with('shippingAddress', 'billingAddress', 'details.product', 'illustrations')
+        $orders = Order::withCount('details', 'illustrations')
             ->where('user_id', $request->user()->id)
             ->get();
 
@@ -23,11 +23,52 @@ class DashboardController extends Controller
 
     public function showOrder(string $reference, IllustrationService $illustrationService): Response
     {
-        $order = Order::with('shippingAddress', 'billingAddress', 'details.product', 'illustrations')
+        $rawOrder = Order::with('shippingAddress', 'billingAddress', 'details.product', 'illustrations')
             ->where('reference', $reference)
             ->firstOrFail();
 
-        $order->illustrationsList = $illustrationService->getOrderDetail($order->illustrations);
+        $items = collect();
+
+        // Add product items
+        foreach ($rawOrder->details as $detail) {
+            $items->push([
+                'type' => 'product',
+                'title' => $detail->product->name,
+                'description' => $detail->product->quickDescription,
+                'price' => (float) $detail->product->price,
+                'totalPrice' => (float) $detail->quantity * $detail->product->price,
+                'quantity' => $detail->quantity,
+                'totalPrice' => (float) $detail->price,
+                'image' => $detail->product->promotedImage,
+            ]);
+        }
+
+        // Add illustration items
+        foreach ($rawOrder->illustrations as $key => $illustration) {
+            $illustrationNumber = $key + 1;
+            $items->push([
+                'type' => 'illustration',
+                'title' => "Illustration n°$illustrationNumber",
+                'description' => $illustration->description ?: 'Illustration personnalisée',
+                'quantity' => 1,
+                'image' => '/assets/images/yell.png',
+                'totalPrice' => (float) $illustration->price,
+                'status' => $illustration->status,
+                'details' => $illustrationService->getSingleIllustrationDetail($illustration),
+            ]);
+        }
+
+        $order = [
+            'id' => $rawOrder->id,
+            'total' => (float) $rawOrder->total,
+            'reference' => $rawOrder->reference,
+            'status' => $rawOrder->status,
+            'shipmentFees' => (float) $rawOrder->shipment_fees,
+            'stripeFees' => (float) $rawOrder->stripe_fees,
+            'created_at' => $rawOrder->created_at->format('d/m/Y à H:i'),
+            'itemCount' => $items->count(),
+            'items' => $items->values()->toArray(),
+        ];
 
         return Inertia::render('User/Order/Show', compact('order'));
     }

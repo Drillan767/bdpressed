@@ -1,14 +1,45 @@
 <script setup lang="ts">
-import type { DataTableHeader, OrderIndex } from '@/types'
+import type { OrderStatus } from '@/types'
 import useNumbers from '@/Composables/numbers'
 import useStatus from '@/Composables/status'
 import UserLayout from '@/Layouts/UserLayout.vue'
-import { router } from '@inertiajs/vue3'
 import { useHead } from '@vueuse/head'
 import { route } from 'ziggy-js'
 
+interface IllustrationDetailItem {
+    name: string
+    price: string
+}
+
+interface OrderItem {
+    type: 'product' | 'illustration'
+    title: string
+    description: string
+    price: number
+    quantity: number
+    totalPrice: number
+    image?: string
+    status: OrderStatus
+    illustrationType?: string
+    details?: Record<string, IllustrationDetailItem>
+}
+
+interface DashboardOrder {
+    id: number
+    reference: string
+    status: OrderStatus
+    total: number
+    details_count: number
+    illustrations_count: number
+    shipmentFees: number
+    stripeFees: number
+    created_at: string
+    itemCount: number
+    items: OrderItem[]
+}
+
 interface Props {
-    orders: Omit<OrderIndex, 'user' | 'guest'>[]
+    orders: DashboardOrder[]
 }
 
 defineOptions({ layout: UserLayout })
@@ -39,26 +70,66 @@ const { formatPrice } = useNumbers()
         >
             <VCol>
                 <VCard
-                    :title="`Commande #${order.reference}`"
+                    :title="`#${order.reference}`"
                 >
                     <template #subtitle>
-                        <span>
-                            <VIcon
-                                icon="mdi-calendar-outline"
+                        <div class="d-flex align-center flex-wrap ga-2">
+                            <VChip
+                                :text="order.created_at"
+                                class="text-caption"
+                                variant="text"
+                                prepend-icon="mdi-calendar-outline"
+                            />
+                            <VChip
+                                :text="`${order.details_count + order.illustrations_count} article(s)`"
+                                class="text-caption"
+                                variant="text"
+                                prepend-icon="mdi-package-variant-closed"
+                            />
+                            <VChip
+                                v-bind="getOrderStatus(order.status)"
                                 size="small"
                             />
-                            {{ order.created_at }}
-                        </span>
-                        <span>
-                            <VICon
-                                icon="mdi-package-variant"
-                                size="small"
-                            />
-                            3 articles
-                        </span>
+                        </div>
                     </template>
                     <template #append>
-                        <VChip v-bind="getOrderStatus(order.status)" />
+                        <div class="text-right">
+                            <div class="text-h6 font-weight-bold">
+                                {{ formatPrice(order.total) }}
+                            </div>
+                        </div>
+                    </template>
+                    <VCardText v-if="order.items && order.items.length > 0">
+                        <div class="d-flex flex-wrap ga-2">
+                            <VChip
+                                v-for="(item, index) in order.items.slice(0, 3)"
+                                :key="index"
+                                size="small"
+                                variant="outlined"
+                                class="text-caption"
+                            >
+                                {{ item.title }}
+                                <span v-if="item.quantity > 1" class="ml-1">x{{ item.quantity }}</span>
+                            </VChip>
+                            <VChip
+                                v-if="order.items.length > 3"
+                                size="small"
+                                variant="outlined"
+                                class="text-caption"
+                            >
+                                +{{ order.items.length - 3 }} autre(s)
+                            </VChip>
+                        </div>
+                    </VCardText>
+                    <template #actions>
+                        <VSpacer />
+                        <VBtn
+                            :href="route('user.order.show', { reference: order.reference })"
+                            variant="flat"
+                            append-icon="mdi-magnify"
+                        >
+                            Détails
+                        </VBtn>
                     </template>
                 </VCard>
             </VCol>

@@ -13,39 +13,44 @@ class IllustrationService
     public function getOrderDetail(Collection $illustrations): Collection
     {
         return $illustrations->map(function (Illustration $illustration) {
-            $type = IllustrationType::tryFrom($illustration->type);
-
-            $result = match ($type) {
-                IllustrationType::BUST => $this->getBustDetails($illustration),
-                IllustrationType::FULL_LENGTH => $this->getFullLengthDetails($illustration),
-                IllustrationType::ANIMAL => $this->getAnimalDetails($illustration),
-                default => []
-            };
-
-            $result['price'] = [
-                'name' => 'Prix',
-                'price' => Number::currency($illustration->price, 'EUR', locale: 'fr'),
-            ];
-
-            $result['pose'] = $this->getPose($illustration->pose);
-            $result['background'] = $this->getBackground($illustration->background);
-
-            if ($illustration->addTracking) {
-                $result['addTracking'] = [
-                    'name' => 'Demander le suivi',
-                    'price' => Number::currency($this->getPrice('options_add_tracking'), 'EUR', locale: 'fr'),
-                ];
-            }
-
-            if ($illustration->print) {
-                $result['print'] = [
-                    'name' => 'Imprimer l\'illustration',
-                    'price' => Number::currency($this->getPrice('options_print'), 'EUR', locale: 'fr'),
-                ];
-            }
-
-            return $result;
+            return $this->getSingleIllustrationDetail($illustration);
         });
+    }
+
+    public function getSingleIllustrationDetail(Illustration $illustration): array
+    {
+        $type = IllustrationType::tryFrom($illustration->type);
+
+        $result = match ($type) {
+            IllustrationType::BUST => $this->getBustDetails($illustration),
+            IllustrationType::FULL_LENGTH => $this->getFullLengthDetails($illustration),
+            IllustrationType::ANIMAL => $this->getAnimalDetails($illustration),
+            default => []
+        };
+
+        $result['price'] = [
+            'name' => 'Prix',
+            'price' => Number::currency($illustration->price, 'EUR', locale: 'fr'),
+        ];
+
+        $result['pose'] = $this->getPose($illustration->pose);
+        $result['background'] = $this->getBackground($illustration->background);
+
+        if ($illustration->addTracking) {
+            $result['addTracking'] = [
+                'name' => 'Demander le suivi',
+                'price' => Number::currency($this->getPrice('options_add_tracking'), 'EUR', locale: 'fr'),
+            ];
+        }
+
+        if ($illustration->print) {
+            $result['print'] = [
+                'name' => 'Imprimer l\'illustration',
+                'price' => Number::currency($this->getPrice('options_print'), 'EUR', locale: 'fr'),
+            ];
+        }
+
+        return $result;
     }
 
     private function getBustDetails(Illustration $illustration): array
