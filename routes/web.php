@@ -19,9 +19,9 @@ Route::get('/health', function () {
     return response()->json(['status' => 'ok', 'timestamp' => now()]);
 });
 
-// Stripe webhook - must be outside auth middleware
+// Stripe webhook - must be outside auth and CSRF middleware
 Route::post('/stripe/webhook', [WebhookController::class, 'handleStripe'])
-    ->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class])
+    ->withoutMiddleware(['web'])
     ->name('stripe.webhook');
 
 Route::controller(VisitorsController::class)->group(function() {
