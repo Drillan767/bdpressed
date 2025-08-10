@@ -4,13 +4,18 @@ namespace App\Services;
 
 use App\Models\Product;
 use App\Models\IllustrationPrice;
+use App\Models\Order;
 use Illuminate\Support\Facades\Log;
 use Stripe\StripeClient;
 use Illuminate\Support\Facades\URL;
 
 class StripeService
 {
-    private StripeClient $client;
+    private StripeClient $client {
+        get {
+            return $this->client;
+        }
+    }
 
     public function __construct()
     {
@@ -24,15 +29,13 @@ class StripeService
     {
         if ($stripeProductId) {
             try {
-                $product = $this->client->products->retrieve($stripeProductId);
-                return $product;
+                return $this->client->products->retrieve($stripeProductId);
             } catch (\Exception $e) {
                 Log::error('Error retrieving Stripe product: ' . $e->getMessage());
                 return null;
             }
         } else {
-            $allProducts = $this->client->products->all();
-            return $allProducts;
+            return $this->client->products->all();
         }
     }
 
@@ -42,12 +45,12 @@ class StripeService
     private function getProductImages(Product $product): array
     {
         $images = [];
-        
+
         // Add promoted image if it exists
         if (!empty($product->promotedImage)) {
             $images[] = URL::to($product->promotedImage);
         }
-        
+
         // Add illustrations if they exist
         if (!empty($product->illustrations)) {
             foreach ($product->illustrations as $illustration) {
@@ -56,7 +59,7 @@ class StripeService
                 }
             }
         }
-        
+
         return $images;
     }
 
@@ -74,13 +77,13 @@ class StripeService
                     'slug' => $product->slug,
                 ],
             ];
-            
+
             // Add images if available
             $images = $this->getProductImages($product);
             if (!empty($images)) {
                 $productData['images'] = $images;
             }
-            
+
             $stripeProduct = $this->client->products->create($productData);
 
             // Create a price for the product
@@ -119,13 +122,13 @@ class StripeService
                     'slug' => $product->slug,
                 ],
             ];
-            
+
             // Add images if available
             $images = $this->getProductImages($product);
             if (!empty($images)) {
                 $productData['images'] = $images;
             }
-            
+
             $stripeProduct = $this->client->products->update(
                 $product->stripe_link,
                 $productData
@@ -157,24 +160,24 @@ class StripeService
             if (!empty($prices->data)) {
                 $currentPrice = $prices->data[0];
                 $currentAmount = $currentPrice->unit_amount / 100; // Convert from cents to euros
-                
+
                 // Only update if the price has changed
                 // Use a small epsilon for float comparison
-                if (abs($currentAmount - $product->price) > 0.01) { 
-                    
+                if (abs($currentAmount - $product->price) > 0.01) {
+
                     // Archive the current price
                     $this->client->prices->update($currentPrice->id, ['active' => false]);
-                    
+
                     // Create a new price
                     $newPrice = $this->client->prices->create([
                         'product' => $product->stripe_link,
                         'unit_amount' => (int)($product->price * 100), // Convert to cents
                         'currency' => 'eur',
                     ]);
-                    
+
                 }
             } else {
-                // No active prices found, create a new one                
+                // No active prices found, create a new one
                 $this->client->prices->create([
                     'product' => $product->stripe_link,
                     'unit_amount' => (int)($product->price * 100), // Convert to cents
@@ -226,7 +229,7 @@ class StripeService
                     'type' => 'illustration_price'
                 ]
             ];
-            
+
             return $this->client->products->create($productData);
         } catch (\Exception $e) {
             Log::error('Error creating Stripe product for illustration price: ' . $e->getMessage());
@@ -252,14 +255,6 @@ class StripeService
     }
 
     /**
-     * Get the Stripe client instance
-     */
-    public function getClient(): StripeClient
-    {
-        return $this->client;
-    }
-
-    /**
      * Handle all Stripe operations for a new illustration price
      */
     public function handleIllustrationPriceCreation(IllustrationPrice $illustrationPrice): bool
@@ -275,10 +270,10 @@ class StripeService
                     'type' => 'illustration_price'
                 ]
             ];
-            
+
             $stripeProduct = $this->client->products->create($productData);
             Log::info('Stripe product created:', ['id' => $stripeProduct->id]);
-            
+
             // Create the price in Stripe
             $stripePrice = $this->client->prices->create([
                 'product' => $stripeProduct->id,
@@ -290,7 +285,7 @@ class StripeService
             // Update the model with Stripe IDs
             $illustrationPrice->stripe_product_id = $stripeProduct->id;
             $illustrationPrice->stripe_price_id = $stripePrice->id;
-            
+
             return $illustrationPrice->saveQuietly();
         } catch (\Exception $e) {
             Log::error('Error handling Stripe operations for illustration price: ' . $e->getMessage(), [
@@ -381,6 +376,72 @@ class StripeService
                 'exception' => $e
             ]);
             return false;
+        }
+    }
+
+    /**
+     * Create a Stripe payment link for an order
+     */
+    public function createPaymentLink(Order $order): ?string
+    {
+        try {
+            $lineItems = [];
+            $shippingRate = null;
+
+            // Add products from order details
+            foreach ($order->details as $detail) {
+                $product = $detail->product;
+
+                // Get an active price for this product
+                $prices = $this->client->prices->all([
+                    'product' => $product->stripe_link,
+                    'active' => true
+                ]);
+
+                if (!empty($prices->data)) {
+                    $lineItems[] = [
+                        'price' => $prices->data[0]->id,
+                        'quantity' => $detail->quantity,
+                    ];
+                }
+            }
+
+            if ($order->shipmentFees + $order->stripeFees > 0) {
+                // Create a one-time product for shipping and fees
+                $shippingRate = $this->client->shippingRates->create([
+                    'display_name' => 'Frais de port et de paiement',
+                    'type' => 'fixed_amount',
+                    'fixed_amount' => [
+                        'amount' => (int)(($order->shipmentFees + $order->stripeFees) * 100),
+                        'currency' => 'eur',
+                    ],
+                ]);
+            }
+
+            // Create the payment link
+            $paymentLink = $this->client->paymentLinks->create([
+                'line_items' => $lineItems,
+                'metadata' => [
+                    'order_id' => $order->id,
+                    'order_reference' => $order->reference,
+                ],
+                'shipping_options' => [['shipping_rate' => $shippingRate]],
+                'after_completion' => [
+                    'type' => 'redirect',
+                    'redirect' => [
+                        'url' => route('user.payment.success'),
+                    ],
+                ],
+            ]);
+
+            return $paymentLink->url;
+
+        } catch (\Exception $e) {
+            Log::error('Error creating Stripe payment link: ' . $e->getMessage(), [
+                'order_id' => $order->id,
+                'exception' => $e
+            ]);
+            return null;
         }
     }
 }

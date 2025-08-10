@@ -21,6 +21,9 @@ use App\Enums\OrderStatus;
  * @property int $billing_address_id
  * @property bool $useSameAddress
  * @property OrderStatus $status
+ * @property string $stripe_payment_link
+ * @property string $stripe_payment_intent_id
+ * @property string $paid_at
  * @property string $created_at
  * @property string $updated_at
  */

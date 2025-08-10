@@ -167,6 +167,7 @@ interface Detail {
         id: number
         name: string
         promotedImage: string
+        price: number
         slug: string
         weigh: number
     }

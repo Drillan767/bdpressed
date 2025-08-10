@@ -6,6 +6,7 @@ import useStrings from '@/Composables/strings'
 import AdminLayout from '@/Layouts/AdminLayout.vue'
 import { router } from '@inertiajs/vue3'
 import { useHead } from '@vueuse/head'
+import { ref } from 'vue'
 import { route } from 'ziggy-js'
 
 interface Props {
@@ -21,8 +22,17 @@ useHead({
     title: () => `Commande ${props.order.reference}`,
 })
 
-function updateStatus() {
-    console.log('updateStatus')
+const loading = ref(false)
+const status = ref('PAYMENT_PENDING')
+
+async function updateStatus() {
+    loading.value = true
+
+    router.post(route('orders.update-status', { reference: props.order.reference }), {
+        status: status.value,
+    })
+
+    loading.value = false
 }
 
 const { formatPrice } = useNumbers()
@@ -58,6 +68,7 @@ const { toParagraphs } = useStrings()
                 <VRow>
                     <VCol>
                         <VCard
+                            :loading="loading"
                             title="Statut de la commande"
                         >
                             <template #append>
@@ -65,10 +76,10 @@ const { toParagraphs } = useStrings()
                             </template>
                             <template #text>
                                 <VSelect
+                                    v-model="status"
                                     :items="orderStatus"
                                     item-title="text"
                                     item-value="internal"
-                                    :model-value="order.status"
                                     variant="outlined"
                                     density="compact"
                                     hide-details
@@ -98,7 +109,7 @@ const { toParagraphs } = useStrings()
                                     v-for="(detail, i) in order.details"
                                     :key="i"
                                     :title="detail.product.name"
-                                    :subtitle="`${detail.quantity} x ${formatPrice(detail.price)}`"
+                                    :subtitle="`${detail.quantity} x ${formatPrice(detail.product.price)}`"
                                     variant="tonal"
                                     class="mb-4"
                                 >
@@ -113,7 +124,7 @@ const { toParagraphs } = useStrings()
                                         />
                                     </template>
                                     <template #append>
-                                        {{ formatPrice(detail.price * detail.quantity) }}
+                                        {{ formatPrice(detail.price) }}
                                     </template>
                                 </VCard>
                                 <VCard

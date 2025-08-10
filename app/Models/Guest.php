@@ -4,9 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Notifications\Notifiable;
 
 class Guest extends Model
 {
+    use Notifiable;
+
     protected $fillable = ['email'];
 
     public function orders(): HasOne
