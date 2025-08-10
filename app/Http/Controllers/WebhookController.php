@@ -15,9 +15,20 @@ class WebhookController extends Controller
 {
     public function handleStripe(Request $request, OrderStatusService $orderStatusService): Response
     {
+        Log::info('Webhook received', [
+            'headers' => $request->headers->all(),
+            'content_length' => strlen($request->getContent())
+        ]);
+
         $payload = $request->getContent();
         $sigHeader = $request->header('Stripe-Signature');
         $endpointSecret = config('app.stripe.webhook_secret');
+
+        Log::info('Webhook processing', [
+            'has_signature' => !empty($sigHeader),
+            'has_secret' => !empty($endpointSecret),
+            'payload_length' => strlen($payload)
+        ]);
 
         try {
             $event = Webhook::constructEvent($payload, $sigHeader, $endpointSecret);
