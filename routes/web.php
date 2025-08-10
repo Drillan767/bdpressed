@@ -11,12 +11,18 @@ use App\Http\Controllers\Admin\ComicController;
 use App\Http\Controllers\VisitorsController;
 use App\Http\Controllers\Admin\IllustrationsController;
 use App\Http\Controllers\User\DashboardController as UserDashboardController;
+use App\Http\Controllers\WebhookController;
 use Illuminate\Support\Facades\Route;
 
 // Health check route for deployment
 Route::get('/health', function () {
     return response()->json(['status' => 'ok', 'timestamp' => now()]);
 });
+
+// Stripe webhook - must be outside auth middleware
+Route::post('/stripe/webhook', [WebhookController::class, 'handleStripe'])
+    ->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class])
+    ->name('stripe.webhook');
 
 Route::controller(VisitorsController::class)->group(function() {
     Route::get('/', 'landing')->name('landing');
@@ -58,6 +64,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
                 Route::get('/commandes', 'index')->name('orders.index');
                 Route::get('/commandes/pending-orders', 'pendingOrders')->name('orders.pending');
                 Route::get('/commande/{reference}', 'show')->name('orders.show');
+                Route::post('/commande/{reference}/update-status', 'updateStatus')->name('orders.update-status');
             });
 
             Route::controller(IllustrationsController::class)->group(function () {
@@ -87,6 +94,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::middleware('role:user')->prefix('/utilisateur')->group(function () {
         Route::get('', [UserDashboardController::class, 'index'])->name('user.dashboard');
         Route::get('/commande/{reference}', [UserDashboardController::class, 'showOrder'])->name('user.order.show');
+        Route::get('/paiement-effectue', [UserDashboardController::class, 'paymentSuccess'])->name('user.payment.success');
 
         Route::controller(AddressesController::class)->group(function () {
             Route::get('/adresses', 'index')->name('user.addresses.index');

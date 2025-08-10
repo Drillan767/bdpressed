@@ -51,7 +51,6 @@ class NewOrderNotification extends Notification
             )
             ->action('Voir la commande', route('orders.show', $this->order->reference))
             ->salutation('La bise et à bientôt !')
-
         ;
     }
 
