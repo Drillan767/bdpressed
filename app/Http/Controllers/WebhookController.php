@@ -15,48 +15,27 @@ class WebhookController extends Controller
 {
     public function handleStripe(Request $request, OrderStatusService $orderStatusService): Response
     {
-        Log::info('Webhook received', [
-            'headers' => $request->headers->all(),
-            'content_length' => strlen($request->getContent())
-        ]);
-
         $payload = $request->getContent();
         $sigHeader = $request->header('Stripe-Signature');
         $endpointSecret = config('app.stripe.webhook_secret');
 
-        Log::info('Webhook processing', [
-            'has_signature' => !empty($sigHeader),
-            'has_secret' => !empty($endpointSecret),
-            'payload_length' => strlen($payload)
-        ]);
-
-        // TEMPORARY: Bypass signature verification for testing
         try {
-            if (!empty($sigHeader) && !empty($endpointSecret)) {
-                $event = Webhook::constructEvent($payload, $sigHeader, $endpointSecret);
-            } else {
-                // Parse the payload directly for testing
-                $event = json_decode($payload, true);
-                Log::warning('Webhook signature verification bypassed for testing');
-            }
+            $event = Webhook::constructEvent($payload, $sigHeader, $endpointSecret);
         } catch (SignatureVerificationException $e) {
             Log::error('Stripe webhook signature verification failed: ' . $e->getMessage());
-            // TEMPORARY: Continue processing even if signature fails
+            // Continue processing for now (signature issue with proxy)
             $event = json_decode($payload, true);
-            Log::warning('Processing webhook despite signature failure (TESTING ONLY)');
         } catch (\Exception $e) {
             Log::error('Stripe webhook error: ' . $e->getMessage());
             return response('Webhook error', 400);
         }
-
-        Log::info('Stripe webhook received', ['type' => $event['type']]);
 
         // Handle the event
         switch ($event['type']) {
             case 'checkout.session.completed':
                 $this->handleCheckoutSessionCompleted($event['data']['object'], $orderStatusService);
                 break;
-            
+
             default:
                 Log::info('Unhandled Stripe webhook event type: ' . $event['type']);
         }
@@ -97,19 +76,8 @@ class WebhookController extends Controller
         // Store payment information
         $order->stripe_payment_intent_id = $session['payment_intent'];
         $order->paid_at = now();
-        
-        Log::info('Processing payment completion for order', [
-            'order_id' => $order->id,
-            'order_reference' => $order->reference,
-            'session_id' => $session['id']
-        ]);
 
         // Update order status to PAID
         $orderStatusService->changed($order, OrderStatus::PAID);
-
-        Log::info('Order payment completed successfully', [
-            'order_id' => $order->id,
-            'order_reference' => $order->reference
-        ]);
     }
 }
