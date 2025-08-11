@@ -1,15 +1,16 @@
 <script setup lang="ts">
-import type { Address, IllustrationStatus, OrderStatus } from '@/types'
+import type { Address, IllustrationStatus, Money, OrderStatus } from '@/types'
 import useNumbers from '@/Composables/numbers'
 import useStatus from '@/Composables/status'
 import useStrings from '@/Composables/strings'
 import UserLayout from '@/Layouts/UserLayout.vue'
 import { useHead } from '@vueuse/head'
 import { ref } from 'vue'
+import { route } from 'ziggy-js'
 
 interface IllustrationDetail {
     name: string
-    price: string
+    price: Money
 }
 
 interface ArticleItem {
@@ -17,7 +18,7 @@ interface ArticleItem {
     id: number
     title: string
     description: string
-    price: number
+    price: Money
     quantity: number
     totalPrice: number
     image: string
@@ -37,9 +38,9 @@ interface IllustrationItem {
 
 interface OrderDetail {
     id: number
-    total: number
-    shipmentFees: number
-    stripeFees: number
+    total: Money
+    shipmentFees: Money
+    stripeFees: Money
     reference: string
     addionalInfos?: string
     created_at: string
@@ -154,7 +155,7 @@ function openIllustrationDetails(illustration: IllustrationItem) {
                                                                 variant="outlined"
                                                                 prepend-icon="mdi-package-variant"
                                                             >
-                                                                {{ item.quantity }} x {{ formatPrice(item.price) }}
+                                                                {{ item.quantity }} x {{ item.price.formatted }}
                                                             </VChip>
                                                             <VChip
                                                                 v-else
@@ -220,14 +221,14 @@ function openIllustrationDetails(illustration: IllustrationItem) {
                                         title="Sous-total"
                                     >
                                         <template #append>
-                                            {{ formatPrice(order.total - order.stripeFees - order.shipmentFees) }}
+                                            {{ formatPrice(order.total.euros - order.stripeFees.euros - order.shipmentFees.euros) }}
                                         </template>
                                     </VListItem>
                                     <VListItem
                                         title="Frais de port"
                                     >
                                         <template #append>
-                                            {{ formatPrice(order.shipmentFees + order.stripeFees) }}
+                                            {{ formatPrice(order.shipmentFees.euros + order.stripeFees.euros) }}
                                         </template>
                                     </VListItem>
                                     <VDivider />
@@ -236,7 +237,7 @@ function openIllustrationDetails(illustration: IllustrationItem) {
                                             <b>Total</b>
                                         </template>
                                         <template #append>
-                                            <b>{{ formatPrice(order.total) }}</b>
+                                            <b>{{ order.total.formatted }}</b>
                                         </template>
                                     </VListItem>
                                 </VList>

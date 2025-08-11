@@ -4,12 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Casts\MoneyCast;
 
 /**
  * @property int $order_id
  * @property int $product_id
  * @property int $quantity
- * @property float price
+ * @property int $price
  * @property string $created_at
  * @property string $updated_at
  */
@@ -18,6 +19,7 @@ class OrderDetail extends Model
     protected $casts = [
         'created_at' => 'datetime:d/m/Y H:i',
         'updated_at' => 'datetime:d/m/Y H:i',
+        'price' => MoneyCast::class,
     ];
 
     public function product(): belongsTo

@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Order;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Casts\MoneyCast;
 
 /**
  * @property int $order_id
@@ -16,8 +17,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string $background
  * @property string $status
  * @property string $description
- * @property float price
- * @property string $status
+ * @property int $price
  * @property bool $print
  * @property bool $addTracking
  * @property string $trackingNumber
@@ -31,6 +31,7 @@ class Illustration extends Model
         'updated_at' => 'datetime:d/m/Y H:i',
         'addTracking' => 'boolean',
         'print' => 'boolean',
+        'price' => MoneyCast::class,
     ];
 
     public function order(): belongsTo

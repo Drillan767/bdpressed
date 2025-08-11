@@ -30,9 +30,9 @@ class HandleOrderAction
         [$totalPrice, $fees, $shipFee] = $this->definePrice($products, $request->get('products'));
 
         $order = new Order();
-        $order->total = Number::abbreviate($totalPrice, 2);
-        $order->stripeFees = Number::abbreviate($fees, 2);
-        $order->shipmentFees = Number::abbreviate($shipFee, 2);
+        $order->total = $totalPrice;
+        $order->stripeFees = $fees;
+        $order->shipmentFees = $shipFee;
         $order->reference = $this->defineReference();
         $order->additionalInfos = $request->get('user')['additionalInfos'];
 
@@ -75,14 +75,17 @@ class HandleOrderAction
                 $product = $products->firstWhere('id', $refProduct['id']);
                 if ($product) {
                     $quantity = $refProduct['quantity'];
-                    $totalPrice += $product->price * $quantity;
+                    $totalPrice += $product->price->cents() * $quantity;
                     $totalWeight += $product->weight * $quantity;
                 }
             }
         }
 
-        $fees = 0.015 * $totalPrice + 0.25;
-        $shipFee = $totalWeight > 400 ? 7 : 4;
+        // Convert fees to cents (0.015 * totalPrice + 0.25 euros = 0.25 * 100 cents)
+        $fees = (int) round(0.015 * $totalPrice + 25); // 25 cents = €0.25
+        
+        // Convert shipping to cents  
+        $shipFee = $totalWeight > 400 ? 700 : 400; // 700 cents = €7, 400 cents = €4
 
         return [
             $totalPrice + $fees + $shipFee,
@@ -113,7 +116,7 @@ class HandleOrderAction
         $orderDetail->order_id = $order->id;
         $orderDetail->product_id = $product['id'];
         $orderDetail->quantity = $product['quantity'];
-        $orderDetail->price = $products->firstWhere('id', $product['id'])->price * $product['quantity'];
+        $orderDetail->price = $products->firstWhere('id', $product['id'])->price->cents() * $product['quantity'];
 
         $orderDetail->save();
 

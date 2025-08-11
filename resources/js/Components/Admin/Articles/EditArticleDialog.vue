@@ -76,7 +76,7 @@ watch(displayDialog, async (value) => {
             quickDescription: props.product.quickDescription,
             weight: props.product.weight,
             description: props.product.description,
-            price: props.product.price,
+            price: props.product.price.euros,
             stock: props.product.stock,
             promotedImage: null,
             illustrations: [],

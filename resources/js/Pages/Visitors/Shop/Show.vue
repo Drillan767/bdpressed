@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import type { AdminProduct, Catalog } from '@/types'
 import ProductIllustration from '@/Components/Shop/ProductIllustration.vue'
-import useNumbers from '@/Composables/numbers'
 import useStrings from '@/Composables/strings'
 import VisitorsLayout from '@/Layouts/VisitorsLayout.vue'
 import useCartStore from '@/Stores/cartStore'
@@ -20,7 +19,6 @@ const props = defineProps<Props>()
 
 const openDrawer = inject<() => void>('openDrawer')
 
-const { formatPrice } = useNumbers()
 const { toParagraphs } = useStrings()
 const { addItem } = useCartStore()
 
@@ -33,7 +31,7 @@ function handleAddToCart(product: Catalog) {
             weight: product.weight,
             type: 'item',
             stock: product.stock - 1,
-            price: product.price,
+            price: product.price.euros,
             illustration: product.promotedImage,
         })
     }, 200)
@@ -80,7 +78,7 @@ useHead({
                         <VRow no-gutters>
                             <VCol cols="12" md="8">
                                 <h1>{{ product.name }}</h1>
-                                <p>Prix: {{ formatPrice(product.price) }}</p>
+                                <p>Prix: {{ product.price.formatted }}</p>
                             </VCol>
                             <VCol
                                 cols="12"

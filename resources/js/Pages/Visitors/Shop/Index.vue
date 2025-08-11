@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { Catalog } from '@/types'
-import useNumbers from '@/Composables/numbers'
 import VisitorsLayout from '@/Layouts/VisitorsLayout.vue'
 import useCartStore from '@/Stores/cartStore'
 import { useHead } from '@vueuse/head'
@@ -20,7 +19,6 @@ useHead({
     title: 'Boutique',
 })
 
-const { formatPrice } = useNumbers()
 const { smAndDown } = useDisplay()
 const { addItem } = useCartStore()
 
@@ -34,7 +32,7 @@ function handleAddToCart(product: Catalog) {
             name: product.name,
             weight: product.weight,
             type: 'item',
-            price: product.price,
+            price: product.price.euros,
             stock: product.stock - 1,
             illustration: product.promotedImage,
         })
@@ -69,7 +67,7 @@ function handleAddToCart(product: Catalog) {
                                             <VRow no-gutters>
                                                 <VCol>
                                                     <VImg
-                                                        src="https://cdn.vuetifyjs.com/images/cards/sunshine.jpg"
+                                                        src="/assets/images/yell.png"
                                                         alt="Illustration"
                                                         class="rounded-lg"
                                                         aspect-ratio="9/16"
@@ -126,7 +124,7 @@ function handleAddToCart(product: Catalog) {
                                                 <VRow>
                                                     <VCol cols="10">
                                                         <h3>{{ product.name }}</h3>
-                                                        <p>{{ formatPrice(product.price) }}</p>
+                                                        <p>{{ product.price.formatted }}</p>
                                                     </VCol>
                                                     <VCol cols="2">
                                                         <VBtn

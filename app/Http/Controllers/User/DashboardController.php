@@ -35,10 +35,9 @@ class DashboardController extends Controller
                 'type' => 'product',
                 'title' => $detail->product->name,
                 'description' => $detail->product->quickDescription,
-                'price' => (float) $detail->product->price,
-                'totalPrice' => (float) $detail->quantity * $detail->product->price,
+                'price' => $detail->product->price,
+                'totalPrice' => $detail->quantity * $detail->product->price->euros(),
                 'quantity' => $detail->quantity,
-                'totalPrice' => (float) $detail->price,
                 'image' => $detail->product->promotedImage,
             ]);
         }
@@ -60,11 +59,11 @@ class DashboardController extends Controller
 
         $order = [
             'id' => $rawOrder->id,
-            'total' => (float) $rawOrder->total,
+            'total' => $rawOrder->total,
             'reference' => $rawOrder->reference,
             'status' => $rawOrder->status,
-            'shipmentFees' => (float) $rawOrder->shipmentFees,
-            'stripeFees' => (float) $rawOrder->stripeFees,
+            'shipmentFees' => $rawOrder->shipmentFees,
+            'stripeFees' => $rawOrder->stripeFees,
             'created_at' => $rawOrder->created_at->format('d/m/Y à H:i'),
             'addionalInfos' => $rawOrder->additionalInfos,
             'itemCount' => $items->count(),

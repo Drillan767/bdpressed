@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Support\Facades\Storage;
 use App\Observers\ProductObserver;
+use App\Casts\MoneyCast;
 
 /**
  * @property int $id
@@ -18,7 +19,7 @@ use App\Observers\ProductObserver;
  * @property string[] $illustrations
  * @property int $weight
  * @property int $stock
- * @property float $price
+ * @property int $price
  * @property \DateTime $created_at
  * @property \DateTime $updated_at
  */
@@ -28,8 +29,8 @@ class Product extends Model
     protected $casts = [
         'created_at' => 'datetime:d/m/Y H:i',
         'updated_at' => 'datetime:d/m/Y H:i',
-        'price' => 'decimal:2',
         'illustrations' => 'array',
+        'price' => MoneyCast::class,
     ];
 
     public function illustrations(): Attribute
@@ -49,4 +50,5 @@ class Product extends Model
             }
         );
     }
+
 }
