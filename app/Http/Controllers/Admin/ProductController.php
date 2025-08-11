@@ -39,7 +39,10 @@ class ProductController extends Controller
 
     public function showApi(Product $product): JsonResponse
     {
-        return response()->json($product);
+        // dd($product->getOriginal('price')->cents / 100);
+        return response()->json([
+            ... $product->toArray(),
+            'price' => $product->getOriginal('price')->cents / 100]);
     }
 
     public function store(Request $request): void
@@ -49,7 +52,7 @@ class ProductController extends Controller
         $product->slug = Str::slug($request->get('name'));
         $product->weight = $request->get('weight');
         $product->stock = $request->get('stock');
-        $product->price = $request->get('price');
+        $product->price = $request->get('price') * 100;
         $product->quickDescription = $request->get('quickDescription');
         $product->description = $request->get('description');
         $product->promotedImage = '';
@@ -86,7 +89,7 @@ class ProductController extends Controller
         $product->slug = Str::slug($request->get('name'));
         $product->weight = $request->get('weight');
         $product->stock = $request->get('stock');
-        $product->price = $request->get('price');
+        $product->price = $request->get('price') * 100;
         $product->quickDescription = $request->get('quickDescription');
         $product->description = $request->get('description');
 
@@ -103,7 +106,7 @@ class ProductController extends Controller
         // Handle illustrations if they are provided
         if ($request->hasFile('illustrations')) {
             $illustrationsPath = [];
-            
+
             foreach($request->file('illustrations') as $illustration) {
                 Storage::putFileAs(
                     "articles/{$product->id}",
@@ -113,7 +116,7 @@ class ProductController extends Controller
 
                 $illustrationsPath[] = "/storage/articles/$product->id/{$illustration->getClientOriginalName()}";
             }
-            
+
             $product->illustrations = $illustrationsPath;
         }
 
@@ -131,7 +134,7 @@ class ProductController extends Controller
     {
         // Get current illustrations or initialize as empty array if null
         $illustrations = $product->illustrations ?? [];
-        
+
         // Extract paths from illustrations if they exist
         $illustrationsPaths = is_array($illustrations) ? array_column($illustrations, 'path') : [];
 
@@ -155,13 +158,13 @@ class ProductController extends Controller
     {
         $realPath = str_replace('/storage/', '', $request->get('illustration'));
         $base = basename($realPath);
-        
+
         // Get current illustrations or initialize as empty array if null
         $illustrations = $product->illustrations ?? [];
-        
+
         // Extract paths from illustrations if they exist
         $illustrationsList = is_array($illustrations) ? array_column($illustrations, 'path') : [];
-        
+
         $index = array_search("/storage/articles/$product->id/$base", $illustrationsList);
         if ($index !== false) {
             unset($illustrationsList[$index]);

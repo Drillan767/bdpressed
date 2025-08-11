@@ -7,12 +7,13 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Enums\OrderStatus;
+use App\Casts\MoneyCast;
 
 /**
  * @property int $id
- * @property float $total
- * @property float $shipmentFees
- * @property float $stripeFees
+ * @property int $total
+ * @property int $shipmentFees
+ * @property int $stripeFees
  * @property string $reference
  * @property string $additionalInfos
  * @property int $user_id
@@ -62,6 +63,9 @@ class Order extends Model
     protected $casts = [
         'status' => OrderStatus::class,
         'useSameAddress' => 'boolean',
+        'total' => MoneyCast::class,
+        'shipmentFees' => MoneyCast::class,
+        'stripeFees' => MoneyCast::class,
         'created_at' => 'datetime:d/m/Y H:i',
         'updated_at' => 'datetime:d/m/Y H:i',
     ];

@@ -46,7 +46,7 @@ class StripeService
     {
         $images = [];
 
-        // Add promoted image if it exists
+        // Add a promoted image if it exists
         if (!empty($product->promotedImage)) {
             $images[] = URL::to($product->promotedImage);
         }
@@ -89,7 +89,7 @@ class StripeService
             // Create a price for the product
             $this->client->prices->create([
                 'product' => $stripeProduct->id,
-                'unit_amount' => (int)($product->price * 100), // Convert to cents
+                'unit_amount' => $product->price->cents(),
                 'currency' => 'eur',
             ]);
 
@@ -159,11 +159,10 @@ class StripeService
             // If there are active prices, check if the price has changed
             if (!empty($prices->data)) {
                 $currentPrice = $prices->data[0];
-                $currentAmount = $currentPrice->unit_amount / 100; // Convert from cents to euros
+                $currentAmountCents = $currentPrice->unit_amount; // Already in cents
 
-                // Only update if the price has changed
-                // Use a small epsilon for float comparison
-                if (abs($currentAmount - $product->price) > 0.01) {
+                // Only update if the price has changed (compare cents)
+                if ($currentAmountCents !== $product->price->cents()) {
 
                     // Archive the current price
                     $this->client->prices->update($currentPrice->id, ['active' => false]);
@@ -171,7 +170,7 @@ class StripeService
                     // Create a new price
                     $newPrice = $this->client->prices->create([
                         'product' => $product->stripe_link,
-                        'unit_amount' => (int)($product->price * 100), // Convert to cents
+                        'unit_amount' => $product->price->cents(),
                         'currency' => 'eur',
                     ]);
 
@@ -180,7 +179,7 @@ class StripeService
                 // No active prices found, create a new one
                 $this->client->prices->create([
                     'product' => $product->stripe_link,
-                    'unit_amount' => (int)($product->price * 100), // Convert to cents
+                    'unit_amount' => $product->price->cents(),
                     'currency' => 'eur',
                 ]);
             }
@@ -245,7 +244,7 @@ class StripeService
         try {
             return $this->client->prices->create([
                 'product' => $productId,
-                'unit_amount' => (int)($amount * 100), // Convert to cents
+                'unit_amount' => $amount, // Already in cents
                 'currency' => 'eur',
             ]);
         } catch (\Exception $e) {
@@ -277,7 +276,7 @@ class StripeService
             // Create the price in Stripe
             $stripePrice = $this->client->prices->create([
                 'product' => $stripeProduct->id,
-                'unit_amount' => (int)($illustrationPrice->price * 100),
+                'unit_amount' => $illustrationPrice->price->cents(),
                 'currency' => 'eur',
             ]);
             Log::info('Stripe price created:', ['id' => $stripePrice->id]);
@@ -329,7 +328,7 @@ class StripeService
                     // Create new price
                     $newPrice = $this->client->prices->create([
                         'product' => $illustrationPrice->stripe_product_id,
-                        'unit_amount' => (int)($illustrationPrice->price * 100),
+                        'unit_amount' => $illustrationPrice->price->cents(),
                         'currency' => 'eur',
                     ]);
 
@@ -406,13 +405,14 @@ class StripeService
                 }
             }
 
-            if ($order->shipmentFees + $order->stripeFees > 0) {
+            $totalFees = $order->shipmentFees->cents() + $order->stripeFees->cents();
+            if ($totalFees > 0) {
                 // Create a one-time product for shipping and fees
                 $shippingRate = $this->client->shippingRates->create([
                     'display_name' => 'Frais de port et de paiement',
                     'type' => 'fixed_amount',
                     'fixed_amount' => [
-                        'amount' => (int)(($order->shipmentFees + $order->stripeFees) * 100),
+                        'amount' => $totalFees,
                         'currency' => 'eur',
                     ],
                 ]);

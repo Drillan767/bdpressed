@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use App\Observers\IllustrationPriceObserver;
 use Illuminate\Database\Eloquent\Model;
+use App\Casts\MoneyCast;
 
 #[ObservedBy(IllustrationPriceObserver::class)]
 class IllustrationPrice extends Model
@@ -19,7 +20,7 @@ class IllustrationPrice extends Model
     ];
 
     protected $casts = [
-        'price' => 'decimal:2',
+        'price' => MoneyCast::class,
         'metadata' => 'array',
     ];
 } 

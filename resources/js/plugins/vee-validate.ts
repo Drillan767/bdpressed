@@ -1,6 +1,6 @@
 import { localize, setLocale } from '@vee-validate/i18n'
 import fr from '@vee-validate/i18n/dist/locale/fr.json'
-import { confirmed, email, image, integer, max, min, min_value as minValue, numeric, regex, required } from '@vee-validate/rules'
+import { confirmed, email, image, integer, max, min, min_value as minValue, regex, required } from '@vee-validate/rules'
 import { configure, defineRule } from 'vee-validate'
 
 setLocale('fr')
@@ -24,9 +24,9 @@ defineRule('numeric', (value: any): boolean | string => {
 
     // Convert to string to handle number inputs
     const stringValue = String(value).trim()
-    
+
     // Regex for integers and floats (including negative numbers)
-    const numericRegex = /^-?\d*\.?\d+$/
+    const numericRegex = /^-?(?:\d+(?:\.\d+)?|\.\d+)$/
 
     if (!numericRegex.test(stringValue)) {
         return 'Ce champ doit être un nombre'

@@ -122,7 +122,7 @@ useHead({
             </div>
         </template>
         <template #item.price="{ item }">
-            {{ item.price }} €
+            {{ item.price }}
         </template>
         <template #item.weight="{ item }">
             {{ item.weight }} g.

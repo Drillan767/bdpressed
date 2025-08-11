@@ -109,7 +109,7 @@ const { toParagraphs } = useStrings()
                                     v-for="(detail, i) in order.details"
                                     :key="i"
                                     :title="detail.product.name"
-                                    :subtitle="`${detail.quantity} x ${formatPrice(detail.product.price)}`"
+                                    :subtitle="`${detail.quantity} x ${detail.product.price.formatted}`"
                                     variant="tonal"
                                     class="mb-4"
                                 >
@@ -124,7 +124,7 @@ const { toParagraphs } = useStrings()
                                         />
                                     </template>
                                     <template #append>
-                                        {{ formatPrice(detail.price) }}
+                                        {{ detail.price.formatted }}
                                     </template>
                                 </VCard>
                                 <VCard
@@ -153,7 +153,7 @@ const { toParagraphs } = useStrings()
                                     <template #append>
                                         <div class="d-flex flex-column ga-2">
                                             <span class="text-end">
-                                                {{ formatPrice(illustration.price) }}
+                                                {{ illustration.price.formatted }}
                                             </span>
                                             <VBtn
                                                 :href="route('admin.illustrations.show', { illustration: illustration.id })"
@@ -170,12 +170,12 @@ const { toParagraphs } = useStrings()
                                 <VList>
                                     <VListItem title="Sous-total">
                                         <template #append>
-                                            {{ formatPrice(order.total) }}
+                                            {{ order.total.formatted }}
                                         </template>
                                     </VListItem>
                                     <VListItem title="Frais de port + paiement">
                                         <template #append>
-                                            {{ formatPrice(order.shipmentFees + order.stripeFees) }}
+                                            {{ formatPrice(order.shipmentFees.euros + order.stripeFees.euros) }}
                                         </template>
                                     </VListItem>
                                     <VListItem>
@@ -184,7 +184,7 @@ const { toParagraphs } = useStrings()
                                         </template>
                                         <template #append>
                                             <b class="text-primary">
-                                                {{ formatPrice(order.total) }}
+                                                {{ order.total.formatted }}
                                             </b>
                                         </template>
                                     </VListItem>
@@ -235,14 +235,16 @@ const { toParagraphs } = useStrings()
                                         </p>
                                     </template>
                                 </VCard>
-                                <h4 class="my-4">
-                                    Informations additionnelles
-                                </h4>
-                                <VCard variant="tonal">
-                                    <template #text>
-                                        <div v-html="toParagraphs(order.additionalInfos)" />
-                                    </template>
-                                </VCard>
+                                <template v-if="order.additionalInfos">
+                                    <h4 class="my-4">
+                                        Informations additionnelles
+                                    </h4>
+                                    <VCard variant="tonal">
+                                        <template #text>
+                                            <div v-html="toParagraphs(order.additionalInfos)" />
+                                        </template>
+                                    </VCard>
+                                </template>
                             </template>
                         </VCard>
                     </VCol>

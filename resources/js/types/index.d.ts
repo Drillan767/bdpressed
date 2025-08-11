@@ -1,5 +1,11 @@
 import type { Config } from 'ziggy-js'
 
+export interface Money {
+    cents: number
+    euros: number
+    formatted: string
+}
+
 export enum OrderStatus {
     NEW = 'NEW',
     ILLUSTRATION_DEPOSIT_PENDING = 'ILLUSTRATION_DEPOSIT_PENDING',
@@ -50,7 +56,7 @@ export interface AdminProductList {
     slug: string
     stock: number
     weight: number
-    price: number
+    price: Money
     created_at: string
     updated_at: string
 }
@@ -80,7 +86,7 @@ export interface Catalog {
     name: string
     slug: string
     stock: number
-    price: number
+    price: Money
     weight: number
     promotedImage: string
     quickDescription: string
@@ -146,7 +152,7 @@ export interface OrderIndex {
     id: number
     reference: string
     status: OrderStatus
-    total: number
+    total: Money
     guest: {
         id: number
         email: string
@@ -161,13 +167,13 @@ export interface OrderIndex {
 
 interface Detail {
     id: number
-    price: number
+    price: Money
     quantity: number
     product: {
         id: number
         name: string
         promotedImage: string
-        price: number
+        price: Money
         slug: string
         weigh: number
     }
@@ -210,7 +216,7 @@ interface Illustration {
     nbAnimals: number
     pose: 'SIMPLE' | 'COMPLEX'
     background: 'SIMPLE' | 'GRADIENT' | 'COMPLEX'
-    price: number
+    price: Money
     status: IllustrationStatus
     description: string
     created_at: string
@@ -225,13 +231,13 @@ export interface OrderDetail {
     id: number
     additionalInfos: string
     reference: string
-    total: number
+    total: Money
     status: OrderStatus
     created_at: string
     updated_at: string
     useSameAddress: boolean
-    stripeFees: number
-    shipmentFees: number
+    stripeFees: Money
+    shipmentFees: Money
     details: Detail[]
     guest_id: number | null
     illustrationsList: IllustrationSpecs[]
