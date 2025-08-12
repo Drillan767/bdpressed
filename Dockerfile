@@ -33,7 +33,8 @@ RUN apk add --no-cache \
     zip \
     unzip \
     caddy \
-    icu-dev
+    icu-dev \
+    supervisor
 
 # Install PHP extensions
 RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip intl
@@ -61,8 +62,15 @@ RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 755 /var/www/html/storage \
     && chmod -R 755 /var/www/html/bootstrap/cache
 
-# Copy Caddyfile
+
+# Create supervisor directories
+RUN mkdir -p /etc/supervisor/conf.d \
+    && mkdir -p /var/log/supervisor
+
+# Copy configuration files
 COPY Caddyfile /etc/caddy/Caddyfile
+COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+COPY laravel-worker.conf /etc/supervisor/conf.d/laravel-worker.conf
 
 # Copy entrypoint script
 COPY entrypoint.sh /entrypoint.sh
