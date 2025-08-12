@@ -8,7 +8,6 @@ use App\Models\Order;
 use App\Models\OrderDetail;
 use App\Models\Product;
 use Illuminate\Support\Str;
-use Illuminate\Support\Number;
 use Illuminate\Support\Facades\DB;
 use App\Enums\OrderStatus;
 use Illuminate\Support\Collection;
@@ -83,8 +82,8 @@ class HandleOrderAction
 
         // Convert fees to cents (0.015 * totalPrice + 0.25 euros = 0.25 * 100 cents)
         $fees = (int) round(0.015 * $totalPrice + 25); // 25 cents = €0.25
-        
-        // Convert shipping to cents  
+
+        // Convert shipping to cents
         $shipFee = $totalWeight > 400 ? 700 : 400; // 700 cents = €7, 400 cents = €4
 
         return [
@@ -110,7 +109,7 @@ class HandleOrderAction
         return $reference;
     }
 
-    private function handleItemOrder($product, $products, $order)
+    private function handleItemOrder($product, $products, $order): void
     {
         $orderDetail = new OrderDetail();
         $orderDetail->order_id = $order->id;
@@ -123,7 +122,7 @@ class HandleOrderAction
         DB::table('products')->decrement('stock', $product['quantity']);
     }
 
-    private function handleIllustrationOrder(array $details, $order)
+    private function handleIllustrationOrder(array $details, $order): void
     {
         $type = match($details['illustrationType']) {
             'bust' => 'bust',
