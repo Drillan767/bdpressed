@@ -68,5 +68,6 @@ class Order extends Model
         'stripeFees' => MoneyCast::class,
         'created_at' => 'datetime:d/m/Y H:i',
         'updated_at' => 'datetime:d/m/Y H:i',
+        'paid_at' => 'datetime:d/m/Y H:i',
     ];
 }
