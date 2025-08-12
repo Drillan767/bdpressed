@@ -3,14 +3,12 @@
 namespace App\Services;
 
 use App\Enums\OrderStatus;
-use App\Services\StripeService;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
 use App\Notifications\OrderPaymentLinkNotification;
 use App\Notifications\PaymentConfirmationNotification;
 use App\Notifications\AdminPaymentNotification;
 use App\Models\Order;
-use App\Models\User;
 
 class OrderStatusService
 {
@@ -27,6 +25,8 @@ class OrderStatusService
                 break;
 
             // Add other status change handlers as needed
+            default:
+                return;
         }
 
         $order->status = $newStatus;
