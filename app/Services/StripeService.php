@@ -429,7 +429,7 @@ class StripeService
                 'after_completion' => [
                     'type' => 'redirect',
                     'redirect' => [
-                        'url' => route('user.payment.success'),
+                        'url' => route('payment.success'),
                     ],
                 ],
             ]);

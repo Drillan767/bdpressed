@@ -28,6 +28,7 @@ Route::controller(VisitorsController::class)->group(function() {
     Route::get('/', 'landing')->name('landing');
     Route::get('/contact', 'contact')->name('contact');
     Route::get('/comic/{comic}', 'comicDetail')->name('comic.details');
+    Route::get('/paiement-effectue', 'paymentSuccess')->name('payment.success');
 });
 
 Route::controller(ShopController::class)->group(function() {
@@ -94,7 +95,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::middleware('role:user')->prefix('/utilisateur')->group(function () {
         Route::get('', [UserDashboardController::class, 'index'])->name('user.dashboard');
         Route::get('/commande/{reference}', [UserDashboardController::class, 'showOrder'])->name('user.order.show');
-        Route::get('/paiement-effectue', [UserDashboardController::class, 'paymentSuccess'])->name('user.payment.success');
 
         Route::controller(AddressesController::class)->group(function () {
             Route::get('/adresses', 'index')->name('user.addresses.index');
