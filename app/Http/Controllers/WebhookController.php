@@ -76,6 +76,9 @@ class WebhookController extends Controller
         // Store payment information
         $order->stripe_payment_intent_id = $session['payment_intent'];
         $order->paid_at = now();
+        $order->save();
+
+        Log::info('Stripe payment completed');
 
         // Update order status to PAID
         $orderStatusService->changed($order, OrderStatus::PAID);

@@ -23,7 +23,7 @@ useHead({
 })
 
 const loading = ref(false)
-const status = ref('PAYMENT_PENDING')
+const status = ref(props.order.status)
 
 async function updateStatus() {
     loading.value = true
