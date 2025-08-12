@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Order;
 use App\Enums\OrderStatus;
 use App\Services\OrderStatusService;
+use App\Services\StripeService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Log;
@@ -32,8 +33,8 @@ class WebhookController extends Controller
 
         // Handle the event
         switch ($event['type']) {
-            case 'checkout.session.completed':
-                $this->handleCheckoutSessionCompleted($event['data']['object'], $orderStatusService);
+            case 'payment_intent.succeeded':
+                $this->handlePaymentIntentSucceeded($event['data']['object'], $orderStatusService, app(StripeService::class));
                 break;
 
             default:
@@ -43,18 +44,17 @@ class WebhookController extends Controller
         return response('Webhook handled', 200);
     }
 
-    private function handleCheckoutSessionCompleted($session, OrderStatusService $orderStatusService): void
+    private function handlePaymentIntentSucceeded($paymentIntent, OrderStatusService $orderStatusService, StripeService $stripeService): void
     {
-        // Extract order information from metadata
-        $orderId = $session['metadata']['order_id'] ?? null;
-        $orderReference = $session['metadata']['order_reference'] ?? null;
+        // Use StripeService to find order metadata from payment links
+        $orderData = $stripeService->findOrderFromPaymentIntent($paymentIntent['id']);
 
-        if (!$orderId && !$orderReference) {
-            Log::error('No order information found in Stripe session metadata', [
-                'session_id' => $session['id']
-            ]);
-            return;
+        if (!$orderData) {
+            return; // Error already logged in StripeService
         }
+
+        $orderId = $orderData['order_id'];
+        $orderReference = $orderData['order_reference'];
 
         // Find the order
         $order = null;
@@ -65,20 +65,24 @@ class WebhookController extends Controller
         }
 
         if (!$order) {
-            Log::error('Order not found for Stripe payment', [
+            Log::error('Order not found for Stripe payment intent', [
                 'order_id' => $orderId,
                 'order_reference' => $orderReference,
-                'session_id' => $session['id']
+                'payment_intent_id' => $paymentIntent['id']
             ]);
             return;
         }
 
         // Store payment information
-        $order->stripe_payment_intent_id = $session['payment_intent'];
+        $order->stripe_payment_intent_id = $paymentIntent['id'];
         $order->paid_at = now();
         $order->save();
 
-        Log::info('Stripe payment completed');
+        Log::info('Stripe payment intent completed', [
+            'order_id' => $order->id,
+            'order_reference' => $order->reference,
+            'payment_intent_id' => $paymentIntent['id']
+        ]);
 
         // Update order status to PAID
         $orderStatusService->changed($order, OrderStatus::PAID);
