@@ -76,7 +76,7 @@ class PaymentConfirmationNotification extends Notification implements ShouldQueu
             $html .= '<tr>';
             $html .= '<td style="padding: 5px;">' . $detail->product->name . '</td>';
             $html .= '<td style="padding: 5px; text-align: center;">' . $detail->quantity . '</td>';
-            $html .= '<td style="padding: 5px; text-align: right;">' . Number::currency($detail->price * $detail->quantity, 'EUR', 'fr') . '</td>';
+            $html .= '<td style="padding: 5px; text-align: right;">' . Number::currency($detail->price->euros() * $detail->quantity, 'EUR', 'fr') . '</td>';
             $html .= '</tr>';
         }
         
@@ -85,12 +85,12 @@ class PaymentConfirmationNotification extends Notification implements ShouldQueu
                 $html .= '<tr>';
                 $html .= '<td style="padding: 5px;">Illustration n°' . ($i + 1) . '</td>';
                 $html .= '<td style="padding: 5px; text-align: center;">1</td>';
-                $html .= '<td style="padding: 5px; text-align: right;">' . Number::currency($illustration->price, 'EUR', 'fr') . '</td>';
+                $html .= '<td style="padding: 5px; text-align: right;">' . Number::currency($illustration->price->euros(), 'EUR', 'fr') . '</td>';
                 $html .= '</tr>';
             }
         }
         
-        $totalFees = $this->order->shipmentFees + $this->order->stripeFees;
+        $totalFees = $this->order->shipmentFees->euros() + $this->order->stripeFees->euros();
         if ($totalFees > 0) {
             $html .= '<tr>';
             $html .= '<td colspan="2" style="padding: 5px; border-top: 1px solid #ddd;">Frais de port et paiement</td>';
@@ -100,7 +100,7 @@ class PaymentConfirmationNotification extends Notification implements ShouldQueu
         
         $html .= '<tr style="font-weight: bold; border-top: 2px solid #333;">';
         $html .= '<td colspan="2" style="padding: 10px 5px;">Total payé</td>';
-        $html .= '<td style="padding: 10px 5px; text-align: right;">' . Number::currency($this->order->total, 'EUR', 'fr') . '</td>';
+        $html .= '<td style="padding: 10px 5px; text-align: right;">' . Number::currency($this->order->total->euros(), 'EUR', 'fr') . '</td>';
         $html .= '</tr>';
         
         $html .= '</table>';

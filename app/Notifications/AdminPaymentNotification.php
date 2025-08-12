@@ -42,8 +42,8 @@ class AdminPaymentNotification extends Notification implements ShouldQueue
             ->lines([
                 'Une nouvelle commande a été payée et est maintenant prête à être préparée.',
                 'Référence de la commande : ' . $this->order->reference,
-                'Montant payé : ' . Number::currency($this->order->total, 'EUR', 'fr'),
-                'Date du paiement : ' . $this->order->paid_at?->format('d/m/Y à H:i'),
+                'Montant payé : ' . $this->order->total->formatted(),
+                'Date du paiement : ' . $this->order->paid_at,
             ])
             ->action('Voir la commande', url('/administration/commandes/' . $this->order->reference))
             ->lines([

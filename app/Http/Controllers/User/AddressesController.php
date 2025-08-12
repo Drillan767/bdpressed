@@ -41,6 +41,8 @@ class AddressesController extends Controller
     {
         $address = new Address();
         $address->fill($request->all());
+        // TODO: Fix later.
+        $address->street2 = '';
         $address->user_id = $request->user()->id;
         $address->save();
     }
@@ -56,7 +58,7 @@ class AddressesController extends Controller
             'zipCode',
             'country',
         ];
-        
+
         foreach ($fields as $field) {
             $address->{$field} = $request->get($field) ?? '';
         }

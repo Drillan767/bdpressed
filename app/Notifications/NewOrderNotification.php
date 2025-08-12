@@ -39,7 +39,7 @@ class NewOrderNotification extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         $total = new NumberFormatter('fr_FR', NumberFormatter::CURRENCY);
-        $totalPrice = $this->order->total + $this->order->total * 0.015 + 0.25;
+        $totalPrice = $this->order->total->euros() + $this->order->total->euros() * 0.015 + 0.25;
         $formattedPrice = $total->formatCurrency($totalPrice, 'EUR');
 
         return (new MailMessage)
