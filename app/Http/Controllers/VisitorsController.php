@@ -38,4 +38,9 @@ class VisitorsController extends Controller
             'description_text' => $settings->contact_text,
         ]);
     }
+
+    public function paymentSuccess()
+    {
+        return Inertia::render('User/Payment/Success');
+    }
 }

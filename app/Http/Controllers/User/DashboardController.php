@@ -74,9 +74,4 @@ class DashboardController extends Controller
 
         return Inertia::render('User/Order/Show', compact('order'));
     }
-
-    public function paymentSuccess()
-    {
-        return Inertia::render('User/Payment/Success');
-    }
 }
