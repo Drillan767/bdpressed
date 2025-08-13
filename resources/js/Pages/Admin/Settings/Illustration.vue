@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { Money } from '@/types'
 import useToast from '@/Composables/toast'
 import AdminLayout from '@/Layouts/AdminLayout.vue'
 import SettingsLayout from '@/Layouts/SettingsLayout.vue'
@@ -13,7 +14,7 @@ interface Setting {
     name: string
     category: string
     key: string
-    price: string
+    price: Money
     stripe_product_id: string | null
     stripe_price_id: string | null
 }
@@ -37,7 +38,7 @@ const { defineField, handleSubmit } = useForm({
     initialValues: Object.fromEntries(
         props.settings.map(setting => [
             setting.key,
-            setting.price,
+            setting.price.euros,
         ]),
     ),
     validationSchema: Object.fromEntries(
