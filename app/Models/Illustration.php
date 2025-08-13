@@ -84,4 +84,9 @@ class Illustration extends Model
             IllustrationStatus::PAYMENT_PENDING,
         ]);
     }
+
+    public function getAvailableStatuses(): array
+    {
+        return $this->getStateMachine()->getAvailableTransitions($this->status);
+    }
 }
