@@ -33,6 +33,7 @@ use App\StateMachines\OrderStateMachine;
 class Order extends Model
 {
     use HasStateMachine;
+
     public function guest(): BelongsTo
     {
         return $this->belongsTo(Guest::class);
@@ -97,5 +98,10 @@ class Order extends Model
     public function requiresRefundOnCancellation(): bool
     {
         return $this->getStateMachine()->requiresRefund($this->status, OrderStatus::CANCELLED);
+    }
+
+    public function getAvailableStatuses(): array
+    {
+        return $this->getStateMachine()->getAvailableTransitions($this->status);
     }
 }

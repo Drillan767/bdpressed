@@ -65,7 +65,9 @@ class OrderController extends Controller
 
         $order->illustrationsList = $illustrationService->getOrderDetail($order->illustrations);
 
-        return Inertia::render('Admin/Orders/Show', compact('order', 'totalWeight'));
+        $allowedStatuses = $order->getAvailableStatuses();
+
+        return Inertia::render('Admin/Orders/Show', compact('order', 'totalWeight', 'allowedStatuses'));
     }
 
     public function pendingOrders(): JsonResponse
