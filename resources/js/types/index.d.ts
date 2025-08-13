@@ -6,26 +6,6 @@ export interface Money {
     formatted: string
 }
 
-export enum OrderStatus {
-    NEW = 'NEW',
-    ILLUSTRATION_DEPOSIT_PENDING = 'ILLUSTRATION_DEPOSIT_PENDING',
-    ILLUSTRATION_DEPOSIT_PAID = 'ILLUSTRATION_DEPOSIT_PAID',
-    PENDING_CLIENT_REVIEW = 'PENDING_CLIENT_REVIEW',
-    IN_PROGRESS = 'IN_PROGRESS',
-    PAYMENT_PENDING = 'PAYMENT_PENDING',
-    PAID = 'PAID',
-    TO_SHIP = 'TO_SHIP',
-    SHIPPED = 'SHIPPED',
-    DONE = 'DONE',
-    CANCELLED = 'CANCELLED',
-}
-
-export enum IllustrationStatus {
-    PENDING = 'PENDING',
-    IN_PROGRESS = 'IN_PROGRESS',
-    DONE = 'DONE',
-}
-
 export interface User {
     id: number
     name: string

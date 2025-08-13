@@ -8,29 +8,14 @@ export default function useStatus() {
             color: '#4CAF50',
         },
         {
-            internal: OrderStatus.ILLUSTRATION_DEPOSIT_PENDING,
-            text: '💰 Accompte en attente',
-            color: '#00897B',
-        },
-        {
-            internal: OrderStatus.ILLUSTRATION_DEPOSIT_PAID,
-            text: '💶 Accompte payé',
-            color: '#00C853',
-        },
-        {
-            internal: OrderStatus.PENDING_CLIENT_REVIEW,
-            text: '👀 En attente de révision',
-            color: '#0288D1',
-        },
-        {
             internal: OrderStatus.IN_PROGRESS,
             text: '✍️ En cours',
             color: '#FF6F00',
         },
         {
-            internal: OrderStatus.PAYMENT_PENDING,
+            internal: OrderStatus.PENDING_PAYMENT,
             text: '💸 En attente de paiement',
-            color: '#7E57C2',
+            color: '#FFFF00',
         },
         {
             internal: OrderStatus.PAID,
@@ -41,6 +26,11 @@ export default function useStatus() {
             internal: OrderStatus.TO_SHIP,
             text: '🚚 À envoyer',
             color: '#2196F3',
+        },
+        {
+            internal: OrderStatus.SHIPPED,
+            text: '🛫 Envoyé',
+            color: '#0065ff',
         },
         {
             internal: OrderStatus.DONE,
@@ -61,12 +51,27 @@ export default function useStatus() {
             color: '#4CAF50',
         },
         {
+            internal: IllustrationStatus.DEPOSIT_PENDING,
+            text: '💰 Accompte en attente',
+            color: '#FDD835',
+        },
+        {
+            internal: IllustrationStatus.DEPOSIT_PAID,
+            text: '💶 Accompte payé',
+            color: '#00C853',
+        },
+        {
+            internal: IllustrationStatus.CLIENT_REVIEW,
+            text: '👀 En attente de révision',
+            color: '#0288D1',
+        },
+        {
             internal: IllustrationStatus.IN_PROGRESS,
             text: '✍️ En cours',
             color: '#FF6F00',
         },
         {
-            internal: IllustrationStatus.DONE,
+            internal: IllustrationStatus.COMPLETED,
             text: '✅ Terminé',
             color: '#4CAF50',
         },
@@ -76,6 +81,10 @@ export default function useStatus() {
         return orderStatus.find(item => item.internal === label)
     }
 
+    function listAvailableStatuses(states: OrderStatus[]) {
+        return orderStatus.filter(item => states.includes(item.internal))
+    }
+
     function getIllustrationStatus(label: IllustrationStatus) {
         return illustrationStatus.find(item => item.internal === label)
     }
@@ -83,6 +92,7 @@ export default function useStatus() {
     return {
         orderStatus,
         getOrderStatus,
+        listAvailableStatuses,
         illustrationStatus,
         getIllustrationStatus,
     }
