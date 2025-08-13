@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Enums\OrderStatus;
 use App\Casts\MoneyCast;
+use App\Traits\HasStateMachine;
+use App\StateMachines\OrderStateMachine;
 
 /**
  * @property int $id
@@ -30,6 +32,7 @@ use App\Casts\MoneyCast;
  */
 class Order extends Model
 {
+    use HasStateMachine;
     public function guest(): BelongsTo
     {
         return $this->belongsTo(Guest::class);
@@ -70,4 +73,29 @@ class Order extends Model
         'updated_at' => 'datetime:d/m/Y H:i',
         'paid_at' => 'datetime:d/m/Y H:i',
     ];
+
+    protected function getStateMachine(): OrderStateMachine
+    {
+        return new OrderStateMachine();
+    }
+
+    protected function getCurrentState(): OrderStatus
+    {
+        return $this->status;
+    }
+
+    protected function setCurrentState($state): void
+    {
+        $this->status = is_object($state) ? $state : OrderStatus::from($state);
+    }
+
+    public function canBeCancelled(): bool
+    {
+        return $this->canTransitionTo(OrderStatus::CANCELLED);
+    }
+
+    public function requiresRefundOnCancellation(): bool
+    {
+        return $this->getStateMachine()->requiresRefund($this->status, OrderStatus::CANCELLED);
+    }
 }
