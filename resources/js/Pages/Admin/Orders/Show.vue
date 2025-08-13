@@ -1,17 +1,19 @@
 <script setup lang="ts">
 import type { OrderDetail } from '@/types'
+import type { OrderStatus } from '@/types/enums'
 import useNumbers from '@/Composables/numbers'
 import useStatus from '@/Composables/status'
 import useStrings from '@/Composables/strings'
 import AdminLayout from '@/Layouts/AdminLayout.vue'
 import { router } from '@inertiajs/vue3'
 import { useHead } from '@vueuse/head'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { route } from 'ziggy-js'
 
 interface Props {
     order: OrderDetail
     totalWeight: number
+    allowedStatuses: OrderStatus[]
 }
 
 defineOptions({ layout: AdminLayout })
@@ -22,8 +24,14 @@ useHead({
     title: () => `Commande ${props.order.reference}`,
 })
 
+const { formatPrice } = useNumbers()
+const { getOrderStatus, getIllustrationStatus, listAvailableStatuses } = useStatus()
+const { toParagraphs } = useStrings()
+
 const loading = ref(false)
-const status = ref(props.order.status)
+const status = ref<OrderStatus>()
+
+const statusList = computed(() => listAvailableStatuses(props.allowedStatuses))
 
 async function updateStatus() {
     loading.value = true
@@ -34,10 +42,6 @@ async function updateStatus() {
 
     loading.value = false
 }
-
-const { formatPrice } = useNumbers()
-const { orderStatus, getOrderStatus, getIllustrationStatus } = useStatus()
-const { toParagraphs } = useStrings()
 </script>
 
 <template>
@@ -77,18 +81,20 @@ const { toParagraphs } = useStrings()
                             <template #text>
                                 <VSelect
                                     v-model="status"
-                                    :items="orderStatus"
+                                    :items="statusList"
                                     item-title="text"
                                     item-value="internal"
                                     variant="outlined"
                                     density="compact"
                                     hide-details
                                     label="Changer le statut"
+                                    clearable
                                 />
                             </template>
                             <template #actions>
                                 <VSpacer />
                                 <VBtn
+                                    :disabled="!status"
                                     color="primary"
                                     variant="flat"
                                     @click="updateStatus"
