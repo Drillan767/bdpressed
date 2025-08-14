@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import type { Money, OrderStatus } from '@/types'
+import type { Money } from '@/types'
+import type { OrderStatus } from '@/types/enums'
 import useStatus from '@/Composables/status'
 import UserLayout from '@/Layouts/UserLayout.vue'
 import { useHead } from '@vueuse/head'
