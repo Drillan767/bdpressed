@@ -19,7 +19,7 @@ return new class extends Migration
         Schema::table('illustrations', function (Blueprint $table) {
             $table->enum('status', [
                 'PENDING',
-                'DEPOSIT_PENDING', 
+                'DEPOSIT_PENDING',
                 'DEPOSIT_PAID',
                 'IN_PROGRESS',
                 'CLIENT_REVIEW',
