@@ -31,7 +31,7 @@ PENDING_PAYMENT
 └── PAID (webhook handles payment)
 
 IN_PROGRESS
-└── PAID (when all work completed)
+└── PENDING_PAYMENT (when all work completed)
 
 PAID
 ├── TO_SHIP
