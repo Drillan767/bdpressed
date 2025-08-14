@@ -32,6 +32,14 @@ const loading = ref(false)
 const status = ref<OrderStatus>()
 
 const statusList = computed(() => listAvailableStatuses(props.allowedStatuses))
+const subtTotal = computed(() => {
+    return props.order.details.reduce<number>((acc, curr) => {
+        return acc + (curr.product.price.euros * curr.quantity)
+    }, 0)
+})
+
+// Add warning for when the order is canceled
+// See: https://github.com/Drillan767/bdpressed/issues/82
 
 async function updateStatus() {
     loading.value = true
@@ -40,6 +48,7 @@ async function updateStatus() {
         status: status.value,
     })
 
+    status.value = undefined
     loading.value = false
 }
 </script>
@@ -176,7 +185,7 @@ async function updateStatus() {
                                 <VList>
                                     <VListItem title="Sous-total">
                                         <template #append>
-                                            {{ order.total.formatted }}
+                                            {{ formatPrice(subtTotal) }}
                                         </template>
                                     </VListItem>
                                     <VListItem title="Frais de port + paiement">
