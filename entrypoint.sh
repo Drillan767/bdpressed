@@ -11,7 +11,7 @@ mkdir -p /var/log/supervisor
 chown -R www-data:www-data /var/www/html/storage
 chown -R www-data:www-data /var/www/html/bootstrap/cache
 
-# Run Laravel optimizations
+# Run Laravel optimizations (only once)
 echo "Running Laravel optimizations..."
 php artisan config:cache
 php artisan route:cache
@@ -28,7 +28,13 @@ php artisan queue:restart
 touch /var/www/html/storage/logs/worker.log
 chown www-data:www-data /var/www/html/storage/logs/worker.log
 
-echo "Starting Supervisor..."
+echo "Starting services..."
 
-# Start supervisor (this will start all configured programs)
-exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
+# Start php-fpm in background
+php-fpm --daemonize
+
+# Start queue workers in background
+php artisan queue:work --daemon --sleep=3 --tries=3 &
+
+# Start Caddy (this keeps the container alive)
+exec caddy run --config /etc/caddy/Caddyfile
