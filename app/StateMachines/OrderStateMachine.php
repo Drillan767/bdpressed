@@ -20,7 +20,7 @@ class OrderStateMachine
                 OrderStatus::PAID->value,
             ],
             OrderStatus::IN_PROGRESS->value => [
-                OrderStatus::PAID->value,
+                OrderStatus::PENDING_PAYMENT->value,
                 OrderStatus::CANCELLED->value,
             ],
             OrderStatus::PAID->value => [
@@ -52,7 +52,7 @@ class OrderStateMachine
     {
         $fromValue = is_object($fromState) ? $fromState->value : $fromState;
         $availableValues = $this->transitions[$fromValue] ?? [];
-        
+
         return array_map(
             fn($value) => OrderStatus::from($value),
             $availableValues
@@ -64,7 +64,7 @@ class OrderStateMachine
         $toValue = is_object($toState) ? $toState->value : $toState;
         $fromValue = is_object($fromState) ? $fromState->value : $fromState;
 
-        return $toValue === OrderStatus::CANCELLED->value 
+        return $toValue === OrderStatus::CANCELLED->value
             && in_array($fromValue, [
                 OrderStatus::PAID->value,
                 OrderStatus::TO_SHIP->value,
@@ -74,7 +74,7 @@ class OrderStateMachine
     public function requiresWarning($fromState, $toState): bool
     {
         $toValue = is_object($toState) ? $toState->value : $toState;
-        
+
         return $toValue === OrderStatus::CANCELLED->value;
     }
 }

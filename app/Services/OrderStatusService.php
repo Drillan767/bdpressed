@@ -16,7 +16,7 @@ class OrderStatusService
     {
         // Handle specific status changes
         switch ($newStatus) {
-            case OrderStatus::PAYMENT_PENDING:
+            case OrderStatus::PENDING_PAYMENT:
                 $this->handlePaymentPending($order, $newStatus);
                 break;
 

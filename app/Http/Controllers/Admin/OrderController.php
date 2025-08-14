@@ -86,15 +86,21 @@ class OrderController extends Controller
             'status' => 'required|string'
         ]);
 
-        $order = Order::with('details.product', 'illustrations', 'user', 'guest')
-            ->where('reference', $reference)
-            ->firstOrFail();
+        try {
+            $order = Order::with('details.product', 'illustrations', 'user', 'guest')
+                ->where('reference', $reference)
+                ->firstOrFail();
 
-        $newStatus = OrderStatus::from($request->status);
+            $newStatus = OrderStatus::from($request->get('status'));
 
-        // Notify the status service of the change
-        $orderStatusService->changed($order, $newStatus);
+            $order->transitionTo($newStatus);
 
-        return back()->with('success', 'Order status updated successfully');
+            // Notify the status service of the change
+            $orderStatusService->changed($order, $newStatus);
+
+            return back()->with('success', 'Order status updated successfully');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Failed to update order status: ' . $e->getMessage());
+        }
     }
 }
