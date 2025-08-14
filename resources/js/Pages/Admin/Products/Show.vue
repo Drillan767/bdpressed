@@ -55,7 +55,7 @@ useHead({
             >
                 <h1>
                     <VIcon icon="mdi-package-variant" />
-                    {{ product.name }} ({{ product.price }} €)
+                    {{ product.name }} ({{ product.price.formatted }})
                 </h1>
             </VCol>
             <VCol
