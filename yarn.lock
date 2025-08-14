@@ -405,21 +405,21 @@
   resolved "https://registry.yarnpkg.com/@humanwhocodes/retry/-/retry-0.4.3.tgz#c2b9d2e374ee62c586d3adbea87199b1d7a7a6ba"
   integrity sha512-bV0Tgo9K4hfPCek+aMAn81RppFKv2ySDQeMoSZuvTASywNTnVJCArCZE2FWqpvIatKu7VMRLWlR1EazvVhDyhQ==
 
-"@inertiajs/core@2.0.17":
-  version "2.0.17"
-  resolved "https://registry.yarnpkg.com/@inertiajs/core/-/core-2.0.17.tgz#25bc3c5ae19257decf2f9290583d997f540508f0"
-  integrity sha512-tvYoqiouQSJrP7i7zVq61yyuEjlL96UU4nkkOWtOajXZlubGN4XrgRpnygpDk1KBO8V2yBab3oUZm+aZImwTHg==
+"@inertiajs/core@2.1.1":
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/@inertiajs/core/-/core-2.1.1.tgz#f6a9612c41664aa2168b51c8f2dbffbc88486266"
+  integrity sha512-FcX5dDdrtt55sNAJpfqqwfpLLyTO3+au0KxMTCtRZ/ZzjUrWkPe1V9ysI41NKNRtTfyRT6S4qWKkct9pOBjmaQ==
   dependencies:
     axios "^1.8.2"
     es-toolkit "^1.34.1"
     qs "^6.9.0"
 
 "@inertiajs/vue3@^2.0.0":
-  version "2.0.17"
-  resolved "https://registry.yarnpkg.com/@inertiajs/vue3/-/vue3-2.0.17.tgz#0f503f2d09d171b388ff36cecd88a324b89e3112"
-  integrity sha512-Al0IMHQSj5aTQBLUAkljFEMCw4YRwSiOSKzN8LAbvJpKwvJFgc/wSj3wVVpr/AO9y9mz1w2mtvjnDoOzsntPLw==
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/@inertiajs/vue3/-/vue3-2.1.1.tgz#8c791bcc78d46c79dfbff5040353552391837df2"
+  integrity sha512-LxO3+MMGsgM7bvQJSq7wnVTT5EbCOCt5hto/xMO+BOk4kv9m52UcVQYY6QrVq2zsJBSrdsHzKCd+xEoIuN7pyA==
   dependencies:
-    "@inertiajs/core" "2.0.17"
+    "@inertiajs/core" "2.1.1"
     es-toolkit "^1.33.0"
 
 "@jridgewell/sourcemap-codec@^1.5.0":
@@ -1611,9 +1611,9 @@ es-set-tostringtag@^2.1.0:
     hasown "^2.0.2"
 
 es-toolkit@^1.33.0, es-toolkit@^1.34.1:
-  version "1.39.8"
-  resolved "https://registry.yarnpkg.com/es-toolkit/-/es-toolkit-1.39.8.tgz#314aca3988fc1f2c3faa95b49c3029f44c690f50"
-  integrity sha512-A8QO9TfF+rltS8BXpdu8OS+rpGgEdnRhqIVxO/ZmNvnXBYgOdSsxukT55ELyP94gZIntWJ+Li9QRrT2u1Kitpg==
+  version "1.39.9"
+  resolved "https://registry.yarnpkg.com/es-toolkit/-/es-toolkit-1.39.9.tgz#6c75f868eb7b93da823de69fabf9bcd8384b8a9a"
+  integrity sha512-9OtbkZmTA2Qc9groyA1PUNeb6knVTkvB2RSdr/LcJXDL8IdEakaxwXLHXa7VX/Wj0GmdMJPR3WhnPGhiP3E+qg==
 
 esbuild@^0.25.0:
   version "0.25.4"
@@ -3124,9 +3124,9 @@ picomatch@^4.0.2:
   integrity sha512-M7BAV6Rlcy5u+m6oPhAPFgJTzAioX/6B0DxyvDlo9l8+T3nLKbrczg2WLUyzd45L8RqfUMyGPzekbMvX2Ldkwg==
 
 pinia-plugin-persistedstate@^4.2.0:
-  version "4.4.1"
-  resolved "https://registry.yarnpkg.com/pinia-plugin-persistedstate/-/pinia-plugin-persistedstate-4.4.1.tgz#2cc60432d8b5b56c49cdd1c604a709f2e2864d60"
-  integrity sha512-lmuMPpXla2zJKjxEq34e1E9P9jxkWEhcVwwioCCE0izG45kkTOvQfCzvwhW3i38cvnaWC7T1eRdkd15Re59ldw==
+  version "4.5.0"
+  resolved "https://registry.yarnpkg.com/pinia-plugin-persistedstate/-/pinia-plugin-persistedstate-4.5.0.tgz#18563d635720de8459a94c051da4befa0c4b18b9"
+  integrity sha512-QTkP1xJVyCdr2I2p3AKUZM84/e+IS+HktRxKGAIuDzkyaKKV48mQcYkJFVVDuvTxlI5j6X3oZObpqoVB8JnWpw==
   dependencies:
     deep-pick-omit "^1.2.1"
     defu "^6.1.4"
@@ -3818,9 +3818,9 @@ vuedraggable@^4.1.0:
     sortablejs "1.14.0"
 
 vuetify@^3.7.6:
-  version "3.9.4"
-  resolved "https://registry.yarnpkg.com/vuetify/-/vuetify-3.9.4.tgz#25c2234c761cba65ac44f49836668c2ba6dc931c"
-  integrity sha512-OUdXVoThHUydJHyFsUHGxKxZ333hXKquRNn2ycqouO08ehi3005QE9tLPkwcBii4sAYZg7mADMRp7JbcNiNrTQ==
+  version "3.9.5"
+  resolved "https://registry.yarnpkg.com/vuetify/-/vuetify-3.9.5.tgz#7f5c79d3789051606f99f2e330ea3a2339ad7bb7"
+  integrity sha512-rJBSo1FeKcJJaqTfVHbOdpFXCmgeEIGzrh6HBEMGjSflan6voPIMSiK2dTCUU4t9JeghwvJtoAE5eBuqYIkFVA==
 
 which@^2.0.1:
   version "2.0.2"
