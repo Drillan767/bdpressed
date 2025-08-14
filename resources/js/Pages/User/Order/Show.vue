@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import type { Address, IllustrationStatus, Money, OrderStatus } from '@/types'
+import type { Address, Money } from '@/types'
+import type { IllustrationStatus, OrderStatus } from '@/types/enums'
 import useNumbers from '@/Composables/numbers'
 import useStatus from '@/Composables/status'
 import useStrings from '@/Composables/strings'
