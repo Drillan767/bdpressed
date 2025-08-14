@@ -11,12 +11,6 @@ set -e
 # chown -R www-data:www-data /var/www/html/storage
 # chown -R www-data:www-data /var/www/html/bootstrap/cache
 
-# Run Laravel optimizations (only once)
-# echo "Running Laravel optimizations..."
-# php artisan config:cache
-# php artisan route:cache
-# php artisan view:cache
-
 # Run database migrations
 # php artisan migrate --force
 
@@ -41,3 +35,6 @@ php-fpm -D
 
 # Start Caddy in the foreground
 exec caddy run --config /etc/caddy/Caddyfile
+
+echo "Starting Supervisor..."
+exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
