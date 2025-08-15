@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Validation\Rule;
 use App\Casts\MoneyCast;
+use App\Enums\PaymentStatus;
+use App\Enums\PaymentType;
 
 class OrderPayment extends Model
 {
@@ -29,6 +31,8 @@ class OrderPayment extends Model
     ];
 
     protected $casts = [
+        'type' => PaymentType::class,
+        'status' => PaymentStatus::class,
         'amount' => MoneyCast::class,
         'refunded_amount' => MoneyCast::class,
         'paid_at' => 'datetime',
@@ -51,14 +55,14 @@ class OrderPayment extends Model
     {
         return [
             'illustration_id' => Rule::requiredIf(function () {
-                return in_array($this->type, ['illustration_deposit', 'illustration_final']);
+                return in_array($this->type, [PaymentType::ILLUSTRATION_DEPOSIT, PaymentType::ILLUSTRATION_FINAL]);
             }),
         ];
     }
 
     public function isForIllustration(): bool
     {
-        return in_array($this->type, ['illustration_deposit', 'illustration_final']);
+        return in_array($this->type, [PaymentType::ILLUSTRATION_DEPOSIT, PaymentType::ILLUSTRATION_FINAL]);
     }
 
     public function isFullyRefunded(): bool

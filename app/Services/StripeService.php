@@ -2,12 +2,13 @@
 
 namespace App\Services;
 
-use App\Models\Product;
 use App\Models\IllustrationPrice;
 use App\Models\Order;
+use App\Models\OrderPayment;
+use App\Models\Product;
 use Illuminate\Support\Facades\Log;
-use Stripe\StripeClient;
 use Illuminate\Support\Facades\URL;
+use Stripe\StripeClient;
 
 class StripeService
 {
@@ -380,6 +381,7 @@ class StripeService
 
     /**
      * Create a Stripe payment link for an order
+     * Note: This method should be called after OrderPayment record is created
      */
     public function createPaymentLink(Order $order): ?string
     {
@@ -405,11 +407,11 @@ class StripeService
                 }
             }
 
-            $totalFees = $order->shipmentFees->cents() + $order->stripeFees->cents();
+            $totalFees = $order->shipmentFees->cents();
             if ($totalFees > 0) {
                 // Create a one-time product for shipping and fees
                 $shippingRate = $this->client->shippingRates->create([
-                    'display_name' => 'Frais de port et de paiement',
+                    'display_name' => 'Frais de port',
                     'type' => 'fixed_amount',
                     'fixed_amount' => [
                         'amount' => $totalFees,
@@ -476,6 +478,29 @@ class StripeService
                 'payment_intent_id' => $paymentIntentId
             ]);
             return null;
+        }
+    }
+
+    /**
+     * Update OrderPayment with payment intent ID from the payment link
+     */
+    public function updatePaymentWithIntent(OrderPayment $payment, string $paymentLinkUrl): void
+    {
+        try {
+            // Extract payment link ID from URL
+            $paymentLinkId = basename(parse_url($paymentLinkUrl, PHP_URL_PATH));
+
+            // Get the payment link to find associated payment intent
+            $paymentLink = $this->client->paymentLinks->retrieve($paymentLinkId);
+
+            // Note: Payment intent is created when customer starts checkout
+            // We'll update this in the webhook when payment_intent.succeeded fires
+
+        } catch (\Exception $e) {
+            Log::error('Error updating payment with intent: ' . $e->getMessage(), [
+                'payment_id' => $payment->id,
+                'payment_link_url' => $paymentLinkUrl
+            ]);
         }
     }
 }
