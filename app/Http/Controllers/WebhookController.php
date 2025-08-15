@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Order;
+use App\Models\OrderPayment;
 use App\Enums\OrderStatus;
+use App\Enums\PaymentStatus;
 use App\Services\OrderStatusService;
 use App\Services\StripeService;
 use Illuminate\Http\Request;
@@ -73,18 +75,34 @@ class WebhookController extends Controller
             return;
         }
 
-        // Store payment information
-        $order->stripe_payment_intent_id = $paymentIntent['id'];
-        $order->paid_at = now();
-        $order->save();
+        // Find the payment record and update it
+        $payment = OrderPayment::where('stripe_payment_intent_id', $paymentIntent['id'])
+                               ->where('order_id', $order->id)
+                               ->first();
+
+        if (!$payment) {
+            Log::error('OrderPayment not found for payment intent', [
+                'order_id' => $order->id,
+                'payment_intent_id' => $paymentIntent['id']
+            ]);
+            return;
+        }
+
+        // Update payment status (simple, no state machine)
+        $payment->update([
+            'status' => PaymentStatus::PAID,
+            'paid_at' => now(),
+            'stripe_metadata' => $paymentIntent
+        ]);
 
         Log::info('Stripe payment intent completed', [
             'order_id' => $order->id,
             'order_reference' => $order->reference,
-            'payment_intent_id' => $paymentIntent['id']
+            'payment_intent_id' => $paymentIntent['id'],
+            'payment_type' => $payment->type->value
         ]);
 
-        // Update order status to PAID
-        $orderStatusService->changed($order, OrderStatus::PAID);
+        // Use state machine for Order status transition
+        $order->transitionTo(OrderStatus::PAID);
     }
 }

@@ -3,6 +3,9 @@
 namespace App\Services;
 
 use App\Enums\OrderStatus;
+use App\Enums\PaymentStatus;
+use App\Enums\PaymentType;
+use App\Models\OrderPayment;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
 use App\Notifications\OrderPaymentLinkNotification;
@@ -35,27 +38,43 @@ class OrderStatusService
 
     private function handlePaymentPending(Order $order, OrderStatus $newStatus): void
     {
-        if (!$order->stripe_payment_link) {
+        // Check if we already have a pending payment for this order
+        $existingPayment = $order->payments()
+            ->where('type', PaymentType::ORDER_FULL)
+            ->where('status', PaymentStatus::PENDING)
+            ->first();
+
+        if (!$existingPayment) {
+            // Create OrderPayment record
+            $payment = $order->payments()->create([
+                'type' => PaymentType::ORDER_FULL,
+                'status' => PaymentStatus::PENDING,
+                'amount' => $order->total,
+                'description' => 'Paiement pour la commande #' . $order->reference,
+            ]);
+
+            // Create Stripe payment link
             $service = new StripeService();
             $paymentLink = $service->createPaymentLink($order);
 
             if ($paymentLink) {
-                $order->stripe_payment_link = $paymentLink;
+                $payment->update(['stripe_payment_link' => $paymentLink]);
             } else {
                 Log::error('Failed to create payment link for order ' . $order->id);
                 return;
             }
+        } else {
+            $payment = $existingPayment;
         }
 
         $order->status = $newStatus;
         $order->save();
 
         if ($order->guest()->exists()) {
-            // Notification::sendNow(collect($order->guest->email), new OrderPaymentLinkNotification($order->stripe_payment_link));
             $order
                 ->guest
                 ->notify(
-                    new OrderPaymentLinkNotification($order->stripe_payment_link)
+                    new OrderPaymentLinkNotification($payment->stripe_payment_link)
                 );
         }
 
@@ -63,7 +82,7 @@ class OrderStatusService
             $order
                 ->user
                 ->notify(
-                    new OrderPaymentLinkNotification($order->stripe_payment_link)
+                    new OrderPaymentLinkNotification($payment->stripe_payment_link)
                 );
         }
     }
