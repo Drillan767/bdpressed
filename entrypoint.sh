@@ -31,10 +31,5 @@ set -e
 # php artisan queue:work --daemon --sleep=3 --tries=3 &
 
 # Start Caddy (this keeps the container alive)
-php-fpm -D
 
-# Start Caddy in the foreground
-exec caddy run --config /etc/caddy/Caddyfile
-
-echo "Starting Supervisor..."
 exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
