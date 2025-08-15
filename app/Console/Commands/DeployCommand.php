@@ -28,7 +28,7 @@ class DeployCommand extends Command
         $this->info('Running post deploy commands');
         $this->call('config:cache');
         $this->call('route:cache');
-        $this->call('php queue:clear', ['--force' => true]);
+        $this->call('queue:clear', ['--force' => true]);
         $this->call('queue:restart');
         $this->call('migrate', ['--force' => true, '--seed' => true]);
         $this->call('storage:link');
