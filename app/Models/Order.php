@@ -15,7 +15,6 @@ use App\StateMachines\OrderStateMachine;
  * @property int $id
  * @property int $total
  * @property int $shipmentFees
- * @property int $stripeFees
  * @property string $reference
  * @property string $additionalInfos
  * @property int $user_id
@@ -24,9 +23,6 @@ use App\StateMachines\OrderStateMachine;
  * @property int $billing_address_id
  * @property bool $useSameAddress
  * @property OrderStatus $status
- * @property string $stripe_payment_link
- * @property string $stripe_payment_intent_id
- * @property string $paid_at
  * @property string $created_at
  * @property string $updated_at
  */
@@ -64,15 +60,18 @@ class Order extends Model
         return $this->hasMany(Illustration::class);
     }
 
+    public function payments(): HasMany
+    {
+        return $this->hasMany(OrderPayment::class);
+    }
+
     protected $casts = [
         'status' => OrderStatus::class,
         'useSameAddress' => 'boolean',
         'total' => MoneyCast::class,
         'shipmentFees' => MoneyCast::class,
-        'stripeFees' => MoneyCast::class,
         'created_at' => 'datetime:d/m/Y H:i',
         'updated_at' => 'datetime:d/m/Y H:i',
-        'paid_at' => 'datetime:d/m/Y H:i',
     ];
 
     protected function getStateMachine(): OrderStateMachine
