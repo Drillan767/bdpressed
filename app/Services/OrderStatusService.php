@@ -46,12 +46,12 @@ class OrderStatusService
 
         if (!$existingPayment) {
             // Calculate final amount (order total + shipping)
-            $finalAmount = $order->total + $order->shipmentFees;
-            
+            $finalAmount = $order->total->cents() + $order->shipmentFees->cents();
+
             // Calculate Stripe fee
             $service = new StripeService();
-            $stripeFee = $service->calculateStripeFee($finalAmount->cents());
-            
+            $stripeFee = $service->calculateStripeFee($finalAmount);
+
             // Create OrderPayment record
             $payment = $order->payments()->create([
                 'type' => PaymentType::ORDER_FULL,
