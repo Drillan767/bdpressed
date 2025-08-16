@@ -45,11 +45,19 @@ class OrderStatusService
             ->first();
 
         if (!$existingPayment) {
+            // Calculate final amount (order total + shipping)
+            $finalAmount = $order->total + $order->shipmentFees;
+            
+            // Calculate Stripe fee
+            $service = new StripeService();
+            $stripeFee = $service->calculateStripeFee($finalAmount->cents());
+            
             // Create OrderPayment record
             $payment = $order->payments()->create([
                 'type' => PaymentType::ORDER_FULL,
                 'status' => PaymentStatus::PENDING,
-                'amount' => $order->total,
+                'amount' => $finalAmount,
+                'stripe_fee' => $stripeFee,
                 'description' => 'Paiement pour la commande #' . $order->reference,
             ]);
 

@@ -7,8 +7,8 @@ use App\Models\Illustration;
 use App\Models\Order;
 use App\Models\OrderDetail;
 use App\Models\Product;
+use App\Services\IllustrationService;
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\DB;
 use App\Enums\OrderStatus;
 use Illuminate\Support\Collection;
 use App\Enums\IllustrationStatus;
@@ -26,11 +26,11 @@ class HandleOrderAction
             'same' => $useSame,
         ] = $addressesInfos;
 
-        [$totalPrice, $fees, $shipFee] = $this->definePrice($products, $request->get('products'));
+        $illustrationService = new IllustrationService();
+        [$totalPrice, $shipFee] = $this->definePrice($products, $request->get('products'), $illustrationService);
 
         $order = new Order();
         $order->total = $totalPrice;
-        $order->stripeFees = $fees;
         $order->shipmentFees = $shipFee;
         $order->reference = $this->defineReference();
         $order->additionalInfos = $request->get('user')['additionalInfos'];
@@ -52,14 +52,14 @@ class HandleOrderAction
             if ($product['type'] === 'item') {
                 $this->handleItemOrder($product, $products, $order);
             } else {
-                $this->handleIllustrationOrder($product['illustrationDetails'], $order);
+                $this->handleIllustrationOrder($product['illustrationDetails'], $order, $illustrationService);
             }
         }
 
         return $order;
     }
 
-    private function definePrice(Collection $products, array $referenceProducts): array
+    private function definePrice(Collection $products, array $referenceProducts, IllustrationService $illustrationService): array
     {
         $totalPrice = 0;
         $totalWeight = 0;
@@ -68,7 +68,8 @@ class HandleOrderAction
 
             if ($refProduct['type'] === 'illustration') {
                 $totalWeight += 15;
-                $totalPrice += $refProduct['illustrationDetails']['price'];
+                // Calculate price server-side
+                $totalPrice += $illustrationService->calculateIllustrationPrice($refProduct['illustrationDetails']);
 
             } else {
                 $product = $products->firstWhere('id', $refProduct['id']);
@@ -80,15 +81,11 @@ class HandleOrderAction
             }
         }
 
-        // Convert fees to cents (0.015 * totalPrice + 0.25 euros = 0.25 * 100 cents)
-        $fees = (int) round(0.015 * $totalPrice + 25); // 25 cents = €0.25
-
         // Convert shipping to cents
         $shipFee = $totalWeight > 400 ? 700 : 400; // 700 cents = €7, 400 cents = €4
 
         return [
-            $totalPrice + $fees + $shipFee,
-            $fees,
+            $totalPrice, // Only products + illustrations, no fees
             $shipFee,
         ];
     }
@@ -118,24 +115,23 @@ class HandleOrderAction
         $orderDetail->price = $products->firstWhere('id', $product['id'])->price->cents() * $product['quantity'];
 
         $orderDetail->save();
-
-        DB::table('products')->decrement('stock', $product['quantity']);
     }
 
-    private function handleIllustrationOrder(array $details, $order): void
+    private function handleIllustrationOrder(array $details, $order, IllustrationService $illustrationService): void
     {
         $type = match($details['illustrationType']) {
             'bust' => 'bust',
             'fl' => 'full_length',
             'animal' => 'animal',
         };
+        
         $illustration = new Illustration();
         $illustration->type = $type;
         $illustration->nbHumans = $details['addedHuman'];
         $illustration->nbAnimals = $details['addedAnimal'];
         $illustration->pose = $details['pose'];
         $illustration->background = $details['background'];
-        $illustration->price = $details['price'];
+        $illustration->price = $illustrationService->calculateIllustrationPrice($details);
         $illustration->print = $details['print'];
         $illustration->addTracking = $details['addTracking'];
         $illustration->status = IllustrationStatus::PENDING;
