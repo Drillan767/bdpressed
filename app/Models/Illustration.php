@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use App\Models\Order;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Casts\MoneyCast;
@@ -30,6 +31,24 @@ use App\Enums\IllustrationStatus;
 class Illustration extends Model
 {
     use HasStateMachine;
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        // Log all status transitions automatically
+        static::afterTransition('*', '*', function($illustration, $from, $to, $context) {
+            $illustration->statusChanges()->create([
+                'from_status' => $from?->value,
+                'to_status' => $to->value,
+                'reason' => $context['reason'] ?? null,
+                'metadata' => $context['metadata'] ?? null,
+                'triggered_by' => $context['triggered_by'] ?? 'manual',
+                'user_id' => auth()->id(),
+            ]);
+        });
+    }
+
     protected $casts = [
         'created_at' => 'datetime:d/m/Y H:i',
         'updated_at' => 'datetime:d/m/Y H:i',
@@ -42,6 +61,11 @@ class Illustration extends Model
     public function order(): belongsTo
     {
         return $this->belongsTo(Order::class);
+    }
+
+    public function statusChanges(): HasMany
+    {
+        return $this->hasMany(IllustrationStatusChange::class);
     }
 
     protected function getStateMachine(): IllustrationStateMachine
