@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { Money } from '@/types'
 import type { OrderStatus } from '@/types/enums'
+import useNumbers from '@/Composables/numbers'
 import useStatus from '@/Composables/status'
 import UserLayout from '@/Layouts/UserLayout.vue'
 import { useHead } from '@vueuse/head'
@@ -31,8 +32,8 @@ interface DashboardOrder {
     total: Money
     details_count: number
     illustrations_count: number
+    final_amount: number
     shipmentFees: Money
-    stripeFees: Money
     created_at: string
     itemCount: number
     items: OrderItem[]
@@ -51,6 +52,7 @@ useHead({
 })
 
 const { getOrderStatus } = useStatus()
+const { formatPrice } = useNumbers()
 </script>
 
 <template>
@@ -94,7 +96,7 @@ const { getOrderStatus } = useStatus()
                     <template #append>
                         <div class="text-right">
                             <div class="text-h6 font-weight-bold">
-                                {{ order.total.formatted }}
+                                {{ formatPrice(order.final_amount / 100) }}
                             </div>
                         </div>
                     </template>

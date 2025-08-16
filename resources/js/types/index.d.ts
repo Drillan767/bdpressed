@@ -133,6 +133,7 @@ export interface OrderIndex {
     reference: string
     status: OrderStatus
     total: Money
+    final_amount: number
     guest: {
         id: number
         email: string
@@ -216,7 +217,6 @@ export interface OrderDetail {
     created_at: string
     updated_at: string
     useSameAddress: boolean
-    stripeFees: Money
     shipmentFees: Money
     details: Detail[]
     guest_id: number | null

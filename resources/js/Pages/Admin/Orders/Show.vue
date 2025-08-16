@@ -12,7 +12,7 @@ import { route } from 'ziggy-js'
 
 interface Props {
     order: OrderDetail
-    totalWeight: number
+    estimatedFees: number
     allowedStatuses: OrderStatus[]
 }
 
@@ -32,11 +32,6 @@ const loading = ref(false)
 const status = ref<OrderStatus>()
 
 const statusList = computed(() => listAvailableStatuses(props.allowedStatuses))
-const subtTotal = computed(() => {
-    return props.order.details.reduce<number>((acc, curr) => {
-        return acc + (curr.product.price.euros * curr.quantity)
-    }, 0)
-})
 
 // Add warning for when the order is canceled
 // See: https://github.com/Drillan767/bdpressed/issues/82
@@ -185,12 +180,12 @@ async function updateStatus() {
                                 <VList>
                                     <VListItem title="Sous-total">
                                         <template #append>
-                                            {{ formatPrice(subtTotal) }}
+                                            {{ order.total.formatted }}
                                         </template>
                                     </VListItem>
                                     <VListItem title="Frais de port + paiement">
                                         <template #append>
-                                            {{ formatPrice(order.shipmentFees.euros + order.stripeFees.euros) }}
+                                            {{ formatPrice(estimatedFees / 100) }}
                                         </template>
                                     </VListItem>
                                     <VListItem>
@@ -199,7 +194,7 @@ async function updateStatus() {
                                         </template>
                                         <template #append>
                                             <b class="text-primary">
-                                                {{ order.total.formatted }}
+                                                {{ formatPrice(order.total.euros + estimatedFees / 100) }}
                                             </b>
                                         </template>
                                     </VListItem>
