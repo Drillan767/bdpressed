@@ -35,7 +35,11 @@ class OrderController extends Controller
         return Inertia::render('Admin/Orders/Index', compact('orders'));
     }
 
-    public function show(string $reference, IllustrationService $illustrationService): Response
+    public function show(
+        string $reference,
+        IllustrationService $illustrationService,
+        StripeService $stripeService,
+    ): Response
     {
         $websiteSettings = app(WebsiteSettings::class);
         $order = Order::with([
@@ -65,9 +69,21 @@ class OrderController extends Controller
 
         $order->illustrationsList = $illustrationService->getOrderDetail($order->illustrations);
 
+        $subtotal = array_sum(array_map(function ($detail) {
+            return $detail['product']['price']->cents / 100 * $detail['quantity'] ;
+        }, $order->details->toArray()));
+
+        $estimatedFees = $stripeService->calculateStripeFee($order->total->cents());
+
         $allowedStatuses = $order->getAvailableStatuses();
 
-        return Inertia::render('Admin/Orders/Show', compact('order', 'totalWeight', 'allowedStatuses'));
+        return Inertia::render('Admin/Orders/Show', compact(
+            'order',
+            'totalWeight',
+            'allowedStatuses',
+            'estimatedFees',
+            'subtotal',
+        ));
     }
 
     public function pendingOrders(): JsonResponse

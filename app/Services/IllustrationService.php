@@ -30,7 +30,7 @@ class IllustrationService
 
         $result['price'] = [
             'name' => 'Prix',
-            'price' => Number::currency($illustration->price, 'EUR', locale: 'fr'),
+            'price' => $illustration->price->euros(),
         ];
 
         $result['pose'] = $this->getPose($illustration->pose);
@@ -175,6 +175,69 @@ class IllustrationService
 
     private function getPrice(string $key): float
     {
-        return IllustrationPrice::where('key', $key)->first()->price;
+        return IllustrationPrice::where('key', $key)->first()->price->euros();
+    }
+
+    public function calculateIllustrationPrice(array $details): int
+    {
+        $type = $details['illustrationType'];
+        $basePrice = 0;
+
+        // Base price
+        $basePrice += match($type) {
+            'bust' => $this->getPrice('bust_base'),
+            'fl' => $this->getPrice('fl_base'),
+            'animal' => $this->getPrice('animal_base'),
+            default => 0
+        };
+
+        // Additional humans/animals
+        if ($type === 'bust') {
+            $basePrice += $this->getPrice('bust_add_human') * intval($details['addedHuman'] ?? 0);
+            $basePrice += $this->getPrice('bust_add_animal') * intval($details['addedAnimal'] ?? 0);
+        } elseif ($type === 'fl') {
+            $basePrice += $this->getPrice('fl_add_human') * intval($details['addedHuman'] ?? 0);
+            $basePrice += $this->getPrice('fl_add_animal') * intval($details['addedAnimal'] ?? 0);
+        } elseif ($type === 'animal') {
+            $basePrice += $this->getPrice('animal_add_one') * intval($details['addedHuman'] ?? 0);
+            $basePrice += $this->getPrice('animal_toy') * intval($details['addedAnimal'] ?? 0);
+        }
+
+        // Pose options
+        if (isset($details['pose'])) {
+            $poseKey = match(strtoupper($details['pose'])) {
+                'SIMPLE' => 'option_pose_simple',
+                'COMPLEX' => 'option_pose_complex',
+                default => null
+            };
+            if ($poseKey) {
+                $basePrice += $this->getPrice($poseKey);
+            }
+        }
+
+        // Background options
+        if (isset($details['background'])) {
+            $bgKey = match(strtoupper($details['background'])) {
+                'GRADIENT' => 'option_bg_gradient',
+                'SIMPLE' => 'option_bg_simple',
+                'COMPLEX' => 'option_bg_complex',
+                default => null
+            };
+            if ($bgKey) {
+                $basePrice += $this->getPrice($bgKey);
+            }
+        }
+
+        // Additional options
+        if (!empty($details['addTracking'])) {
+            $basePrice += $this->getPrice('options_add_tracking');
+        }
+
+        if (!empty($details['print'])) {
+            $basePrice += $this->getPrice('options_print');
+        }
+
+        // Convert to cents (prices are stored as floats in euros)
+        return intval($basePrice * 100);
     }
 }

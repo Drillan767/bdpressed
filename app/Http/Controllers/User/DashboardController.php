@@ -51,7 +51,7 @@ class DashboardController extends Controller
                 'description' => $illustration->description ?: 'Illustration personnalisée',
                 'quantity' => 1,
                 'image' => '/assets/images/yell.png',
-                'totalPrice' => (float) $illustration->price,
+                'totalPrice' => (float) $illustration->price->euros(),
                 'status' => $illustration->status,
                 'details' => $illustrationService->getSingleIllustrationDetail($illustration),
             ]);
@@ -63,7 +63,6 @@ class DashboardController extends Controller
             'reference' => $rawOrder->reference,
             'status' => $rawOrder->status,
             'shipmentFees' => $rawOrder->shipmentFees,
-            'stripeFees' => $rawOrder->stripeFees,
             'created_at' => $rawOrder->created_at->format('d/m/Y à H:i'),
             'addionalInfos' => $rawOrder->additionalInfos,
             'itemCount' => $items->count(),

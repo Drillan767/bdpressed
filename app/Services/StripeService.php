@@ -482,6 +482,23 @@ class StripeService
     }
 
     /**
+     * Calculate Stripe processing fees for a given amount
+     * EU rates: 1.5% + €0.25 (standard), 2.5% + €0.25 (UK/non-EU)
+     */
+    public function calculateStripeFee(int $amountCents, string $region = 'EU'): int
+    {
+        $percentageFee = match($region) {
+            'UK' => 0.025, // 2.5%
+            'EU' => 0.015, // 1.5%
+            default => 0.015 // Default to EU rate
+        };
+        
+        $fixedFee = 25; // €0.25 in cents
+        
+        return intval($amountCents * $percentageFee) + $fixedFee;
+    }
+
+    /**
      * Update OrderPayment with payment intent ID from the payment link
      */
     public function updatePaymentWithIntent(OrderPayment $payment, string $paymentLinkUrl): void
