@@ -22,7 +22,7 @@ const props = defineProps<{
     user_addresses: Address[]
 }>()
 
-const { cart, tax, totalPrice, totalWeight } = storeToRefs(useCartStore())
+const { cart, totalFees, totalPrice, totalWeight } = storeToRefs(useCartStore())
 const { formatPrice } = useNumbers()
 const { handleQuantity, removeItem } = useCartStore()
 
@@ -92,10 +92,7 @@ async function submit() {
             quantity: item.quantity,
             type: item.type,
             illustrationDetails: item.type === 'illustration' && 'illustrationSettings' in item
-                ? {
-                        ...item.illustrationSettings,
-                        price: item.price,
-                    }
+                ? item.illustrationSettings
                 : undefined,
         })),
         addresses: addressesPayload,
@@ -261,19 +258,9 @@ onMounted(() => {
                                             @quantity="handleQuantity(i, $event)"
                                             @remove="removeItem(item)"
                                         />
-                                        <VListItem
-                                            title="Frais"
-                                        >
-                                            <template #append>
-                                                <span>
-                                                    {{ formatPrice(tax) }}
-                                                </span>
-                                            </template>
-                                        </VListItem>
-
                                         <VListItem>
                                             <template #title>
-                                                Frais de livraison (estimation)
+                                                Frais (livraison + paiement)
                                                 <VTooltip location="top">
                                                     <template #activator="{ props: tooltip }">
                                                         <VIcon
@@ -281,17 +268,17 @@ onMounted(() => {
                                                             icon="mdi-help-circle"
                                                         />
                                                     </template>
-                                                    <span v-if="totalWeight > 400">
-                                                        Les frais d'envois sont plus élevés du fait que votre commande dépasse 400 grammes.
-                                                    </span>
-                                                    <span v-else>
-                                                        Frais d'envoi estimé à partir du poids de votre commande.
+                                                    <span>
+                                                        Inclut les frais d'envoi ({{ formatPrice(totalWeight > 400 ? 7 : 4) }}) et les frais de paiement.
+                                                        <span v-if="totalWeight > 400">
+                                                            Frais d'envoi plus élevés car votre commande dépasse 400g.
+                                                        </span>
                                                     </span>
                                                 </VTooltip>
                                             </template>
                                             <template #append>
                                                 <span>
-                                                    {{ formatPrice(totalWeight > 400 ? 7 : 4) }}
+                                                    {{ formatPrice(totalFees) }}
                                                 </span>
                                             </template>
                                         </VListItem>
@@ -301,7 +288,7 @@ onMounted(() => {
                                         >
                                             <template #append>
                                                 <span>
-                                                    {{ formatPrice(tax + (totalWeight > 400 ? 7 : 4) + totalPrice) }}
+                                                    {{ formatPrice(totalPrice + totalFees) }}
                                                 </span>
                                             </template>
                                         </VListItem>

@@ -133,7 +133,7 @@ The following state transitions are handled automatically by Stripe webhooks:
 - `status` field uses `OrderStatus` enum
 - Stripe payment links stored in `stripe_payment_link` field
 
-### Illustration Model  
+### Illustration Model
 - `status` field should use `IllustrationStatus` enum (to be created)
 - `print` boolean field determines if illustration needs shipping
 - Related to Order via `order_id` foreign key

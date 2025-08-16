@@ -35,9 +35,13 @@ const useCartStore = defineStore('cart', () => {
         return cart.value.reduce((acc, item) => acc + item.weight * item.quantity, 0)
     })
 
-    const tax = computed(() => {
-        const tax = totalPrice.value * 0.015 + 0.25
-        return Number(tax.toFixed(2))
+    const totalFees = computed(() => {
+        // Shipping fee
+        const shipping = totalWeight.value > 400 ? 7 : 4
+        // Stripe fee calculated on total + shipping
+        const stripeFee = (totalPrice.value + shipping) * 0.015 + 0.25
+        // Return combined fees
+        return Number((shipping + stripeFee).toFixed(2))
     })
 
     function handleQuantity(index: number, action: 'increase' | 'decrease') {
@@ -68,7 +72,7 @@ const useCartStore = defineStore('cart', () => {
         cart,
         totalPrice,
         totalWeight,
-        tax,
+        totalFees,
         addItem,
         handleQuantity,
         removeItem,
