@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\PaymentType;
 use App\Models\Order;
 use App\Models\OrderPayment;
 use App\Enums\OrderStatus;
@@ -75,15 +76,29 @@ class WebhookController extends Controller
             return;
         }
 
-        // Find the payment record and update it
+        // Find the payment record - try multiple approaches
         $payment = OrderPayment::where('stripe_payment_intent_id', $paymentIntent['id'])
-                               ->where('order_id', $order->id)
-                               ->first();
+           ->where('order_id', $order->id)
+           ->first();
+
+        // If not found by payment intent ID, try to find the pending payment for this order
+        if (!$payment) {
+            Log::info('Payment not found by intent ID, trying to find pending payment', [
+                'order_id' => $order->id,
+                'payment_intent_id' => $paymentIntent['id']
+            ]);
+
+            $payment = OrderPayment::where('order_id', $order->id)
+               ->where('status', PaymentStatus::PENDING)
+               ->where('type', PaymentType::ORDER_FULL)
+               ->first();
+        }
 
         if (!$payment) {
             Log::error('OrderPayment not found for payment intent', [
                 'order_id' => $order->id,
-                'payment_intent_id' => $paymentIntent['id']
+                'payment_intent_id' => $paymentIntent['id'],
+                'available_payments' => OrderPayment::where('order_id', $order->id)->get()
             ]);
             return;
         }
@@ -104,5 +119,8 @@ class WebhookController extends Controller
 
         // Use state machine for Order status transition
         $order->transitionTo(OrderStatus::PAID);
+        
+        // Trigger email notifications via OrderStatusService
+        $orderStatusService->changed($order, OrderStatus::PAID);
     }
 }
