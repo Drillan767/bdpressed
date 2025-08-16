@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { DataTableHeader, OrderIndex, User } from '@/types'
+import useNumbers from "@/Composables/numbers";
 import useStatus from '@/Composables/status'
 import AdminLayout from '@/Layouts/AdminLayout.vue'
 import { router } from '@inertiajs/vue3'
@@ -26,6 +27,7 @@ useHead({
 })
 
 const { getOrderStatus } = useStatus()
+const { formatPrice } = useNumbers()
 
 const search = ref<string>()
 
@@ -131,7 +133,7 @@ const headers: DataTableHeader[] = [
                     {{ item.guest ? item.guest.email : item.user?.email }}
                 </template>
                 <template #item.total="{ item }">
-                    {{ item.total.formatted }}
+                    {{ formatPrice(item.final_amount / 100) }}
                 </template>
                 <template #item.status="{ item }">
                     <VChip v-bind="getOrderStatus(item.status)" />

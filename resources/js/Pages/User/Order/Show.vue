@@ -41,8 +41,8 @@ interface OrderDetail {
     id: number
     total: Money
     shipmentFees: Money
-    stripeFees: Money
     reference: string
+    estimatedFees: number
     addionalInfos?: string
     created_at: string
     shippingAddress: Address
@@ -222,14 +222,14 @@ function openIllustrationDetails(illustration: IllustrationItem) {
                                         title="Sous-total"
                                     >
                                         <template #append>
-                                            {{ formatPrice(order.total.euros - order.stripeFees.euros - order.shipmentFees.euros) }}
+                                            {{ order.total.formatted }}
                                         </template>
                                     </VListItem>
                                     <VListItem
                                         title="Frais de port"
                                     >
                                         <template #append>
-                                            {{ formatPrice(order.shipmentFees.euros + order.stripeFees.euros) }}
+                                            {{ formatPrice(order.estimatedFees / 100) }}
                                         </template>
                                     </VListItem>
                                     <VDivider />
@@ -238,7 +238,9 @@ function openIllustrationDetails(illustration: IllustrationItem) {
                                             <b>Total</b>
                                         </template>
                                         <template #append>
-                                            <b>{{ order.total.formatted }}</b>
+                                            <b>
+                                                {{ formatPrice(order.total.euros + order.estimatedFees / 100) }}
+                                            </b>
                                         </template>
                                     </VListItem>
                                 </VList>

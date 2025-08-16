@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Services\OrderService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -10,27 +11,32 @@ use App\Models\Order;
 use App\Http\Controllers\Controller;
 use App\Services\IllustrationService;
 use App\Services\OrderStatusService;
-use App\Services\StripeService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use App\Enums\OrderStatus;
 
 class OrderController extends Controller
 {
-    public function index(): Response
+    public function index(OrderService $orderService): Response
     {
-        $orders = Order::with('guest', 'user')
+        $orders = Order::with(['guest', 'user', 'payments'])
             ->orderByDesc('created_at')
             ->get([
                 'id',
                 'reference',
                 'status',
                 'total',
+                'shipmentFees',
                 'guest_id',
                 'user_id',
                 'created_at',
                 'updated_at',
             ]);
+
+        // Add final amounts to each order
+        $orders->each(function ($order) use ($orderService) {
+            $order->final_amount = $orderService->getFinalAmount($order);
+        });
 
         return Inertia::render('Admin/Orders/Index', compact('orders'));
     }
@@ -38,7 +44,7 @@ class OrderController extends Controller
     public function show(
         string $reference,
         IllustrationService $illustrationService,
-        StripeService $stripeService,
+        OrderService $orderService
     ): Response
     {
         $websiteSettings = app(WebsiteSettings::class);
@@ -60,29 +66,16 @@ class OrderController extends Controller
             unset($order->user);
         }
 
-        $totalWeight = $order->details->sum(function ($detail) {
-            return $detail->product->weight;
-        });
-
-        $totalWeight += $order->illustrations->count() * $websiteSettings->illustration_weight;
-        $totalWeight += $websiteSettings->shipping_default_weight;
-
         $order->illustrationsList = $illustrationService->getOrderDetail($order->illustrations);
 
-        $subtotal = array_sum(array_map(function ($detail) {
-            return $detail['product']['price']->cents / 100 * $detail['quantity'] ;
-        }, $order->details->toArray()));
-
-        $estimatedFees = $stripeService->calculateStripeFee($order->total->cents());
+        $estimatedFees = $orderService->calculateFees($order);
 
         $allowedStatuses = $order->getAvailableStatuses();
 
         return Inertia::render('Admin/Orders/Show', compact(
             'order',
-            'totalWeight',
             'allowedStatuses',
             'estimatedFees',
-            'subtotal',
         ));
     }
 
@@ -96,14 +89,14 @@ class OrderController extends Controller
         Request $request,
         string $reference,
         OrderStatusService $orderStatusService,
-        StripeService $stripeService
-    ): RedirectResponse {
+    ): RedirectResponse
+    {
         $request->validate([
             'status' => 'required|string'
         ]);
 
         try {
-            $order = Order::with('details.product', 'illustrations', 'user', 'guest')
+            $order = Order::with('details.product', 'illustrations', 'user', 'guest', 'payments')
                 ->where('reference', $reference)
                 ->firstOrFail();
 

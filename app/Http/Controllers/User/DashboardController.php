@@ -5,25 +5,36 @@ namespace App\Http\Controllers\User;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Services\IllustrationService;
+use App\Services\OrderService;
 use Inertia\Inertia;
 use Inertia\Response;
 use Illuminate\Http\Request;
 
 class DashboardController extends Controller
 {
-    public function index(Request $request, IllustrationService $illustrationService): Response
+    public function index(Request $request, OrderService $orderService, IllustrationService $illustrationService): Response
     {
-        // $orders = Order::where(['user_id' => $request->user()->id])->get(['id', 'reference', 'status', 'total', 'created_at', 'updated_at']);
         $orders = Order::withCount('details', 'illustrations')
+            ->with('payments')
             ->where('user_id', $request->user()->id)
+            ->orderByDesc('created_at')
             ->get();
+
+        // Add final amounts to each order
+        $orders->each(function ($order) use ($orderService) {
+            $order->final_amount = $orderService->getFinalAmount($order);
+        });
 
         return Inertia::render('User/Dashboard', compact('orders'));
     }
 
-    public function showOrder(string $reference, IllustrationService $illustrationService): Response
+    public function showOrder(
+        string $reference,
+        OrderService $orderService,
+        IllustrationService $illustrationService
+    ): Response
     {
-        $rawOrder = Order::with('shippingAddress', 'billingAddress', 'details.product', 'illustrations')
+        $rawOrder = Order::with('shippingAddress', 'billingAddress', 'details.product', 'illustrations', 'payments')
             ->where('reference', $reference)
             ->firstOrFail();
 
@@ -57,6 +68,8 @@ class DashboardController extends Controller
             ]);
         }
 
+        $estimatedFees = $orderService->calculateFees($rawOrder);
+
         $order = [
             'id' => $rawOrder->id,
             'total' => $rawOrder->total,
@@ -69,6 +82,8 @@ class DashboardController extends Controller
             'shippingAddress' => $rawOrder->shippingAddress,
             'billingAddress' => $rawOrder->billingAddress,
             'items' => $items->values()->toArray(),
+            'estimatedFees' => $estimatedFees,
+            'finalAmount' => $orderService->getFinalAmount($rawOrder),
         ];
 
         return Inertia::render('User/Order/Show', compact('order'));
