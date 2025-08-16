@@ -117,8 +117,14 @@ class WebhookController extends Controller
             'payment_type' => $payment->type->value
         ]);
 
-        // Use state machine for Order status transition
-        $order->transitionTo(OrderStatus::PAID);
+        // Use state machine for Order status transition with context
+        $order->transitionTo(OrderStatus::PAID, [
+            'triggered_by' => 'webhook',
+            'metadata' => [
+                'payment_intent_id' => $paymentIntent['id'],
+                'stripe_event' => 'payment_intent.succeeded'
+            ]
+        ]);
         
         // Trigger email notifications via OrderStatusService
         $orderStatusService->changed($order, OrderStatus::PAID);
