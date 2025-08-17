@@ -6,7 +6,6 @@ use App\Services\OrderService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
-use App\Settings\WebsiteSettings;
 use App\Models\Order;
 use App\Http\Controllers\Controller;
 use App\Services\IllustrationService;
@@ -47,7 +46,6 @@ class OrderController extends Controller
         OrderService $orderService
     ): Response
     {
-        $websiteSettings = app(WebsiteSettings::class);
         $order = Order::with([
             'details.product:id,name,promotedImage,slug,price,weight',
             'illustrations'

@@ -72,7 +72,6 @@ const illustrationPrice = ref()
 const openDetails = ref(false)
 
 function openIllustrationDetails(illustration: IllustrationItem) {
-    delete illustration.details.price
     illustrationDetails.value = illustration.details
     illustrationPrice.value = formatPrice(illustration.totalPrice)
     openDetails.value = true
