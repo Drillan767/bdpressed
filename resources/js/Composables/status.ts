@@ -75,6 +75,11 @@ export default function useStatus() {
             text: '✅ Terminé',
             color: '#4CAF50',
         },
+        {
+            internal: IllustrationStatus.CANCELLED,
+            text: '❌ Annulé',
+            color: '#F44336',
+        },
     ]
 
     function getOrderStatus(label: OrderStatus) {
@@ -89,11 +94,16 @@ export default function useStatus() {
         return illustrationStatus.find(item => item.internal === label)
     }
 
+    function listIllustrationStatuses(states: IllustrationStatus[]) {
+        return illustrationStatus.filter(i => states.includes(i.internal))
+    }
+
     return {
         orderStatus,
         getOrderStatus,
         listAvailableStatuses,
         illustrationStatus,
+        listIllustrationStatuses,
         getIllustrationStatus,
     }
 }

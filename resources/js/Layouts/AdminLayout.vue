@@ -99,7 +99,7 @@ onMounted(async () => {
                     </template>
                 </VListItem>
                 <VListItem
-                    :active="page.url.includes('/illustrations')"
+                    :active="page.url.includes('/illustration')"
                     prepend-icon="mdi-palette-outline"
                     title="Illustrations"
                     nav

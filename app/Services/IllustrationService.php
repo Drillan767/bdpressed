@@ -28,11 +28,6 @@ class IllustrationService
             default => []
         };
 
-        $result['price'] = [
-            'name' => 'Prix',
-            'price' => $illustration->price->euros(),
-        ];
-
         $result['pose'] = $this->getPose($illustration->pose);
         $result['background'] = $this->getBackground($illustration->background);
 
