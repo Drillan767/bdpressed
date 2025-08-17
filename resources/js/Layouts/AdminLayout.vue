@@ -68,7 +68,7 @@ onMounted(async () => {
         >
             <VList nav>
                 <VListItem
-                    :active="$page.url.endsWith('/administration')"
+                    :active="page.url.endsWith('/administration')"
                     prepend-icon="mdi-home"
                     title="Accueil"
                     nav
@@ -76,14 +76,14 @@ onMounted(async () => {
                 />
                 <VDivider class="my-2" />
                 <VListItem
-                    :active="$page.url.includes('/articles')"
+                    :active="page.url.includes('/articles')"
                     prepend-icon="mdi-package-variant"
                     title="Articles"
                     nav
                     @click="router.visit(route('products.index'))"
                 />
                 <VListItem
-                    :active="$page.url.includes('/commandes')"
+                    :active="page.url.includes('/commandes')"
                     prepend-icon="mdi-package-variant-closed"
                     title="Commandes"
                     nav
@@ -98,9 +98,16 @@ onMounted(async () => {
                         />
                     </template>
                 </VListItem>
+                <VListItem
+                    :active="page.url.includes('/illustrations')"
+                    prepend-icon="mdi-palette-outline"
+                    title="Illustrations"
+                    nav
+                    @click="router.visit(route('admin.illustrations.index'))"
+                />
                 <VDivider class="my-2" />
                 <VListItem
-                    :active="$page.url.includes('/comics')"
+                    :active="page.url.includes('/comics')"
                     prepend-icon="mdi-draw"
                     title="Bédés"
                     nav
@@ -108,7 +115,7 @@ onMounted(async () => {
                 />
                 <VDivider class="my-2" />
                 <VListItem
-                    :active="$page.url.includes('/parametres')"
+                    :active="page.url.includes('/parametres')"
                     prepend-icon="mdi-cog-outline"
                     title="Paramètres"
                     nav

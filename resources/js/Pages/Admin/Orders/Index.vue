@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { DataTableHeader, OrderIndex, User } from '@/types'
-import useNumbers from "@/Composables/numbers";
+import useNumbers from '@/Composables/numbers';
 import useStatus from '@/Composables/status'
 import AdminLayout from '@/Layouts/AdminLayout.vue'
 import { router } from '@inertiajs/vue3'
