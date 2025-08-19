@@ -19,7 +19,7 @@ use App\Enums\IllustrationStatus;
  * @property int $nbItems
  * @property string $pose
  * @property string $background
- * @property string $status
+ * @property IllustrationStatus $status
  * @property string $description
  * @property int $price
  * @property bool $print
@@ -31,23 +31,6 @@ use App\Enums\IllustrationStatus;
 class Illustration extends Model
 {
     use HasStateMachine;
-
-    protected static function boot()
-    {
-        parent::boot();
-
-        // Log all status transitions automatically
-        static::afterTransition('*', '*', function($illustration, $from, $to, $context) {
-            $illustration->statusChanges()->create([
-                'from_status' => $from?->value,
-                'to_status' => $to->value,
-                'reason' => $context['reason'] ?? null,
-                'metadata' => $context['metadata'] ?? null,
-                'triggered_by' => $context['triggered_by'] ?? 'manual',
-                'user_id' => auth()->id(),
-            ]);
-        });
-    }
 
     protected $casts = [
         'created_at' => 'datetime:d/m/Y H:i',
@@ -65,7 +48,9 @@ class Illustration extends Model
 
     public function statusChanges(): HasMany
     {
-        return $this->hasMany(IllustrationStatusChange::class);
+        return $this
+            ->hasMany(IllustrationStatusChange::class)
+            ->orderBy('created_at', 'desc');
     }
 
     public function payments(): HasMany
@@ -78,7 +63,7 @@ class Illustration extends Model
         return new IllustrationStateMachine();
     }
 
-    protected function getCurrentState(): string
+    protected function getCurrentState(): IllustrationStatus
     {
         return $this->status;
     }
@@ -117,5 +102,17 @@ class Illustration extends Model
     public function getAvailableStatuses(): array
     {
         return $this->getStateMachine()->getAvailableTransitions($this->status);
+    }
+
+    protected function executeAfterTransitionCallbacks($fromState, $toState, array $context): void
+    {
+        $this->statusChanges()->create([
+            'from_status' => $fromState?->value,
+            'to_status' => $toState->value,
+            'reason' => $context['reason'] ?? null,
+            'metadata' => $context['metadata'] ?? null,
+            'triggered_by' => $context['triggered_by'] ?? 'manual',
+            'user_id' => auth()->id(),
+        ]);
     }
 }

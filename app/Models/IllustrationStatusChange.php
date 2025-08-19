@@ -11,7 +11,7 @@ class IllustrationStatusChange extends Model
     protected $fillable = [
         'illustration_id',
         'from_status',
-        'to_status', 
+        'to_status',
         'reason',
         'metadata',
         'triggered_by',
@@ -22,6 +22,8 @@ class IllustrationStatusChange extends Model
         'from_status' => IllustrationStatus::class,
         'to_status' => IllustrationStatus::class,
         'metadata' => 'array',
+        'created_at' => 'datetime:d/m/Y H:i',
+        'updated_at' => 'datetime:d/m/Y H:i',
     ];
 
     public function illustration(): BelongsTo

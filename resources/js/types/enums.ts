@@ -19,3 +19,10 @@ export enum IllustrationStatus {
     COMPLETED = 'COMPLETED',
     CANCELLED = 'CANCELLED',
 }
+
+export enum StatusTriggers {
+    MANUAL = 'manual',
+    WEBHOOK = 'webhook',
+    SYSTEM = 'system',
+    CUSTOMER = 'customer',
+}

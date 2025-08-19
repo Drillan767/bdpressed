@@ -71,6 +71,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::controller(IllustrationsController::class)->group(function () {
                 Route::get('/illustrations', 'index')->name('admin.illustrations.index');
                 Route::get('/illustration/{illustration}', 'show')->name('admin.illustrations.show');
+                Route::post('/illustration/{illustration}/update-status', 'updateStatus')->name('admin.illustrations.update-status');
             });
 
             Route::controller(ComicController::class)->group(function () {

@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\IllustrationStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Illustration;
 use App\Services\IllustrationService;
+use Illuminate\Http\Request;
+use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -75,5 +78,26 @@ class IllustrationsController extends Controller
             'availableStatuses',
             'client',
         ));
+    }
+
+    public function updateStatus(
+        Request $request,
+        Illustration $illustration,
+        IllustrationService $illustrationService,
+    ): RedirectResponse
+    {
+        $request->validate([
+            'status' => 'required|string'
+        ]);
+
+        try {
+            $newStatus = IllustrationStatus::from($request->get('status'));
+            $illustration->transitionTo($newStatus);
+
+            return back()->with('success', 'Order status updated successfully');
+
+        } catch (\Exception $e) {
+            return back()->with('error', 'Failed to update illustration status: ' . $e->getMessage());
+        }
     }
 }
