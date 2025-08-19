@@ -1,4 +1,4 @@
-import { IllustrationStatus, OrderStatus } from '@/types/enums'
+import {IllustrationStatus, OrderStatus, StatusTriggers } from '@/types/enums'
 
 export default function useStatus() {
     const orderStatus = [
@@ -82,6 +82,29 @@ export default function useStatus() {
         },
     ]
 
+    const statusTriggers = [
+        {
+            internal: StatusTriggers.MANUAL,
+            text: '💪 Manuel',
+            color: '#4CAF50',
+        },
+        {
+            internal: StatusTriggers.WEBHOOK,
+            text: '💸 Stripe',
+            color: '#5167FC',
+        },
+        {
+            internal: StatusTriggers.CUSTOMER,
+            text: '👶 Client',
+            color: '#FF6F00',
+        },
+        {
+            internal: StatusTriggers.SYSTEM,
+            text: '🤖 Automatique',
+            color: '#454545',
+        },
+    ]
+
     function getOrderStatus(label: OrderStatus) {
         return orderStatus.find(item => item.internal === label)
     }
@@ -98,6 +121,14 @@ export default function useStatus() {
         return illustrationStatus.filter(i => states.includes(i.internal))
     }
 
+    function getTrigger(label: StatusTriggers) {
+        return statusTriggers.find(item => item.internal === label)
+    }
+
+    function listTriggers(states: StatusTriggers[]) {
+        return statusTriggers.filter(item => states.includes(item.internal))
+    }
+
     return {
         orderStatus,
         getOrderStatus,
@@ -105,5 +136,8 @@ export default function useStatus() {
         illustrationStatus,
         listIllustrationStatuses,
         getIllustrationStatus,
+        statusTriggers,
+        getTrigger,
+        listTriggers,
     }
 }

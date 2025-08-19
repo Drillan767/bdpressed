@@ -1,3 +1,4 @@
+import type { IllustrationStatus, OrderStatus, StatusTriggers } from '@/types/enums'
 import type { Config } from 'ziggy-js'
 
 export interface Money {
@@ -5,6 +6,27 @@ export interface Money {
     euros: number
     formatted: string
 }
+
+export type StatusChange<T extends 'illustration' | 'order'> = {
+    id: number
+    triggered_by: StatusTriggers
+    reason?: string
+    metadata?: Record<string, any>
+    user_id?: number
+    created_at: string
+    updated_at: string
+} & (T extends 'illustration'
+    ? {
+            illustration_id: number
+            from_status: IllustrationStatus
+            to_status: IllustrationStatus
+        }
+    : {
+            order_id: number
+            from_status: OrderStatus
+            to_status: OrderStatus
+        }
+    )
 
 export interface User {
     id: number
