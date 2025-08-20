@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { OrderDetail } from '@/types'
 import type { OrderStatus } from '@/types/enums'
+import StatusChangeHistory from '@/Components/Admin/StatusChangeHistory.vue'
 import useNumbers from '@/Composables/numbers'
 import useStatus from '@/Composables/status'
 import useStrings from '@/Composables/strings'
@@ -25,13 +26,24 @@ useHead({
 })
 
 const { formatPrice } = useNumbers()
-const { getOrderStatus, getIllustrationStatus, listAvailableStatuses } = useStatus()
+const { getOrderStatus, getIllustrationStatus, listAvailableStatuses, getTrigger } = useStatus()
 const { toParagraphs } = useStrings()
 
 const loading = ref(false)
 const status = ref<OrderStatus>()
 
 const statusList = computed(() => listAvailableStatuses(props.allowedStatuses))
+
+const statusChangesDisplay = computed(() => {
+    return props.order.status_changes.map(change => ({
+        id: change.id,
+        created_at: change.created_at,
+        reason: change.reason,
+        triggered_by: getTrigger(change.triggered_by),
+        from_status: change.from_status ? getOrderStatus(change.from_status) : undefined,
+        to_status: getOrderStatus(change.to_status),
+    }))
+})
 
 // Add warning for when the order is canceled
 // See: https://github.com/Drillan767/bdpressed/issues/82
@@ -308,6 +320,11 @@ async function updateStatus() {
                                 </p>
                             </template>
                         </VCard>
+                    </VCol>
+                </VRow>
+                <VRow>
+                    <VCol>
+                        <StatusChangeHistory :status-changes="statusChangesDisplay" />
                     </VCol>
                 </VRow>
             </VCol>

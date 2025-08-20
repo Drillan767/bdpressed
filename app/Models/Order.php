@@ -30,23 +30,6 @@ class Order extends Model
 {
     use HasStateMachine;
 
-    protected static function boot()
-    {
-        parent::boot();
-
-        // Log all status transitions automatically
-        static::afterTransition('*', '*', function($order, $from, $to, $context) {
-            $order->statusChanges()->create([
-                'from_status' => $from?->value,
-                'to_status' => $to->value,
-                'reason' => $context['reason'] ?? null,
-                'metadata' => $context['metadata'] ?? null,
-                'triggered_by' => $context['triggered_by'] ?? 'manual',
-                'user_id' => auth()->id(),
-            ]);
-        });
-    }
-
     public function guest(): BelongsTo
     {
         return $this->belongsTo(Guest::class);
@@ -124,5 +107,18 @@ class Order extends Model
     public function getAvailableStatuses(): array
     {
         return $this->getStateMachine()->getAvailableTransitions($this->status);
+    }
+
+    protected function executeAfterTransitionCallbacks($fromState, $toState, array $context): void
+    {
+        // Always log status changes regardless of specific transition
+        $this->statusChanges()->create([
+            'from_status' => $fromState?->value,
+            'to_status' => $toState->value,
+            'reason' => $context['reason'] ?? null,
+            'metadata' => $context['metadata'] ?? null,
+            'triggered_by' => $context['triggered_by'] ?? 'manual',
+            'user_id' => auth()->id(),
+        ]);
     }
 }
