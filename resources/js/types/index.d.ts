@@ -244,6 +244,7 @@ export interface OrderDetail {
     guest_id: number | null
     illustrationsList: IllustrationSpecs[]
     illustrations: Illustration[]
+    status_changes: StatusChange<'order'>[]
     client: {
         email: string
         instagram: string | null

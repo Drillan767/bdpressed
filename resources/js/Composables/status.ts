@@ -1,4 +1,16 @@
-import {IllustrationStatus, OrderStatus, StatusTriggers } from '@/types/enums'
+import { IllustrationStatus, OrderStatus, StatusTriggers } from '@/types/enums'
+
+interface StatusInfo {
+    internal: OrderStatus | IllustrationStatus
+    text: string
+    color: string
+}
+
+interface TriggerInfo {
+    internal: StatusTriggers
+    text: string
+    color: string
+}
 
 export default function useStatus() {
     const orderStatus = [
@@ -42,7 +54,7 @@ export default function useStatus() {
             text: '❌ Annulé',
             color: '#F44336',
         },
-    ]
+    ] as const
 
     const illustrationStatus = [
         {
@@ -80,7 +92,7 @@ export default function useStatus() {
             text: '❌ Annulé',
             color: '#F44336',
         },
-    ]
+    ] as const
 
     const statusTriggers = [
         {
@@ -103,30 +115,43 @@ export default function useStatus() {
             text: '🤖 Automatique',
             color: '#454545',
         },
-    ]
+    ] as const
 
-    function getOrderStatus(label: OrderStatus) {
-        return orderStatus.find(item => item.internal === label)
+    // Create Maps for O(1) lookup performance
+    const orderStatusMap = new Map(orderStatus.map(item => [item.internal as OrderStatus, item]))
+    const illustrationStatusMap = new Map(illustrationStatus.map(item => [item.internal as IllustrationStatus, item]))
+    const statusTriggersMap = new Map(statusTriggers.map(item => [item.internal as StatusTriggers, item]))
+
+    function getOrderStatus(label: OrderStatus): StatusInfo {
+        const status = orderStatusMap.get(label)
+        if (!status) {
+            throw new Error(`Invalid order status: ${label}`)
+        }
+        return status
     }
 
     function listAvailableStatuses(states: OrderStatus[]) {
         return orderStatus.filter(item => states.includes(item.internal))
     }
 
-    function getIllustrationStatus(label: IllustrationStatus) {
-        return illustrationStatus.find(item => item.internal === label)
+    function getIllustrationStatus(label: IllustrationStatus): StatusInfo {
+        const status = illustrationStatusMap.get(label)
+        if (!status) {
+            throw new Error(`Invalid illustration status: ${label}`)
+        }
+        return status
     }
 
     function listIllustrationStatuses(states: IllustrationStatus[]) {
         return illustrationStatus.filter(i => states.includes(i.internal))
     }
 
-    function getTrigger(label: StatusTriggers) {
-        return statusTriggers.find(item => item.internal === label)
-    }
-
-    function listTriggers(states: StatusTriggers[]) {
-        return statusTriggers.filter(item => states.includes(item.internal))
+    function getTrigger(label: StatusTriggers): TriggerInfo {
+        const trigger = statusTriggersMap.get(label)
+        if (!trigger) {
+            throw new Error(`Invalid status trigger: ${label}`)
+        }
+        return trigger
     }
 
     return {
@@ -138,6 +163,5 @@ export default function useStatus() {
         getIllustrationStatus,
         statusTriggers,
         getTrigger,
-        listTriggers,
     }
 }

@@ -11,7 +11,7 @@ class OrderStatusChange extends Model
     protected $fillable = [
         'order_id',
         'from_status',
-        'to_status', 
+        'to_status',
         'reason',
         'metadata',
         'triggered_by',
@@ -22,6 +22,8 @@ class OrderStatusChange extends Model
         'from_status' => OrderStatus::class,
         'to_status' => OrderStatus::class,
         'metadata' => 'array',
+        'created_at' => 'datetime:d/m/Y H:i',
+        'updated_at' => 'datetime:d/m/Y H:i',
     ];
 
     public function order(): BelongsTo

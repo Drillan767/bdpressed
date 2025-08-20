@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { Money, StatusChange } from '@/types'
 import type { IllustrationStatus } from '@/types/enums'
+import StatusChangeHistory from '@/Components/Admin/StatusChangeHistory.vue'
 import useStatus from '@/Composables/status'
 import useStrings from '@/Composables/strings'
 import AdminLayout from '@/Layouts/AdminLayout.vue'
@@ -52,6 +53,17 @@ const { getIllustrationStatus, listIllustrationStatuses, getTrigger } = useStatu
 const { toParagraphs } = useStrings()
 
 const statusList = computed(() => listIllustrationStatuses(props.availableStatuses))
+
+const statusChangesDisplay = computed(() => {
+    return props.illustration.status_changes.map(change => ({
+        id: change.id,
+        created_at: change.created_at,
+        reason: change.reason,
+        triggered_by: getTrigger(change.triggered_by),
+        from_status: change.from_status ? getIllustrationStatus(change.from_status) : undefined,
+        to_status: getIllustrationStatus(change.to_status),
+    }))
+})
 
 const loading = ref(false)
 const status = ref<IllustrationStatus>()
@@ -191,80 +203,7 @@ async function updateStatus() {
             >
                 <VRow>
                     <VCol>
-                        <VCard title="Historique des statuts">
-                            <template #text>
-                                <VTimeline
-                                    v-if="illustration.status_changes.length > 0"
-                                    side="end"
-                                    density="compact"
-                                >
-                                    <VTimelineItem
-                                        v-for="statusChange in illustration.status_changes"
-                                        :key="statusChange.id"
-                                        :dot-color="getIllustrationStatus(statusChange.to_status)!.color"
-                                        size="small"
-                                        width="100%"
-                                    >
-                                        <VCard
-                                            variant="tonal"
-                                            color="grey-lighten-4"
-                                            density="compact"
-                                        >
-                                            <template #title>
-                                                <span class="text-caption text-medium-emphasis">
-                                                    {{ statusChange.created_at }}
-                                                </span>
-                                            </template>
-                                            <template #append>
-                                                <VChip
-                                                    v-bind="getTrigger(statusChange.triggered_by)"
-                                                    size="x-small"
-                                                    variant="outlined"
-                                                />
-                                            </template>
-                                            <template #text>
-                                                <div>
-                                                    <VChip
-                                                        v-if="statusChange.from_status"
-                                                        v-bind="getIllustrationStatus(statusChange.from_status)"
-                                                        size="small"
-                                                    />
-                                                    <VIcon
-                                                        v-if="statusChange.from_status"
-                                                        icon="mdi-arrow-right"
-                                                        size="small"
-                                                        class="text-medium-emphasis"
-                                                    />
-                                                    <VChip
-                                                        v-bind="getIllustrationStatus(statusChange.to_status)"
-                                                        size="small"
-                                                    />
-                                                </div>
-                                                <template v-if="statusChange.reason">
-                                                    <VDivider class="my-2" />
-                                                    <span
-                                                        class="text-caption text-medium-emphasis"
-                                                    >
-                                                        {{ statusChange.reason }}
-                                                    </span>
-                                                </template>
-                                            </template>
-                                        </VCard>
-                                    </VTimelineItem>
-                                </VTimeline>
-                                <div
-                                    v-else
-                                    class="text-center py-8 text-medium-emphasis"
-                                >
-                                    <VIcon
-                                        icon="mdi-timeline-clock-outline"
-                                        size="48"
-                                        class="mb-2"
-                                    />
-                                    <p>Aucun changement de statut pour le moment</p>
-                                </div>
-                            </template>
-                        </VCard>
+                        <StatusChangeHistory :status-changes="statusChangesDisplay" />
                     </VCol>
                 </VRow>
                 <VRow>

@@ -48,7 +48,9 @@ class OrderController extends Controller
     {
         $order = Order::with([
             'details.product:id,name,promotedImage,slug,price,weight',
-            'illustrations'
+            'illustrations',
+            'statusChanges',
+            'payments',
         ])
             ->where('reference', $reference)
             ->firstOrFail();
