@@ -28,7 +28,7 @@ class WebsiteSettingsRequest extends FormRequest
             'shop_subtitle' => ['required', 'string'],
             'contact_image_url' => ['nullable', 'image'],
             'contact_text' => ['required', 'string'],
-
+            'holiday_mode' => ['required', 'boolean'],
         ];
     }
 }

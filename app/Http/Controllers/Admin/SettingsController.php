@@ -24,6 +24,7 @@ class SettingsController extends Controller
         $settings->shop_title = $request->get('shop_title');
         $settings->shop_subtitle = $request->get('shop_subtitle');
         $settings->contact_text = $request->get('contact_text');
+        $settings->holiday_mode = $request->boolean('holiday_mode');
 
         $settings->comics_image_url = $this->uploadFile($request, $settings, 'comics_image_url');
         $settings->contact_image_url = $this->uploadFile($request, $settings, 'contact_image_url');
