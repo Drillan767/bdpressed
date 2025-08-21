@@ -20,6 +20,7 @@ interface Props {
         contact_text: string
         shipping_default_weight: number
         illustration_weight: number
+        holiday_mode: boolean
     }
     flash: {
         success: string | null
@@ -35,6 +36,7 @@ interface SettingsProps {
     contact_text: string
     shipping_default_weight: number
     illustration_weight: number
+    holiday_mode: boolean
 }
 
 defineOptions({ layout: AdminLayout })
@@ -64,6 +66,7 @@ const { defineField, handleSubmit } = useForm<SettingsProps>({
         contact_text: props.settings.contact_text,
         shipping_default_weight: props.settings.shipping_default_weight,
         illustration_weight: props.settings.illustration_weight,
+        holiday_mode: props.settings.holiday_mode,
     },
 })
 
@@ -75,6 +78,7 @@ const [contactImage, contactImageProps] = defineField('contact_image_url', valid
 const [contactText, contactTextProps] = defineField('contact_text', validationConfig)
 const [shippingWeight, shippingWeightProps] = defineField('shipping_default_weight', validationConfig)
 const [illustrationWeight, illustrationWeightProps] = defineField('illustration_weight', validationConfig)
+const [holidayMode, holidayModeProps] = defineField('holiday_mode', validationConfig)
 
 const formValid = useIsFormValid()
 const formDirty = useIsFormDirty()
@@ -245,6 +249,30 @@ watch(() => props.flash.success, (value) => {
                                 type="number"
                                 label="Poids d'une illustration"
                                 suffix="grammes"
+                            />
+                        </VCol>
+                    </VRow>
+                </VContainer>
+            </template>
+        </VCard>
+        <VDivider />
+        <VCard
+            class="mt-4"
+            variant="outlined"
+            color="warning"
+            title="Mode vacances"
+        >
+            <template #text>
+                <VContainer>
+                    <VRow>
+                        <VCol cols="12">
+                            <VSwitch
+                                v-bind="holidayModeProps"
+                                v-model="holidayMode"
+                                label="Activer le mode vacances"
+                                color="primary"
+                                hint="Quand activé, les clients ne pourront plus passer de commandes"
+                                persistent-hint
                             />
                         </VCol>
                     </VRow>

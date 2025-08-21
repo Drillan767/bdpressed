@@ -15,6 +15,7 @@ class WebsiteSettings extends Settings
     public string $contact_text;
     public int $shipping_default_weight;
     public int $illustration_weight;
+    public bool $holiday_mode;
 
     public static function group(): string
     {
