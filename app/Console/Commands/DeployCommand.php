@@ -26,11 +26,11 @@ class DeployCommand extends Command
     public function handle(): void
     {
         $this->info('Running post deploy commands');
+        $this->call('migrate', ['--force' => true, '--seed' => true]);
         $this->call('config:cache');
         $this->call('route:cache');
         $this->call('queue:clear', ['--force' => true]);
         $this->call('queue:restart');
-        $this->call('migrate', ['--force' => true, '--seed' => true]);
         $this->call('storage:link');
         $this->info('Done.');
     }
