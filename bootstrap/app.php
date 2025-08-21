@@ -19,6 +19,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->alias([
             'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
+            'holiday_mode' => \App\Http\Middleware\HolidayMode::class,
         ]);
 
         $middleware->trustProxies(

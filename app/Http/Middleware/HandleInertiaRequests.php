@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Settings\WebsiteSettings;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 use Tighten\Ziggy\Ziggy;
@@ -30,6 +31,8 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
+        $settings = app(WebsiteSettings::class);
+
         return [
             ...parent::share($request),
             'auth' => [
@@ -40,6 +43,7 @@ class HandleInertiaRequests extends Middleware
                 'location' => $request->url(),
             ],
             'csrf_token' => csrf_token(),
+            'holiday_mode' => $settings->holiday_mode,
             'flash' => [
                 'message' => fn () => $request->session()->get('message'),
                 'success' => fn () => $request->session()->get('success'),
