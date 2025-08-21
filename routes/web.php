@@ -31,7 +31,7 @@ Route::controller(VisitorsController::class)->group(function() {
     Route::get('/paiement-effectue', 'paymentSuccess')->name('payment.success');
 });
 
-Route::controller(ShopController::class)->group(function() {
+Route::controller(ShopController::class)->middleware('holiday_mode')->group(function() {
     Route::get('/boutique', 'index')->name('shop.index');
     Route::get('/boutique/illustration', 'illustration')->name('shop.illustration');
     Route::get('/boutique/{slug}', 'show')->name('shop.show');

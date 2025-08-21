@@ -2,12 +2,14 @@
 import Cart from '@/Components/Shop/Cart.vue'
 import useToast from '@/Composables/toast'
 import useCartStore from '@/Stores/cartStore'
-import { Link, router } from '@inertiajs/vue3'
+import { Link, router, usePage } from '@inertiajs/vue3'
 import { useHead } from '@vueuse/head'
 import { storeToRefs } from 'pinia'
 import { computed, provide, ref, watch } from 'vue'
 import { useDisplay } from 'vuetify'
 import { route } from 'ziggy-js'
+
+defineProps<{ holiday_mode: boolean }>()
 
 const links = [
     { title: 'Accueil', href: '/' },
@@ -29,6 +31,7 @@ useHead({
 const { smAndDown } = useDisplay()
 const { cart } = storeToRefs(useCartStore())
 const { showError } = useToast()
+const page = usePage()
 
 const drawer = ref(false)
 const linksDrawer = ref(false)
@@ -120,19 +123,19 @@ provide('openDrawer', openDrawer)
                     <VRow>
                         <VCol class="links d-flex justify-center ga-4">
                             <Link
-                                :class="{ active: $page.url === '/' }"
+                                :class="{ active: page.url === '/' }"
                                 href="/"
                             >
                                 Accueil
                             </Link>
                             <Link
-                                :class="{ active: $page.url.startsWith('/boutique') }"
+                                :class="{ active: page.url.startsWith('/boutique') }"
                                 :href="route('shop.index')"
                             >
                                 Boutique
                             </Link>
                             <Link
-                                :class="{ active: $page.url === '/contact' }"
+                                :class="{ active: page.url === '/contact' }"
                                 :href="route('contact')"
                             >
                                 Contact
@@ -160,7 +163,10 @@ provide('openDrawer', openDrawer)
                         Accéder à votre compte
                     </VTooltip>
 
-                    <VTooltip location="bottom">
+                    <VTooltip
+                        v-if="!holiday_mode"
+                        location="bottom"
+                    >
                         <template #activator="{ props }">
                             <VBadge
                                 v-bind="props"
