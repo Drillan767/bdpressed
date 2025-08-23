@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\PaymentStatus;
 use App\Models\Order;
 use App\Settings\WebsiteSettings;
 
@@ -10,6 +11,7 @@ class OrderService
     public function __construct(
         private readonly WebsiteSettings $websiteSettings,
         private readonly StripeService $stripeService,
+        private readonly MoneyService $moneyService,
     ) {}
 
     /**
@@ -20,11 +22,11 @@ class OrderService
     {
         // Check if payments are loaded and we have actual payment data
         if ($order->relationLoaded('payments')) {
-            $actualPayment = $order->payments->whereIn('status', ['paid', 'refunded'])->first();
+            $actualPayment = $order->payments->whereIn('status', [PaymentStatus::PAID, PaymentStatus::REFUNDED])->first();
 
             if ($actualPayment) {
                 // Use actual fees from completed payment
-                return $order->shipmentFees + $actualPayment->stripe_fee;
+                return $order->shipmentFees->cents() + $actualPayment->stripe_fee;
             }
         }
 
@@ -37,6 +39,27 @@ class OrderService
         $shippingFee = $totalWeight > 400 ? 700 : 400; // 7€ or 4€
 
         return $estimatedStripeFee + $shippingFee;
+    }
+
+    /**
+     * Calculate only the Stripe fees portion (for email notifications)
+     * Returns a Money object for consistency with other fee calculations
+     */
+    public function calculateStripeFeesOnly(Order $order)
+    {
+        // Check if payments are loaded and we have actual payment data
+        if ($order->relationLoaded('payments')) {
+            $actualPayment = $order->payments->whereIn('status', [PaymentStatus::PAID, PaymentStatus::REFUNDED])->first();
+
+            if ($actualPayment && $actualPayment->stripe_fee) {
+                // Return actual Stripe fee as Money object
+                return $this->moneyService->createMoneyObject($actualPayment->stripe_fee);
+            }
+        }
+
+        // Fallback to estimated Stripe fees
+        $estimatedStripeFee = $this->stripeService->calculateStripeFee($order->total->cents());
+        return $this->moneyService->createMoneyObject($estimatedStripeFee);
     }
 
     /**

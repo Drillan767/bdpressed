@@ -42,31 +42,39 @@ describe('Email Notifications - Stripe Fee TDD Tests', function () {
         });
     });
 
-    describe('Missing stripeFees Method Detection', function () {
-        it('reveals that Order model lacks stripeFees method', function () {
+    describe('stripeFees Method Implementation', function () {
+        it('confirms that Order model has stripeFees method', function () {
             $order = Order::factory()->create(['user_id' => $this->user->id]);
 
-            // This should reveal the missing method
+            // Verify the method now exists
             $hasStripeFees = method_exists($order, 'stripeFees');
 
-            expect($hasStripeFees)->toBeFalse('Order model should have stripeFees method for email notifications');
+            expect($hasStripeFees)->toBeTrue('Order model should have stripeFees method for email notifications');
         });
 
-        it('shows that email notifications will fail due to missing stripeFees', function () {
+        it('shows that email notifications now work with stripeFees method', function () {
             $order = Order::factory()->create(['user_id' => $this->user->id]);
 
-            // Try to call the notifications - they should fail with undefined method
-            expect(function () use ($order) {
+            // Try to call the notifications - they should now work without errors
+            $orderNotificationWorks = true;
+            $paymentNotificationWorks = true;
+
+            try {
                 $notification = new OrderConfirmationNotification($order);
                 $notification->toMail($this->user);
-            })
-                ->toThrow(Error::class)
-                ->and(function () use ($order) {
-                    $notification = new PaymentConfirmationNotification($order);
-                    $notification->toMail($this->user);
-                })->toThrow(Error::class); // Should throw "Call to undefined method stripeFees()"
+            } catch (Error $e) {
+                $orderNotificationWorks = false;
+            }
 
-            // Should throw "Call to undefined method stripeFees()"
+            try {
+                $notification = new PaymentConfirmationNotification($order);
+                $notification->toMail($this->user);
+            } catch (Error $e) {
+                $paymentNotificationWorks = false;
+            }
+
+            expect($orderNotificationWorks)->toBeTrue('OrderConfirmationNotification should work')
+                ->and($paymentNotificationWorks)->toBeTrue('PaymentConfirmationNotification should work');
         });
     });
 
@@ -118,6 +126,8 @@ describe('Email Notifications - Stripe Fee TDD Tests', function () {
 
             if (method_exists($order, 'stripeFees')) {
                 // If the method exists, test its behavior
+                // Refresh the order to ensure payments are loaded
+                $order = $order->fresh(['payments']);
                 $stripeFeeAmount = $order->stripeFees;
                 expect($stripeFeeAmount->cents())->toBe(123);
             } else {
@@ -146,11 +156,9 @@ describe('Email Notifications - Stripe Fee TDD Tests', function () {
                 $errorMessage = $e->getMessage();
             }
 
-            // For now this will fail, but defines what should work
+            // The notifications should now work without errors
             expect($notificationWorks)
-                ->toBeFalse('Email notifications should work without method errors')
-                ->and($errorMessage ?? '')
-                ->toContain('stripeFees');
+                ->toBeTrue('Email notifications should work without method errors');
         });
     });
 });

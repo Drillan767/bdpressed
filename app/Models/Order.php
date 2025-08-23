@@ -4,8 +4,10 @@ namespace App\Models;
 
 use App\Casts\MoneyCast;
 use App\Enums\OrderStatus;
+use App\Services\OrderService;
 use App\StateMachines\OrderStateMachine;
 use App\Traits\HasStateMachine;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -108,6 +110,16 @@ class Order extends Model
     public function getAvailableStatuses(): array
     {
         return $this->getStateMachine()->getAvailableTransitions($this->status);
+    }
+
+    public function stripeFees(): Attribute
+    {
+        return Attribute::make(
+            get: function () {
+                $orderService = app(OrderService::class);
+                return $orderService->calculateStripeFeesOnly($this);
+            }
+        );
     }
 
     protected function executeAfterTransitionCallbacks($fromState, $toState, array $context): void
