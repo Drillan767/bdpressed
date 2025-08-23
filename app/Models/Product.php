@@ -42,6 +42,11 @@ class Product extends Model
             get: function ($illustrations) {
                 $parsedPaths = json_decode($illustrations, true);
 
+                // Handle cases where json_decode returns null or non-array
+                if (!is_array($parsedPaths)) {
+                    return [];
+                }
+
                 return array_map(function ($illustration) {
                     $realPath = str_replace('/storage', '', $illustration);
 

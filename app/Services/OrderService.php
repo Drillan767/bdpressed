@@ -31,14 +31,10 @@ class OrderService
         }
 
         // Fallback to estimates (for new orders or when payments not loaded)
-        $totalWeight = $order->details->sum(fn ($detail) => $detail->product->weight * $detail->quantity);
-        $totalWeight += $order->illustrations->count() * $this->websiteSettings->illustration_weight;
-        $totalWeight += $this->websiteSettings->shipping_default_weight;
-
         $estimatedStripeFee = $this->stripeService->calculateStripeFee($order->total->cents());
-        $shippingFee = $totalWeight > 400 ? 700 : 400; // 7€ or 4€
 
-        return $estimatedStripeFee + $shippingFee;
+        // Use the order's existing shipmentFees instead of recalculating
+        return $order->shipmentFees->cents() + $estimatedStripeFee;
     }
 
     /**
