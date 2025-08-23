@@ -10,7 +10,7 @@ BD Pressed is a Laravel-based e-commerce platform for custom comic book illustra
 
 ### Backend (Laravel with Sail)
 - `./vendor/bin/sail up` - Start Docker development environment
-- `./vendor/bin/sail artisan migrate` - Run database migrations  
+- `./vendor/bin/sail artisan migrate` - Run database migrations
 - `./vendor/bin/sail artisan db:seed` - Seed database
 - `./vendor/bin/sail test` - Run PHPUnit/Pest tests
 - `./vendor/bin/sail artisan pint` - Format PHP code
