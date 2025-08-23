@@ -1,16 +1,16 @@
 <?php
 
+use App\Http\Controllers\Admin\ComicController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Admin\IllustrationsController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ShopController;
-use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\User\AddressesController;
-use App\Http\Controllers\Admin\ComicController;
-use App\Http\Controllers\VisitorsController;
-use App\Http\Controllers\Admin\IllustrationsController;
 use App\Http\Controllers\User\DashboardController as UserDashboardController;
+use App\Http\Controllers\VisitorsController;
 use App\Http\Controllers\WebhookController;
 use Illuminate\Support\Facades\Route;
 
@@ -24,14 +24,14 @@ Route::post('/stripe/webhook', [WebhookController::class, 'handleStripe'])
     ->withoutMiddleware(['web'])
     ->name('stripe.webhook');
 
-Route::controller(VisitorsController::class)->group(function() {
+Route::controller(VisitorsController::class)->group(function () {
     Route::get('/', 'landing')->name('landing');
     Route::get('/contact', 'contact')->name('contact');
     Route::get('/comic/{comic}', 'comicDetail')->name('comic.details');
     Route::get('/paiement-effectue', 'paymentSuccess')->name('payment.success');
 });
 
-Route::controller(ShopController::class)->middleware('holiday_mode')->group(function() {
+Route::controller(ShopController::class)->middleware('holiday_mode')->group(function () {
     Route::get('/boutique', 'index')->name('shop.index');
     Route::get('/boutique/illustration', 'illustration')->name('shop.illustration');
     Route::get('/boutique/{slug}', 'show')->name('shop.show');

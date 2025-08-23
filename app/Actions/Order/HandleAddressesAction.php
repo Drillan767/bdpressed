@@ -2,9 +2,9 @@
 
 namespace App\Actions\Order;
 
+use App\Enums\AddressType;
 use App\Http\Requests\OrderRequest;
 use App\Models\Address;
-use App\Enums\AddressType;
 use App\Models\User;
 
 class HandleAddressesAction
@@ -12,8 +12,7 @@ class HandleAddressesAction
     public function __construct(
         public bool $guest,
         public int $authId,
-    )
-    {}
+    ) {}
 
     private array $fields = [
         'firstName',
@@ -37,7 +36,7 @@ class HandleAddressesAction
         $addresses = $request->get('addresses');
 
         // Handle shipping address
-        if (!$this->guest && isset($addresses['shipping_id'])) {
+        if (! $this->guest && isset($addresses['shipping_id'])) {
             // User is logged in and selected existing shipping address
             $shippingId = $addresses['shipping_id'];
         } else {
@@ -49,7 +48,7 @@ class HandleAddressesAction
         if ($useSame) {
             // Use same address for billing (shipping address)
             $billingId = $shippingId;
-        } elseif (!$this->guest && isset($addresses['billing_id'])) {
+        } elseif (! $this->guest && isset($addresses['billing_id'])) {
             // User is logged in and selected existing billing address
             $billingId = $addresses['billing_id'];
         } else {
@@ -67,14 +66,13 @@ class HandleAddressesAction
     private function storeAddress(
         OrderRequest $request,
         AddressType $type,
-    ): int
-    {
+    ): int {
         $addressType = strtolower($type->name);
         $addresses = $request->get('addresses');
         $relationColumn = $this->guest ? 'guest_id' : 'user_id';
 
         $fields = array_intersect_key($addresses[$addressType], array_flip($this->fields));
-        $fields["default_$addressType"] = !$this->guest;
+        $fields["default_$addressType"] = ! $this->guest;
 
         $fields[$relationColumn] = $this->authId;
 

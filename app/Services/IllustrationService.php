@@ -5,8 +5,8 @@ namespace App\Services;
 use App\Enums\IllustrationType;
 use App\Models\Illustration;
 use App\Models\IllustrationPrice;
-use Illuminate\Support\Number;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Number;
 
 class IllustrationService
 {
@@ -54,7 +54,7 @@ class IllustrationService
             'type' => [
                 'name' => 'Buste',
                 'price' => Number::currency($this->getPrice('bust_base'), 'EUR', locale: 'fr'),
-            ]
+            ],
         ];
 
         if ($illustration->nbHumans > 0) {
@@ -80,7 +80,7 @@ class IllustrationService
             'type' => [
                 'name' => 'Portrait en pied',
                 'price' => Number::currency($this->getPrice('fl_base'), 'EUR', locale: 'fr'),
-            ]
+            ],
         ];
 
         if ($illustration->nbHumans > 0) {
@@ -106,7 +106,7 @@ class IllustrationService
             'type' => [
                 'name' => 'Compagnon',
                 'price' => Number::currency($this->getPrice('animal_base'), 'EUR', locale: 'fr'),
-            ]
+            ],
         ];
 
         if ($illustration->nbAnimals > 0) {
@@ -134,7 +134,7 @@ class IllustrationService
             default => null,
         };
 
-        if (!$key) {
+        if (! $key) {
             return [];
         }
 
@@ -153,7 +153,7 @@ class IllustrationService
             default => null,
         };
 
-        if (!$key) {
+        if (! $key) {
             return [];
         }
 
@@ -179,7 +179,7 @@ class IllustrationService
         $basePrice = 0;
 
         // Base price
-        $basePrice += match($type) {
+        $basePrice += match ($type) {
             'bust' => $this->getPrice('bust_base'),
             'fl' => $this->getPrice('fl_base'),
             'animal' => $this->getPrice('animal_base'),
@@ -200,7 +200,7 @@ class IllustrationService
 
         // Pose options
         if (isset($details['pose'])) {
-            $poseKey = match(strtoupper($details['pose'])) {
+            $poseKey = match (strtoupper($details['pose'])) {
                 'SIMPLE' => 'option_pose_simple',
                 'COMPLEX' => 'option_pose_complex',
                 default => null
@@ -212,7 +212,7 @@ class IllustrationService
 
         // Background options
         if (isset($details['background'])) {
-            $bgKey = match(strtoupper($details['background'])) {
+            $bgKey = match (strtoupper($details['background'])) {
                 'GRADIENT' => 'option_bg_gradient',
                 'SIMPLE' => 'option_bg_simple',
                 'COMPLEX' => 'option_bg_complex',
@@ -224,11 +224,11 @@ class IllustrationService
         }
 
         // Additional options
-        if (!empty($details['addTracking'])) {
+        if (! empty($details['addTracking'])) {
             $basePrice += $this->getPrice('options_add_tracking');
         }
 
-        if (!empty($details['print'])) {
+        if (! empty($details['print'])) {
             $basePrice += $this->getPrice('options_print');
         }
 

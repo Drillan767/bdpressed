@@ -5,7 +5,7 @@ use App\StateMachines\IllustrationStateMachine;
 
 describe('IllustrationStateMachine', function () {
     beforeEach(function () {
-        $this->stateMachine = new IllustrationStateMachine();
+        $this->stateMachine = new IllustrationStateMachine;
     });
 
     describe('valid transitions', function () {

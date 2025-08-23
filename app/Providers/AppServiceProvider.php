@@ -3,9 +3,9 @@
 namespace App\Providers;
 
 use Illuminate\Auth\Middleware\RedirectIfAuthenticated;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Support\Facades\URL;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -28,6 +28,7 @@ class AppServiceProvider extends ServiceProvider
 
         RedirectIfAuthenticated::redirectUsing(function ($request) {
             $redirectTo = $request->user()->hasRole('admin') ? 'admin.dashboard' : 'user.dashboard';
+
             return route($redirectTo);
         });
 

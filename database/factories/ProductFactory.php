@@ -21,7 +21,7 @@ class ProductFactory extends Factory
     public function definition(): array
     {
         $name = $this->faker->words(3, true);
-        
+
         return [
             'name' => $name,
             'slug' => Str::slug($name),
@@ -30,7 +30,7 @@ class ProductFactory extends Factory
             'weight' => $this->faker->numberBetween(50, 500), // grams
             'stock' => $this->faker->numberBetween(0, 100),
             'illustrations' => '[]', // Empty JSON array for illustrations
-            'promotedImage' => 'products/' . $this->faker->uuid() . '.jpg',
+            'promotedImage' => 'products/'.$this->faker->uuid().'.jpg',
             'price' => $this->faker->numberBetween(1000, 5000), // €10-50 in cents
             'stripe_link' => '',
         ];

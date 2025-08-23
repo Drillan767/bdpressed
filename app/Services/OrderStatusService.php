@@ -5,13 +5,13 @@ namespace App\Services;
 use App\Enums\OrderStatus;
 use App\Enums\PaymentStatus;
 use App\Enums\PaymentType;
+use App\Models\Order;
 use App\Models\OrderPayment;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Notification;
+use App\Notifications\AdminPaymentNotification;
 use App\Notifications\OrderPaymentLinkNotification;
 use App\Notifications\PaymentConfirmationNotification;
-use App\Notifications\AdminPaymentNotification;
-use App\Models\Order;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Notification;
 
 class OrderStatusService
 {
@@ -27,7 +27,7 @@ class OrderStatusService
                 $this->handlePaymentCompleted($order, $newStatus);
                 break;
 
-            // Add other status change handlers as needed
+                // Add other status change handlers as needed
             default:
                 return;
         }
@@ -44,12 +44,12 @@ class OrderStatusService
             ->where('status', PaymentStatus::PENDING)
             ->first();
 
-        if (!$existingPayment) {
+        if (! $existingPayment) {
             // Calculate final amount (order total + shipping)
             $finalAmount = $order->total->cents() + $order->shipmentFees->cents();
 
             // Calculate Stripe fee
-            $service = new StripeService();
+            $service = new StripeService;
             $stripeFee = $service->calculateStripeFee($finalAmount);
 
             // Create OrderPayment record
@@ -58,17 +58,18 @@ class OrderStatusService
                 'status' => PaymentStatus::PENDING,
                 'amount' => $finalAmount,
                 'stripe_fee' => $stripeFee,
-                'description' => 'Paiement pour la commande #' . $order->reference,
+                'description' => 'Paiement pour la commande #'.$order->reference,
             ]);
 
             // Create Stripe payment link
-            $service = new StripeService();
+            $service = new StripeService;
             $paymentLink = $service->createPaymentLink($order);
 
             if ($paymentLink) {
                 $payment->update(['stripe_payment_link' => $paymentLink]);
             } else {
-                Log::error('Failed to create payment link for order ' . $order->id);
+                Log::error('Failed to create payment link for order '.$order->id);
+
                 return;
             }
         } else {
@@ -103,7 +104,7 @@ class OrderStatusService
 
         Log::info('Order payment completed', [
             'order_id' => $order->id,
-            'order_reference' => $order->reference
+            'order_reference' => $order->reference,
         ]);
 
         // Send confirmation emails (will implement next)
@@ -126,7 +127,7 @@ class OrderStatusService
         // You'll need to define who should receive admin notifications
         $adminEmails = config('app.admin_emails', []); // Configure in config/app.php
 
-        if (!empty($adminEmails)) {
+        if (! empty($adminEmails)) {
             Notification::route('mail', $adminEmails)
                 ->notify(new AdminPaymentNotification($order));
         }
@@ -138,7 +139,7 @@ class OrderStatusService
         Log::info('Payment confirmation notifications sent', [
             'order_id' => $order->id,
             'customer_notified' => $order->guest()->exists() || $order->user()->exists(),
-            'admin_notified' => !empty($adminEmails)
+            'admin_notified' => ! empty($adminEmails),
         ]);
     }
 }

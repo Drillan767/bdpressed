@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use Inertia\Inertia;
+use App\Models\Comic;
 use App\Settings\WebsiteSettings;
 use Illuminate\Http\JsonResponse;
-use App\Models\Comic;
+use Inertia\Inertia;
 
 class VisitorsController extends Controller
 {

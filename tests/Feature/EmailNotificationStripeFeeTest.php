@@ -1,7 +1,6 @@
 <?php
 
 use App\Models\Order;
-use App\Models\OrderDetail;
 use App\Models\OrderPayment;
 use App\Models\Product;
 use App\Models\User;
@@ -10,7 +9,6 @@ use App\Notifications\PaymentConfirmationNotification;
 use App\Services\OrderService;
 use App\Services\StripeService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Notifications\Messages\MailMessage;
 
 uses(RefreshDatabase::class);
 
@@ -22,7 +20,7 @@ describe('Email Notifications - Stripe Fee TDD Tests', function () {
 
     describe('StripeService Fee Calculations - Core Logic', function () {
         it('calculates EU Stripe fees correctly', function () {
-            $stripeService = new StripeService();
+            $stripeService = new StripeService;
 
             // Test EU rates: 1.5% + €0.25 (25 cents)
             expect($stripeService->calculateStripeFee(1000))->toBe(40)
@@ -33,7 +31,7 @@ describe('Email Notifications - Stripe Fee TDD Tests', function () {
         });
 
         it('calculates UK Stripe fees correctly', function () {
-            $stripeService = new StripeService();
+            $stripeService = new StripeService;
 
             // Test UK rates: 2.5% + €0.25 (25 cents)
             expect($stripeService->calculateStripeFee(1000, 'UK'))->toBe(50)
@@ -63,7 +61,7 @@ describe('Email Notifications - Stripe Fee TDD Tests', function () {
                 $notification->toMail($this->user);
             })
                 ->toThrow(Error::class)
-                ->and(function () use($order) {
+                ->and(function () use ($order) {
                     $notification = new PaymentConfirmationNotification($order);
                     $notification->toMail($this->user);
                 })->toThrow(Error::class); // Should throw "Call to undefined method stripeFees()"

@@ -15,7 +15,7 @@ use Spatie\Permission\Traits\HasRoles;
 class User extends Authenticatable implements MustVerifyEmail
 {
     /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable, hasRoles;
+    use HasFactory, hasRoles, Notifiable;
 
     public function orders(): HasMany
     {

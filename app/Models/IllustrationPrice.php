@@ -2,10 +2,10 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Attributes\ObservedBy;
-use App\Observers\IllustrationPriceObserver;
-use Illuminate\Database\Eloquent\Model;
 use App\Casts\MoneyCast;
+use App\Observers\IllustrationPriceObserver;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Illuminate\Database\Eloquent\Model;
 
 #[ObservedBy(IllustrationPriceObserver::class)]
 class IllustrationPrice extends Model
@@ -23,4 +23,4 @@ class IllustrationPrice extends Model
         'price' => MoneyCast::class,
         'metadata' => 'array',
     ];
-} 
+}

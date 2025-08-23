@@ -2,15 +2,15 @@
 
 namespace App\Models;
 
+use App\Casts\MoneyCast;
+use App\Enums\OrderStatus;
+use App\StateMachines\OrderStateMachine;
+use App\Traits\HasStateMachine;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use App\Enums\OrderStatus;
-use App\Casts\MoneyCast;
-use App\Traits\HasStateMachine;
-use App\StateMachines\OrderStateMachine;
 
 /**
  * @property int $id
@@ -82,7 +82,7 @@ class Order extends Model
 
     protected function getStateMachine(): OrderStateMachine
     {
-        return new OrderStateMachine();
+        return new OrderStateMachine;
     }
 
     protected function getCurrentState(): OrderStatus

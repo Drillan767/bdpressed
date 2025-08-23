@@ -3,10 +3,9 @@
 namespace App\Actions\Order;
 
 use App\Http\Requests\OrderRequest;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Auth\Events\Registered;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class RegisterClientAction
 {

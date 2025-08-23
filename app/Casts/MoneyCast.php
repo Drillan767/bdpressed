@@ -14,7 +14,8 @@ class MoneyCast implements CastsAttributes
      */
     public function get(Model $model, string $key, mixed $value, array $attributes): object
     {
-        return new class((int) $value) implements \JsonSerializable {
+        return new class((int) $value) implements \JsonSerializable
+        {
             public function __construct(public readonly int $cents) {}
 
             // Raw cents for calculations
@@ -32,7 +33,7 @@ class MoneyCast implements CastsAttributes
             // Formatted string for display
             public function formatted(): string
             {
-                return number_format($this->euros(), 2, ',', ' ') . '€';
+                return number_format($this->euros(), 2, ',', ' ').'€';
             }
 
             // For JSON serialization - return object with all values
@@ -80,6 +81,7 @@ class MoneyCast implements CastsAttributes
                 // Replace comma with dot for parsing
                 $stringValue = str_replace(',', '.', $stringValue);
                 $euros = (float) $stringValue;
+
                 return (int) round($euros * 100);
             }
         }

@@ -27,6 +27,7 @@ class ProductController extends Controller
             'created_at',
             'updated_at',
         ]);
+
         return Inertia::render('Admin/Products/Index', compact('products'));
     }
 
@@ -41,13 +42,13 @@ class ProductController extends Controller
     {
         // dd($product->getOriginal('price')->cents / 100);
         return response()->json([
-            ... $product->toArray(),
+            ...$product->toArray(),
             'price' => $product->getOriginal('price')->cents / 100]);
     }
 
     public function store(Request $request): void
     {
-        $product = new Product();
+        $product = new Product;
         $product->name = $request->get('name');
         $product->slug = Str::slug($request->get('name'));
         $product->weight = $request->get('weight');
@@ -66,7 +67,7 @@ class ProductController extends Controller
         $illustrationsPath = [];
 
         if ($request->hasFile('illustrations')) {
-            foreach($request->file('illustrations') as $illustration) {
+            foreach ($request->file('illustrations') as $illustration) {
                 Storage::putFileAs(
                     "articles/{$product->id}",
                     $illustration,
@@ -107,7 +108,7 @@ class ProductController extends Controller
         if ($request->hasFile('illustrations')) {
             $illustrationsPath = [];
 
-            foreach($request->file('illustrations') as $illustration) {
+            foreach ($request->file('illustrations') as $illustration) {
                 Storage::putFileAs(
                     "articles/{$product->id}",
                     $illustration,

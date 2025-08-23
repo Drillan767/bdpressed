@@ -2,16 +2,16 @@
 
 namespace App\Actions\Order;
 
+use App\Enums\IllustrationStatus;
+use App\Enums\OrderStatus;
 use App\Http\Requests\OrderRequest;
 use App\Models\Illustration;
 use App\Models\Order;
 use App\Models\OrderDetail;
 use App\Models\Product;
 use App\Services\IllustrationService;
-use Illuminate\Support\Str;
-use App\Enums\OrderStatus;
 use Illuminate\Support\Collection;
-use App\Enums\IllustrationStatus;
+use Illuminate\Support\Str;
 
 class HandleOrderAction
 {
@@ -26,10 +26,10 @@ class HandleOrderAction
             'same' => $useSame,
         ] = $addressesInfos;
 
-        $illustrationService = new IllustrationService();
+        $illustrationService = new IllustrationService;
         [$totalPrice, $shipFee] = $this->definePrice($products, $request->get('products'), $illustrationService);
 
-        $order = new Order();
+        $order = new Order;
         $order->total = $totalPrice;
         $order->shipmentFees = $shipFee;
         $order->reference = $this->defineReference();
@@ -99,7 +99,7 @@ class HandleOrderAction
 
         $reference = strtoupper(Str::random(8));
 
-        while($orders->contains('reference', $reference)) {
+        while ($orders->contains('reference', $reference)) {
             $reference = strtoupper(Str::random(8));
         }
 
@@ -108,7 +108,7 @@ class HandleOrderAction
 
     private function handleItemOrder($product, $products, $order): void
     {
-        $orderDetail = new OrderDetail();
+        $orderDetail = new OrderDetail;
         $orderDetail->order_id = $order->id;
         $orderDetail->product_id = $product['id'];
         $orderDetail->quantity = $product['quantity'];
@@ -119,13 +119,13 @@ class HandleOrderAction
 
     private function handleIllustrationOrder(array $details, $order, IllustrationService $illustrationService): void
     {
-        $type = match($details['illustrationType']) {
+        $type = match ($details['illustrationType']) {
             'bust' => 'bust',
             'fl' => 'full_length',
             'animal' => 'animal',
         };
-        
-        $illustration = new Illustration();
+
+        $illustration = new Illustration;
         $illustration->type = $type;
         $illustration->nbHumans = $details['addedHuman'];
         $illustration->nbAnimals = $details['addedAnimal'];

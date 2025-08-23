@@ -54,7 +54,7 @@ class OrderStateMachine
         $availableValues = $this->transitions[$fromValue] ?? [];
 
         return array_map(
-            fn($value) => OrderStatus::from($value),
+            fn ($value) => OrderStatus::from($value),
             $availableValues
         );
     }

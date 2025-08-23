@@ -10,8 +10,7 @@ class OrderService
     public function __construct(
         private readonly WebsiteSettings $websiteSettings,
         private readonly StripeService $stripeService,
-    )
-    {}
+    ) {}
 
     /**
      * Calculate fees - automatically uses actual fees if payment exists, otherwise estimates
@@ -30,7 +29,7 @@ class OrderService
         }
 
         // Fallback to estimates (for new orders or when payments not loaded)
-        $totalWeight = $order->details->sum(fn($detail) => $detail->product->weight * $detail->quantity);
+        $totalWeight = $order->details->sum(fn ($detail) => $detail->product->weight * $detail->quantity);
         $totalWeight += $order->illustrations->count() * $this->websiteSettings->illustration_weight;
         $totalWeight += $this->websiteSettings->shipping_default_weight;
 

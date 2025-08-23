@@ -17,7 +17,7 @@ uses(RefreshDatabase::class);
 describe('Email Notifications with Stripe Fee Logic', function () {
     beforeEach(function () {
         $this->user = User::factory()->create([
-            'email' => 'test@example.com'
+            'email' => 'test@example.com',
         ]);
         $this->order = Order::factory()->forUser($this->user)->create([
             'total' => 5000, // €50.00 in cents
@@ -33,7 +33,7 @@ describe('Email Notifications with Stripe Fee Logic', function () {
 
     describe('Stripe Fee Calculation Logic', function () {
         it('calculates EU Stripe fees correctly', function () {
-            $stripeService = new StripeService();
+            $stripeService = new StripeService;
 
             // Test various amounts with EU rates (1.5% + €0.25)
             expect($stripeService->calculateStripeFee(1000))->toBe(40)
@@ -44,7 +44,7 @@ describe('Email Notifications with Stripe Fee Logic', function () {
         });
 
         it('calculates UK Stripe fees correctly', function () {
-            $stripeService = new StripeService();
+            $stripeService = new StripeService;
 
             // Test various amounts with UK rates (2.5% + €0.25)
             expect($stripeService->calculateStripeFee(1000, 'UK'))->toBe(50)

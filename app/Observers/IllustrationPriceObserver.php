@@ -4,7 +4,6 @@ namespace App\Observers;
 
 use App\Models\IllustrationPrice;
 use App\Services\StripeService;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Contracts\Events\ShouldHandleEventsAfterCommit;
 
 class IllustrationPriceObserver implements ShouldHandleEventsAfterCommit

@@ -25,7 +25,7 @@ class OrderFactory extends Factory
         return [
             'total' => $this->faker->numberBetween(1000, 10000), // €10-100 in cents
             'shipmentFees' => $this->faker->numberBetween(400, 700), // €4-7 in cents
-            'reference' => 'ORD-' . $this->faker->unique()->numberBetween(100000, 999999),
+            'reference' => 'ORD-'.$this->faker->unique()->numberBetween(100000, 999999),
             'additionalInfos' => $this->faker->optional()->sentence(),
             'user_id' => User::factory(),
             'guest_id' => null,
@@ -55,7 +55,7 @@ class OrderFactory extends Factory
         return $this->state(function (array $attributes) use ($user) {
             $shippingAddress = Address::factory()->create(['user_id' => $user->id]);
             $billingAddress = Address::factory()->create(['user_id' => $user->id]);
-            
+
             return [
                 'user_id' => $user->id,
                 'guest_id' => null,

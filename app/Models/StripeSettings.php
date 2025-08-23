@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class StripeSettings extends Model
 {
     public $timestamps = false;
-    
+
     /*
         TODO:
         - Setup create / update / delete events for Product model

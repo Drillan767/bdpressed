@@ -21,7 +21,7 @@ class DatabaseSeeder extends Seeder
             Role::create(['name' => 'user']);
         }
 
-        if (!User::where('email', 'oddejade@gmail.com')->exists()) {
+        if (! User::where('email', 'oddejade@gmail.com')->exists()) {
             $jade = User::create([
                 'email' => 'oddejade@gmail.com',
                 'email_verified_at' => '2024-12-26 18:47:56',
@@ -31,7 +31,7 @@ class DatabaseSeeder extends Seeder
             $jade->assignRole('admin');
         }
 
-        if (!User::where('email', 'jlevarato@pm.me')->exists()) {
+        if (! User::where('email', 'jlevarato@pm.me')->exists()) {
             $dev = User::create([
                 'email' => 'jlevarato@pm.me',
                 'email_verified_at' => '2024-12-26 18:47:56',

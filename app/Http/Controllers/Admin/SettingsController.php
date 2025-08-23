@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers\Admin;
 
-use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\IllustrationSettingsRequest;
 use App\Http\Requests\WebsiteSettingsRequest;
-use App\Settings\WebsiteSettings;
 use App\Models\IllustrationPrice;
-use Inertia\Response;
+use App\Settings\WebsiteSettings;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
+use Inertia\Response;
 
 class SettingsController extends Controller
 {
@@ -37,16 +37,17 @@ class SettingsController extends Controller
     public function illustration()
     {
         $settings = IllustrationPrice::all();
+
         return Inertia::render('Admin/Settings/Illustration', compact('settings'));
     }
 
     public function updateIllustration(IllustrationSettingsRequest $request)
     {
         $data = $request->all();
-        
+
         // Get all illustration prices
         $settings = IllustrationPrice::all();
-        
+
         // Update only the values that have changed
         foreach ($settings as $setting) {
             if (isset($data[$setting->key]) && $data[$setting->key] != $setting->price) {

@@ -46,4 +46,4 @@ class IllustrationPriceSeeder extends Seeder
             IllustrationPrice::create($price);
         }
     }
-} 
+}

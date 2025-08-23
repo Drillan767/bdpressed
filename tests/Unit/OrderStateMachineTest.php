@@ -5,7 +5,7 @@ use App\StateMachines\OrderStateMachine;
 
 describe('OrderStateMachine', function () {
     beforeEach(function () {
-        $this->stateMachine = new OrderStateMachine();
+        $this->stateMachine = new OrderStateMachine;
     });
 
     describe('valid transitions', function () {

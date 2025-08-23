@@ -47,7 +47,7 @@ class OrderPaymentFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'status' => 'paid',
-            'stripe_payment_intent_id' => 'pi_' . $this->faker->uuid(),
+            'stripe_payment_intent_id' => 'pi_'.$this->faker->uuid(),
             'stripe_fee' => intval($attributes['amount'] * 0.015) + 25, // 1.5% + €0.25
             'paid_at' => now(),
         ]);
@@ -67,11 +67,11 @@ class OrderPaymentFactory extends Factory
     /**
      * Create refunded payment
      */
-    public function refunded(int $refundAmount = null): static
+    public function refunded(?int $refundAmount = null): static
     {
         return $this->state(function (array $attributes) use ($refundAmount) {
             $refundAmount = $refundAmount ?? $attributes['amount'];
-            
+
             return [
                 'status' => 'refunded',
                 'refunded_amount' => $refundAmount,

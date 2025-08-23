@@ -2,13 +2,13 @@
 
 namespace App\Models;
 
+use App\Casts\MoneyCast;
+use App\Observers\ProductObserver;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Support\Facades\Storage;
-use App\Observers\ProductObserver;
-use App\Casts\MoneyCast;
 
 /**
  * @property int $id
@@ -28,6 +28,7 @@ use App\Casts\MoneyCast;
 class Product extends Model
 {
     use HasFactory;
+
     protected $casts = [
         'created_at' => 'datetime:d/m/Y H:i',
         'updated_at' => 'datetime:d/m/Y H:i',
@@ -38,7 +39,7 @@ class Product extends Model
     public function illustrations(): Attribute
     {
         return Attribute::make(
-            get: function($illustrations) {
+            get: function ($illustrations) {
                 $parsedPaths = json_decode($illustrations, true);
 
                 return array_map(function ($illustration) {
@@ -52,5 +53,4 @@ class Product extends Model
             }
         );
     }
-
 }

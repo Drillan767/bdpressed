@@ -8,7 +8,6 @@ use App\Models\Address;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
-use Illuminate\Http\RedirectResponse;
 
 class AddressesController extends Controller
 {
@@ -39,7 +38,7 @@ class AddressesController extends Controller
 
     public function store(Request $request): void
     {
-        $address = new Address();
+        $address = new Address;
         $address->fill($request->all());
         // TODO: Fix later.
         $address->street2 = '';
