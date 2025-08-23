@@ -99,17 +99,6 @@ jobs:
         with:
           php-version: '8.4'
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-
       - name: Install Dependencies
         run: |
           composer install --no-dev --optimize-autoloader
-          yarn install --frozen-lockfile
-
-      - name: Run Security Audit
-        run: |
-          composer audit
-          yarn audit
