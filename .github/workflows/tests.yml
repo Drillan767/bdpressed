@@ -88,17 +88,3 @@ jobs:
           DB_USERNAME: root
           DB_PASSWORD: password
         run: php artisan test
-
-  security-audit:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.4'
-
-      - name: Install Dependencies
-        run: |
-          composer install --no-dev --optimize-autoloader

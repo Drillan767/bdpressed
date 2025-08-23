@@ -10,5 +10,9 @@ export default antfu({
         'vue/valid-v-slot': 'off',
         'vue/prop-name-casing': 'off',
     },
-    ignores: ['.github/*'],
+    ignores: [
+        '.github/*',
+        '*.yml',
+        '*.yaml',
+    ],
 })
