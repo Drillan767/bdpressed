@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -28,7 +29,7 @@ use App\StateMachines\OrderStateMachine;
  */
 class Order extends Model
 {
-    use HasStateMachine;
+    use HasFactory, HasStateMachine;
 
     public function guest(): BelongsTo
     {
