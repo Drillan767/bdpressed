@@ -3,7 +3,7 @@
 use App\Models\User;
 
 test('login screen can be rendered', function () {
-    $response = $this->get('/login');
+    $response = $this->get('/connexion');
 
     $response->assertStatus(200);
 });
@@ -17,7 +17,7 @@ test('users can authenticate using the login screen', function () {
     ]);
 
     $this->assertAuthenticated();
-    $response->assertRedirect(route('dashboard', absolute: false));
+    $response->assertRedirect(route('user.dashboard', absolute: false));
 });
 
 test('users can not authenticate with invalid password', function () {
