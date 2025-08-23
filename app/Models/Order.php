@@ -117,6 +117,7 @@ class Order extends Model
         return Attribute::make(
             get: function () {
                 $orderService = app(OrderService::class);
+
                 return $orderService->calculateStripeFeesOnly($this);
             }
         );

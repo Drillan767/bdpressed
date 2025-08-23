@@ -52,7 +52,7 @@ class MoneyService
     {
         $cents1 = is_object($money1) ? $money1->cents() : (int) $money1;
         $cents2 = is_object($money2) ? $money2->cents() : (int) $money2;
-        
+
         return $this->createMoneyObject($cents1 + $cents2);
     }
 
@@ -63,7 +63,7 @@ class MoneyService
     {
         $cents1 = is_object($money1) ? $money1->cents() : (int) $money1;
         $cents2 = is_object($money2) ? $money2->cents() : (int) $money2;
-        
+
         return $this->createMoneyObject($cents1 - $cents2);
     }
 }

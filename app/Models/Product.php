@@ -43,7 +43,7 @@ class Product extends Model
                 $parsedPaths = json_decode($illustrations, true);
 
                 // Handle cases where json_decode returns null or non-array
-                if (!is_array($parsedPaths)) {
+                if (! is_array($parsedPaths)) {
                     return [];
                 }
 

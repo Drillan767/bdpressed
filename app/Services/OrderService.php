@@ -55,6 +55,7 @@ class OrderService
 
         // Fallback to estimated Stripe fees
         $estimatedStripeFee = $this->stripeService->calculateStripeFee($order->total->cents());
+
         return $this->moneyService->createMoneyObject($estimatedStripeFee);
     }
 
