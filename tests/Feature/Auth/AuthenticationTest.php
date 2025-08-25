@@ -2,6 +2,7 @@
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Spatie\Permission\Models\Role;
 
 uses(RefreshDatabase::class);
 
@@ -12,7 +13,11 @@ test('login screen can be rendered', function () {
 });
 
 test('users can authenticate using the login screen', function () {
+    Role::create(['name' => 'user']);
+    Role::create(['name' => 'admin']);
+
     $user = User::factory()->create();
+    $user->assignRole('user');
 
     $response = $this->post('/login', [
         'email' => $user->email,
@@ -35,7 +40,11 @@ test('users can not authenticate with invalid password', function () {
 });
 
 test('users can logout', function () {
+    Role::create(['name' => 'user']);
+    Role::create(['name' => 'admin']);
+
     $user = User::factory()->create();
+    $user->assignRole('user');
 
     $response = $this->actingAs($user)->post('/logout');
 
