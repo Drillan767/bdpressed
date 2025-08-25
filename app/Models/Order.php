@@ -2,14 +2,17 @@
 
 namespace App\Models;
 
+use App\Casts\MoneyCast;
+use App\Enums\OrderStatus;
+use App\Services\OrderService;
+use App\StateMachines\OrderStateMachine;
+use App\Traits\HasStateMachine;
+use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use App\Enums\OrderStatus;
-use App\Casts\MoneyCast;
-use App\Traits\HasStateMachine;
-use App\StateMachines\OrderStateMachine;
 
 /**
  * @property int $id
@@ -28,7 +31,7 @@ use App\StateMachines\OrderStateMachine;
  */
 class Order extends Model
 {
-    use HasStateMachine;
+    use HasFactory, HasStateMachine;
 
     public function guest(): BelongsTo
     {
@@ -81,7 +84,7 @@ class Order extends Model
 
     protected function getStateMachine(): OrderStateMachine
     {
-        return new OrderStateMachine();
+        return new OrderStateMachine;
     }
 
     protected function getCurrentState(): OrderStatus
@@ -107,6 +110,17 @@ class Order extends Model
     public function getAvailableStatuses(): array
     {
         return $this->getStateMachine()->getAvailableTransitions($this->status);
+    }
+
+    public function stripeFees(): Attribute
+    {
+        return Attribute::make(
+            get: function () {
+                $orderService = app(OrderService::class);
+
+                return $orderService->calculateStripeFeesOnly($this);
+            }
+        );
     }
 
     protected function executeAfterTransitionCallbacks($fromState, $toState, array $context): void

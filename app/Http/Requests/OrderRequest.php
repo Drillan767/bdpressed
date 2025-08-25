@@ -3,10 +3,8 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rules\Password;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rules\Password;
 
 class OrderRequest extends FormRequest
 {
@@ -15,7 +13,7 @@ class OrderRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return !$this->user() || $this->user()->hasRole('user');
+        return ! $this->user() || $this->user()->hasRole('user');
     }
 
     /**
@@ -35,7 +33,7 @@ class OrderRequest extends FormRequest
             'email:rfc,dns',
         ];
 
-        if (!$this->user()) {
+        if (! $this->user()) {
             $guestEmailRule[] = 'unique:users,email';
             $guestEmailRule[] = function ($attribute, $value, $fail) {
                 if (DB::table('guests')->where('email', $value)->exists()) {

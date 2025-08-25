@@ -7,13 +7,14 @@ use App\Exceptions\InvalidStateTransitionException;
 trait HasStateMachine
 {
     protected static $beforeTransitionCallbacks = [];
+
     protected static $afterTransitionCallbacks = [];
 
     public function canTransitionTo(string|object $toState): bool
     {
         $stateMachine = $this->getStateMachine();
         $currentState = $this->getCurrentState();
-        
+
         return $stateMachine->canTransition($currentState, $toState);
     }
 
@@ -23,7 +24,7 @@ trait HasStateMachine
         $currentState = $this->getCurrentState();
         $toStateValue = is_object($toState) ? $toState->value : $toState;
 
-        if (!$stateMachine->canTransition($currentState, $toState)) {
+        if (! $stateMachine->canTransition($currentState, $toState)) {
             $currentStateValue = is_object($currentState) ? $currentState->value : $currentState;
             throw new InvalidStateTransitionException(
                 "Cannot transition from {$currentStateValue} to {$toStateValue}"
@@ -31,7 +32,7 @@ trait HasStateMachine
         }
 
         $this->executeBeforeTransitionCallbacks($currentState, $toState, $context);
-        
+
         $this->setCurrentState($toState);
         $this->save();
 
@@ -56,7 +57,7 @@ trait HasStateMachine
     {
         $key = static::getTransitionKey($fromState, $toState);
         $callbacks = static::$beforeTransitionCallbacks[static::class][$key] ?? [];
-        
+
         foreach ($callbacks as $callback) {
             $callback($this, $fromState, $toState, $context);
         }
@@ -66,7 +67,7 @@ trait HasStateMachine
     {
         $key = static::getTransitionKey($fromState, $toState);
         $callbacks = static::$afterTransitionCallbacks[static::class][$key] ?? [];
-        
+
         foreach ($callbacks as $callback) {
             $callback($this, $fromState, $toState, $context);
         }
@@ -76,11 +77,13 @@ trait HasStateMachine
     {
         $from = is_object($fromState) ? $fromState->value : $fromState;
         $to = is_object($toState) ? $toState->value : $toState;
-        
+
         return "{$from}->{$to}";
     }
 
     abstract protected function getStateMachine();
+
     abstract protected function getCurrentState();
+
     abstract protected function setCurrentState($state): void;
 }

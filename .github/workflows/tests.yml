@@ -1,0 +1,99 @@
+name: Laravel CI/CD
+
+on:
+  push:
+    branches: [ main, 93-write-some-tests ]
+  pull_request:
+    branches: [ main, 93-write-some-tests ]
+
+jobs:
+  laravel-tests:
+    runs-on: ubuntu-latest
+
+    services:
+      mariadb:
+        image: mariadb:10.11
+        env:
+          MARIADB_ROOT_PASSWORD: password
+          MARIADB_DATABASE: testing
+          MARIADB_USER: laravel
+          MARIADB_PASSWORD: password
+        ports:
+          - 3306:3306
+        options: --health-cmd="healthcheck.sh --connect --innodb_initialized" --health-interval=10s --health-timeout=5s --health-retries=3
+
+    strategy:
+      matrix:
+        php-versions: ['8.4']
+        node-versions: ['22']
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.composer/cache/files
+          key: dependencies-composer-${{ hashFiles('composer.lock') }}
+          restore-keys: |
+            dependencies-composer-
+
+      - name: Cache Yarn dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/yarn
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-versions }}
+          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, bcmath, soap, intl, gd, exif, iconv, mysql, pdo_mysql
+          coverage: xdebug
+          tools: composer:v2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-versions }}
+
+      - name: Install MariaDB client
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y mariadb-client
+
+      - name: Install Composer dependencies
+        run: composer install --prefer-dist --no-progress --no-suggest --no-interaction --optimize-autoloader
+
+      - name: Install Node.js dependencies
+        run: corepack yarn install --frozen-lockfile
+
+      - name: Build assets
+        run: corepack yarn build
+
+      - name: Handling env file
+        run: |
+          echo "APP_KEY=${{ secrets.TEST_APP_KEY }}" >> .env.testing
+          echo "STRIPE_PUBLIC_KEY=${{ secrets.STRIPE_PUBLIC_KEY }}" >> .env.testing
+          echo "STRIPE_SECRET_KEY=${{ secrets.STRIPE_SECRET_KEY }}" >> .env.testing
+          echo "STRIPE_WEBHOOK_SECRET=${{ secrets.STRIPE_WEBHOOK_SECRET }}" >> .env.testing
+          cp .env.testing .env
+
+      - name: Set directory permissions
+        run: chmod -R 755 storage bootstrap/cache
+
+      - name: Check code style with Pint
+        run: ./vendor/bin/pint --test
+
+      - name: Run database migrations
+        run: php artisan migrate --force
+
+      - name: Run database seeders (optional)
+        run: php artisan db:seed --force
+        continue-on-error: true
+
+      - name: Run tests
+        run: php artisan test # --coverage --min=80

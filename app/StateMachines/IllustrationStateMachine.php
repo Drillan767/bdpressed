@@ -53,9 +53,9 @@ class IllustrationStateMachine
     {
         $fromValue = is_object($fromState) ? $fromState->value : $fromState;
         $availableValues = $this->transitions[$fromValue] ?? [];
-        
+
         return array_map(
-            fn($value) => IllustrationStatus::from($value),
+            fn ($value) => IllustrationStatus::from($value),
             $availableValues
         );
     }
@@ -65,7 +65,7 @@ class IllustrationStateMachine
         $fromValue = is_object($fromState) ? $fromState->value : $fromState;
 
         // Full refund possible before CLIENT_REVIEW approval
-        return !in_array($fromValue, [
+        return ! in_array($fromValue, [
             IllustrationStatus::PAYMENT_PENDING->value,
             IllustrationStatus::COMPLETED->value,
         ]);
@@ -77,21 +77,21 @@ class IllustrationStateMachine
         $toValue = is_object($toState) ? $toState->value : $toState;
 
         // CLIENT_REVIEW → PAYMENT_PENDING is the point of no return
-        return $fromValue === IllustrationStatus::CLIENT_REVIEW->value 
+        return $fromValue === IllustrationStatus::CLIENT_REVIEW->value
             && $toValue === IllustrationStatus::PAYMENT_PENDING->value;
     }
 
     public function requiresWarning($fromState, $toState): bool
     {
         $toValue = is_object($toState) ? $toState->value : $toState;
-        
+
         return $toValue === IllustrationStatus::CANCELLED->value;
     }
 
     public function triggersPaymentLink($fromState, $toState): bool
     {
         $toValue = is_object($toState) ? $toState->value : $toState;
-        
+
         return in_array($toValue, [
             IllustrationStatus::DEPOSIT_PENDING->value,
             IllustrationStatus::PAYMENT_PENDING->value,

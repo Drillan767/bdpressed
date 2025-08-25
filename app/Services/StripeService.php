@@ -32,7 +32,8 @@ class StripeService
             try {
                 return $this->client->products->retrieve($stripeProductId);
             } catch (\Exception $e) {
-                Log::error('Error retrieving Stripe product: ' . $e->getMessage());
+                Log::error('Error retrieving Stripe product: '.$e->getMessage());
+
                 return null;
             }
         } else {
@@ -48,12 +49,12 @@ class StripeService
         $images = [];
 
         // Add a promoted image if it exists
-        if (!empty($product->promotedImage)) {
+        if (! empty($product->promotedImage)) {
             $images[] = URL::to($product->promotedImage);
         }
 
         // Add illustrations if they exist
-        if (!empty($product->illustrations)) {
+        if (! empty($product->illustrations)) {
             foreach ($product->illustrations as $illustration) {
                 if (isset($illustration['path'])) {
                     $images[] = URL::to($illustration['path']);
@@ -81,7 +82,7 @@ class StripeService
 
             // Add images if available
             $images = $this->getProductImages($product);
-            if (!empty($images)) {
+            if (! empty($images)) {
                 $productData['images'] = $images;
             }
 
@@ -100,7 +101,8 @@ class StripeService
 
             return $stripeProduct;
         } catch (\Exception $e) {
-            Log::error('Error creating Stripe product: ' . $e->getMessage());
+            Log::error('Error creating Stripe product: '.$e->getMessage());
+
             return null;
         }
     }
@@ -126,7 +128,7 @@ class StripeService
 
             // Add images if available
             $images = $this->getProductImages($product);
-            if (!empty($images)) {
+            if (! empty($images)) {
                 $productData['images'] = $images;
             }
 
@@ -140,7 +142,8 @@ class StripeService
 
             return $stripeProduct;
         } catch (\Exception $e) {
-            Log::error('Error updating Stripe product: ' . $e->getMessage());
+            Log::error('Error updating Stripe product: '.$e->getMessage());
+
             return null;
         }
     }
@@ -154,11 +157,11 @@ class StripeService
             // Get all active prices for the product
             $prices = $this->client->prices->all([
                 'product' => $product->stripe_link,
-                'active' => true
+                'active' => true,
             ]);
 
             // If there are active prices, check if the price has changed
-            if (!empty($prices->data)) {
+            if (! empty($prices->data)) {
                 $currentPrice = $prices->data[0];
                 $currentAmountCents = $currentPrice->unit_amount; // Already in cents
 
@@ -185,7 +188,7 @@ class StripeService
                 ]);
             }
         } catch (\Exception $e) {
-            Log::error('Error updating product price in Stripe: ' . $e->getMessage());
+            Log::error('Error updating product price in Stripe: '.$e->getMessage());
         }
     }
 
@@ -207,9 +210,11 @@ class StripeService
 
             // Delete the product
             $deletedProduct = $this->client->products->delete($product->stripe_link);
+
             return $deletedProduct;
         } catch (\Exception $e) {
-            Log::error('Error deleting Stripe product: ' . $e->getMessage());
+            Log::error('Error deleting Stripe product: '.$e->getMessage());
+
             return null;
         }
     }
@@ -226,13 +231,13 @@ class StripeService
                 'metadata' => [
                     'price_key' => $illustrationPrice->key,
                     'category' => explode('_', $illustrationPrice->key)[0] ?? 'default',
-                    'type' => 'illustration_price'
-                ]
+                    'type' => 'illustration_price',
+                ],
             ];
 
             return $this->client->products->create($productData);
         } catch (\Exception $e) {
-            Log::error('Error creating Stripe product for illustration price: ' . $e->getMessage());
+            Log::error('Error creating Stripe product for illustration price: '.$e->getMessage());
             throw $e;
         }
     }
@@ -249,7 +254,7 @@ class StripeService
                 'currency' => 'eur',
             ]);
         } catch (\Exception $e) {
-            Log::error('Error creating Stripe price for illustration price: ' . $e->getMessage());
+            Log::error('Error creating Stripe price for illustration price: '.$e->getMessage());
             throw $e;
         }
     }
@@ -267,8 +272,8 @@ class StripeService
                 'metadata' => [
                     'price_key' => $illustrationPrice->key,
                     'category' => explode('_', $illustrationPrice->key)[0] ?? 'default',
-                    'type' => 'illustration_price'
-                ]
+                    'type' => 'illustration_price',
+                ],
             ];
 
             $stripeProduct = $this->client->products->create($productData);
@@ -288,10 +293,11 @@ class StripeService
 
             return $illustrationPrice->saveQuietly();
         } catch (\Exception $e) {
-            Log::error('Error handling Stripe operations for illustration price: ' . $e->getMessage(), [
+            Log::error('Error handling Stripe operations for illustration price: '.$e->getMessage(), [
                 'illustration_price_id' => $illustrationPrice->id ?? null,
-                'exception' => $e
+                'exception' => $e,
             ]);
+
             return false;
         }
     }
@@ -311,8 +317,8 @@ class StripeService
                         'metadata' => [
                             'price_key' => $illustrationPrice->key,
                             'category' => explode('_', $illustrationPrice->key)[0] ?? 'default',
-                            'type' => 'illustration_price'
-                        ]
+                            'type' => 'illustration_price',
+                        ],
                     ]
                 );
 
@@ -335,15 +341,18 @@ class StripeService
 
                     // Update model with new price ID
                     $illustrationPrice->stripe_price_id = $newPrice->id;
+
                     return $illustrationPrice->saveQuietly();
                 }
             }
+
             return true;
         } catch (\Exception $e) {
-            Log::error('Error handling Stripe update for illustration price: ' . $e->getMessage(), [
+            Log::error('Error handling Stripe update for illustration price: '.$e->getMessage(), [
                 'illustration_price_id' => $illustrationPrice->id ?? null,
-                'exception' => $e
+                'exception' => $e,
             ]);
+
             return false;
         }
     }
@@ -369,12 +378,14 @@ class StripeService
                     ['active' => false]
                 );
             }
+
             return true;
         } catch (\Exception $e) {
-            Log::error('Error handling Stripe deletion for illustration price: ' . $e->getMessage(), [
+            Log::error('Error handling Stripe deletion for illustration price: '.$e->getMessage(), [
                 'illustration_price_id' => $illustrationPrice->id ?? null,
-                'exception' => $e
+                'exception' => $e,
             ]);
+
             return false;
         }
     }
@@ -396,10 +407,10 @@ class StripeService
                 // Get an active price for this product
                 $prices = $this->client->prices->all([
                     'product' => $product->stripe_link,
-                    'active' => true
+                    'active' => true,
                 ]);
 
-                if (!empty($prices->data)) {
+                if (! empty($prices->data)) {
                     $lineItems[] = [
                         'price' => $prices->data[0]->id,
                         'quantity' => $detail->quantity,
@@ -439,10 +450,11 @@ class StripeService
             return $paymentLink->url;
 
         } catch (\Exception $e) {
-            Log::error('Error creating Stripe payment link: ' . $e->getMessage(), [
+            Log::error('Error creating Stripe payment link: '.$e->getMessage(), [
                 'order_id' => $order->id,
-                'exception' => $e
+                'exception' => $e,
             ]);
+
             return null;
         }
     }
@@ -468,15 +480,16 @@ class StripeService
             }
 
             Log::warning('No payment link found with order metadata for payment intent', [
-                'payment_intent_id' => $paymentIntentId
+                'payment_intent_id' => $paymentIntentId,
             ]);
 
             return null;
 
         } catch (\Exception $e) {
-            Log::error('Error finding order from payment intent: ' . $e->getMessage(), [
-                'payment_intent_id' => $paymentIntentId
+            Log::error('Error finding order from payment intent: '.$e->getMessage(), [
+                'payment_intent_id' => $paymentIntentId,
             ]);
+
             return null;
         }
     }
@@ -487,14 +500,14 @@ class StripeService
      */
     public function calculateStripeFee(int $amountCents, string $region = 'EU'): int
     {
-        $percentageFee = match($region) {
+        $percentageFee = match ($region) {
             'UK' => 0.025, // 2.5%
             'EU' => 0.015, // 1.5%
             default => 0.015 // Default to EU rate
         };
-        
+
         $fixedFee = 25; // €0.25 in cents
-        
+
         return intval($amountCents * $percentageFee) + $fixedFee;
     }
 
@@ -514,9 +527,9 @@ class StripeService
             // We'll update this in the webhook when payment_intent.succeeded fires
 
         } catch (\Exception $e) {
-            Log::error('Error updating payment with intent: ' . $e->getMessage(), [
+            Log::error('Error updating payment with intent: '.$e->getMessage(), [
                 'payment_id' => $payment->id,
-                'payment_link_url' => $paymentLinkUrl
+                'payment_link_url' => $paymentLinkUrl,
             ]);
         }
     }

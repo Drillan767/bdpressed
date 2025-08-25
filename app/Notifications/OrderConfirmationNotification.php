@@ -4,11 +4,10 @@ namespace App\Notifications;
 
 use App\Models\Order;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
-use Illuminate\Support\Number;
 use Illuminate\Support\HtmlString;
+use Illuminate\Support\Number;
 
 class OrderConfirmationNotification extends Notification
 {
@@ -48,9 +47,9 @@ class OrderConfirmationNotification extends Notification
             ->line(new HtmlString($this->orderTable($this->order)))
             ->linesIf(
                 $this->order->guest()->exists(), [
-                'Vos informations personnelles seront supprimées automatiquement si la commande est annulée ou 2 semaines après qu\'elle soit terminée.',
-                'Si vous souhaitez les conserver, il vous suffira de créer un compte en utilisant la même adresse e-mail que celle utilisée pour la commande.',
-            ]);
+                    'Vos informations personnelles seront supprimées automatiquement si la commande est annulée ou 2 semaines après qu\'elle soit terminée.',
+                    'Si vous souhaitez les conserver, il vous suffira de créer un compte en utilisant la même adresse e-mail que celle utilisée pour la commande.',
+                ]);
     }
 
     /**
@@ -72,7 +71,7 @@ class OrderConfirmationNotification extends Notification
         $table .= '<tr><th style="text-align: left">Nom</th><th style="text-align: right">Quantité</th><th style="text-align: right">Prix</th></tr>';
 
         foreach ($order->details as $detail) {
-            $table .= "<tr><td>{$detail->product->name}</td><td style='text-align: right'>{$detail->quantity}</td><td style='text-align: right'>" . Number::currency($detail->price->euros(), 'EUR', 'fr') . "</td></tr>";
+            $table .= "<tr><td>{$detail->product->name}</td><td style='text-align: right'>{$detail->quantity}</td><td style='text-align: right'>".Number::currency($detail->price->euros(), 'EUR', 'fr').'</td></tr>';
         }
 
         $totalFees = $order->shipmentFees->euros() + $order->stripeFees->euros();

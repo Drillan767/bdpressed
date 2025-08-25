@@ -2,14 +2,13 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use App\Models\Order;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Casts\MoneyCast;
-use App\Traits\HasStateMachine;
-use App\StateMachines\IllustrationStateMachine;
 use App\Enums\IllustrationStatus;
+use App\StateMachines\IllustrationStateMachine;
+use App\Traits\HasStateMachine;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * @property int $order_id
@@ -60,7 +59,7 @@ class Illustration extends Model
 
     protected function getStateMachine(): IllustrationStateMachine
     {
-        return new IllustrationStateMachine();
+        return new IllustrationStateMachine;
     }
 
     protected function getCurrentState(): IllustrationStatus

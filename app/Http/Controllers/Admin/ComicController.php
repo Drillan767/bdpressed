@@ -2,21 +2,22 @@
 
 namespace App\Http\Controllers\Admin;
 
-use Illuminate\Http\Request;
-use Inertia\Inertia;
-use Inertia\Response;
-use App\Http\Requests\CreateComicRequest;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Storage;
+use App\Http\Requests\CreateComicRequest;
 use App\Models\Comic;
 use App\Models\ComicPage;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Inertia\Inertia;
+use Inertia\Response;
 
 class ComicController extends Controller
 {
     public function index(): Response
     {
         $comics = Comic::withCount('pages')->get();
+
         return Inertia::render('Admin/Comics/Index', compact('comics'));
     }
 
@@ -41,13 +42,13 @@ class ComicController extends Controller
         Storage::putFileAs(
             "comics/{$comic->id}",
             $preview,
-            'preview.' . $preview->getClientOriginalExtension(),
+            'preview.'.$preview->getClientOriginalExtension(),
         );
 
         $comic->save();
 
         foreach ($request->file('images') as $i => $image) {
-            $fileName = 'page-' . ($i + 1) . '.' . $image->getClientOriginalExtension();
+            $fileName = 'page-'.($i + 1).'.'.$image->getClientOriginalExtension();
 
             ComicPage::create([
                 'comic_id' => $comic->id,
@@ -68,7 +69,7 @@ class ComicController extends Controller
     public function edit(string $slug): Response
     {
         $comic = Comic::where('slug', $slug)
-            ->with(['pages' => function($query) {
+            ->with(['pages' => function ($query) {
                 $query->orderBy('order');
             }])
             ->firstOrFail();
@@ -90,12 +91,12 @@ class ComicController extends Controller
         // Handle preview image update
         if ($request->hasFile('preview')) {
             $preview = $request->file('preview');
-            $previewPath = "/storage/comics/{$comic->id}/preview." . $preview->getClientOriginalExtension();
+            $previewPath = "/storage/comics/{$comic->id}/preview.".$preview->getClientOriginalExtension();
 
             Storage::putFileAs(
                 "comics/{$comic->id}",
                 $preview,
-                'preview.' . $preview->getClientOriginalExtension(),
+                'preview.'.$preview->getClientOriginalExtension(),
             );
 
             $comic->update(['preview' => $previewPath]);
@@ -114,7 +115,7 @@ class ComicController extends Controller
 
             foreach ($existingImages as $index => $pageId) {
                 ComicPage::where('id', $pageId)->update([
-                    'order' => $existingImagesOrder[$index]
+                    'order' => $existingImagesOrder[$index],
                 ]);
             }
         }
@@ -125,7 +126,7 @@ class ComicController extends Controller
             $newImagesOrder = $request->get('new_images_order', []);
 
             foreach ($newImages as $index => $image) {
-                $fileName = 'page-' . time() . '-' . $index . '.' . $image->getClientOriginalExtension();
+                $fileName = 'page-'.time().'-'.$index.'.'.$image->getClientOriginalExtension();
                 $order = $newImagesOrder[$index] ?? ($comic->pages()->max('order') + 1);
 
                 ComicPage::create([
@@ -149,10 +150,10 @@ class ComicController extends Controller
     {
         $comic = Comic::where('slug', $slug)->firstOrFail();
         $status = $comic->is_published ? false : true;
-        $comic->is_published = !$comic->is_published;
+        $comic->is_published = ! $comic->is_published;
         $comic->save();
 
-        return redirect()->back()->with('success', "Bédé " . ($status ? 'publiée' : 'dépubliée') . " avec succès");
+        return redirect()->back()->with('success', 'Bédé '.($status ? 'publiée' : 'dépubliée').' avec succès');
     }
 
     public function destroy(string $slug)
@@ -170,5 +171,4 @@ class ComicController extends Controller
 
         return redirect()->route('admin.comics.index')->with('success', 'Bédé supprimée avec succès');
     }
-
 }

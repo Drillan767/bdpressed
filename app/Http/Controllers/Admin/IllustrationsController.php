@@ -6,8 +6,8 @@ use App\Enums\IllustrationStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Illustration;
 use App\Services\IllustrationService;
-use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -16,7 +16,7 @@ class IllustrationsController extends Controller
     public function index(): Response
     {
         $illustrations = Illustration::with(
-        'order:id,reference,user_id,guest_id',
+            'order:id,reference,user_id,guest_id',
             'order.user:id,email',
             'order.guest:id,email',
         )
@@ -39,8 +39,7 @@ class IllustrationsController extends Controller
                     ...$illustration->toArray(),
                     'email' => $email,
                 ];
-            })
-        ;
+            });
 
         return Inertia::render('Admin/Illustrations/Index', compact('illustrations'));
     }
@@ -48,8 +47,7 @@ class IllustrationsController extends Controller
     public function show(
         Illustration $illustration,
         IllustrationService $illustrationService
-    ): Response
-    {
+    ): Response {
         $illustration->load(
             'statusChanges',
             'order:id,reference,user_id,guest_id',
@@ -69,7 +67,7 @@ class IllustrationsController extends Controller
 
         $client = [
             'email' => $email,
-            'guest' => !!$illustration->order->guest_id,
+            'guest' => (bool) $illustration->order->guest_id,
         ];
 
         return Inertia::render('Admin/Illustrations/Show', compact(
@@ -84,10 +82,9 @@ class IllustrationsController extends Controller
         Request $request,
         Illustration $illustration,
         IllustrationService $illustrationService,
-    ): RedirectResponse
-    {
+    ): RedirectResponse {
         $request->validate([
-            'status' => 'required|string'
+            'status' => 'required|string',
         ]);
 
         try {
@@ -97,7 +94,7 @@ class IllustrationsController extends Controller
             return back()->with('success', 'Order status updated successfully');
 
         } catch (\Exception $e) {
-            return back()->with('error', 'Failed to update illustration status: ' . $e->getMessage());
+            return back()->with('error', 'Failed to update illustration status: '.$e->getMessage());
         }
     }
 }

@@ -2,17 +2,17 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Services\OrderService;
-use Illuminate\Http\Request;
-use Inertia\Inertia;
-use Inertia\Response;
-use App\Models\Order;
+use App\Enums\OrderStatus;
 use App\Http\Controllers\Controller;
+use App\Models\Order;
 use App\Services\IllustrationService;
+use App\Services\OrderService;
 use App\Services\OrderStatusService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
-use App\Enums\OrderStatus;
+use Illuminate\Http\Request;
+use Inertia\Inertia;
+use Inertia\Response;
 
 class OrderController extends Controller
 {
@@ -44,8 +44,7 @@ class OrderController extends Controller
         string $reference,
         IllustrationService $illustrationService,
         OrderService $orderService
-    ): Response
-    {
+    ): Response {
         $order = Order::with([
             'details.product:id,name,promotedImage,slug,price,weight',
             'illustrations',
@@ -82,6 +81,7 @@ class OrderController extends Controller
     public function pendingOrders(): JsonResponse
     {
         $orders = Order::where('status', 'NEW')->count();
+
         return response()->json($orders);
     }
 
@@ -89,10 +89,9 @@ class OrderController extends Controller
         Request $request,
         string $reference,
         OrderStatusService $orderStatusService,
-    ): RedirectResponse
-    {
+    ): RedirectResponse {
         $request->validate([
-            'status' => 'required|string'
+            'status' => 'required|string',
         ]);
 
         try {
@@ -109,7 +108,7 @@ class OrderController extends Controller
 
             return back()->with('success', 'Order status updated successfully');
         } catch (\Exception $e) {
-            return back()->with('error', 'Failed to update order status: ' . $e->getMessage());
+            return back()->with('error', 'Failed to update order status: '.$e->getMessage());
         }
     }
 }

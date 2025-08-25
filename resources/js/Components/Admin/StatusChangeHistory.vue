@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { StatusTriggers, OrderStatus, IllustrationStatus } from '@/types/enums'
+import type { IllustrationStatus, OrderStatus, StatusTriggers } from '@/types/enums'
 
 interface StatusChangeDisplay {
     id: number

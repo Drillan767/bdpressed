@@ -18,8 +18,7 @@ class NewOrderNotification extends Notification
      */
     public function __construct(
         public Order $order,
-    )
-    {
+    ) {
         //
     }
 
@@ -50,8 +49,7 @@ class NewOrderNotification extends Notification
                 new HtmlString("Il y en a tout pour <b>$formattedPrice</b>, frais de port et de transaction compris.")
             )
             ->action('Voir la commande', route('orders.show', $this->order->reference))
-            ->salutation('La bise et à bientôt !')
-        ;
+            ->salutation('La bise et à bientôt !');
     }
 
     /**

@@ -18,7 +18,7 @@ class HolidayMode
     public function handle(Request $request, Closure $next): Response
     {
         $settings = app(WebsiteSettings::class);
-        
+
         if ($settings->holiday_mode) {
             return Inertia::render('Visitors/Shop/HolidayMode')->toResponse($request);
         }

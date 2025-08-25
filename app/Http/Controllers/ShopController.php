@@ -2,17 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Actions\Order\RegisterClientAction;
+use App\Actions\Order\HandleAddressesAction;
 use App\Actions\Order\HandleGuestAction;
 use App\Actions\Order\HandleOrderAction;
-use App\Actions\Order\HandleAddressesAction;
-use App\Settings\WebsiteSettings;
-use App\Settings\IllustrationSettings;
+use App\Actions\Order\RegisterClientAction;
 use App\Events\OrderCreated;
 use App\Http\Requests\OrderRequest;
 use App\Models\Address;
-use Illuminate\Support\Facades\Auth;
 use App\Models\Product;
+use App\Settings\IllustrationSettings;
+use App\Settings\WebsiteSettings;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -70,14 +70,14 @@ class ShopController extends Controller
                 $shippingId = $request->get('addresses')['shippingId'];
                 $billingId = $request->get('addresses')['billingId'];
 
-                $order = (new HandleOrderAction())->handle($request, false, $request->user()->id, [
+                $order = (new HandleOrderAction)->handle($request, false, $request->user()->id, [
                     'shipping' => $shippingId,
                     'billing' => $billingId,
                     'same' => $shippingId === $billingId,
                 ]);
             } else {
                 $addressesInfos = (new HandleAddressesAction(false, $request->user()->id))->handle($request);
-                $order = (new HandleOrderAction())->handle($request, false, $request->user()->id, $addressesInfos);
+                $order = (new HandleOrderAction)->handle($request, false, $request->user()->id, $addressesInfos);
             }
 
             event(new OrderCreated($order, false));
@@ -85,14 +85,14 @@ class ShopController extends Controller
             $guest = $request->get('user')['guest'];
 
             $clientId = $guest
-                ? (new HandleGuestAction())->handle($request)
-                : (new RegisterClientAction())->handle($request);
+                ? (new HandleGuestAction)->handle($request)
+                : (new RegisterClientAction)->handle($request);
 
             $addressesInfos = (new HandleAddressesAction($guest, $clientId))->handle($request);
 
-            $order = (new HandleOrderAction())->handle($request, $guest, $clientId, $addressesInfos);
+            $order = (new HandleOrderAction)->handle($request, $guest, $clientId, $addressesInfos);
 
-            event(new OrderCreated($order, !$guest));
+            event(new OrderCreated($order, ! $guest));
         }
 
         return redirect()->route('shop.thankYou');

@@ -6,9 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Services\IllustrationService;
 use App\Services\OrderService;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
-use Illuminate\Http\Request;
 
 class DashboardController extends Controller
 {
@@ -32,8 +32,7 @@ class DashboardController extends Controller
         string $reference,
         OrderService $orderService,
         IllustrationService $illustrationService
-    ): Response
-    {
+    ): Response {
         $rawOrder = Order::with('shippingAddress', 'billingAddress', 'details.product', 'illustrations', 'payments')
             ->where('reference', $reference)
             ->firstOrFail();

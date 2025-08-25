@@ -3,9 +3,9 @@
 namespace App\Listeners;
 
 use App\Events\OrderCreated;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use App\Notifications\NewOrderNotification;
 use App\Notifications\OrderConfirmationNotification;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Notification;
 
 class SendOrderEmails implements ShouldQueue
@@ -23,7 +23,7 @@ class SendOrderEmails implements ShouldQueue
      */
     public function handle(OrderCreated $event): void
     {
-        
+
         if ($event->order->user) {
             $event->order->user->notify(new NewOrderNotification($event->order));
         }
