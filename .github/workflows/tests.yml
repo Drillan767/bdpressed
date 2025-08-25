@@ -15,7 +15,7 @@ jobs:
         image: mariadb:10.11
         env:
           MARIADB_ROOT_PASSWORD: password
-          MARIADB_DATABASE: laravel_testing
+          MARIADB_DATABASE: testing
           MARIADB_USER: laravel
           MARIADB_PASSWORD: password
         ports:
@@ -74,32 +74,26 @@ jobs:
       - name: Build assets
         run: corepack yarn build
 
-      - name: Generate application key
-        run: php artisan key:generate --env=testing
-
-      - name: Inject secrets into .env.testing
+      - name: Handling env file
         run: |
-          echo "STRIPE_PUBLIC_KEY=${{ secrets.STRIPE_PUBLIC_KEY }}" >> .env.testing
-          echo "STRIPE_SECRET_KEY=${{ secrets.STRIPE_SECRET_KEY }}" >> .env.testing
-          echo "STRIPE_WEBHOOK_SECRET=${{ secrets.STRIPE_WEBHOOK_SECRET }}" >> .env.testing
+          cp .env.testing .env
+          php artisan key:generate
+          echo "STRIPE_PUBLIC_KEY=${{ secrets.STRIPE_PUBLIC_KEY }}" >> .env
+          echo "STRIPE_SECRET_KEY=${{ secrets.STRIPE_SECRET_KEY }}" >> .env
+          echo "STRIPE_WEBHOOK_SECRET=${{ secrets.STRIPE_WEBHOOK_SECRET }}" >> .env
 
       - name: Set directory permissions
         run: chmod -R 755 storage bootstrap/cache
-
-      - name: Clear and cache config
-        run: |
-          php artisan config:clear
-          php artisan config:cache
 
       - name: Check code style with Pint
         run: ./vendor/bin/pint --test
 
       - name: Run database migrations
-        run: php artisan migrate --force --env=testing
+        run: php artisan migrate --force
 
       - name: Run database seeders (optional)
-        run: php artisan db:seed --force --env=testing
+        run: php artisan db:seed --force
         continue-on-error: true
 
       - name: Run tests
-        run: php artisan test --coverage --min=80 --env=testing
+        run: php artisan test --coverage --min=80
