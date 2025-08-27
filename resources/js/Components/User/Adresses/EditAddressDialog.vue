@@ -30,6 +30,7 @@ const form = ref<AddressFields>({
 
 const formValid = ref(false)
 const loading = ref(false)
+const addressForm = ref<InstanceType<typeof AddressFormComponent>>()
 
 async function submit() {
     if (!csrfToken)
@@ -50,7 +51,13 @@ async function submit() {
 
     loading.value = false
     displayDialog.value = false
+    addressForm.value?.resetForm()
     emit('success')
+}
+
+function close() {
+    addressForm.value?.resetForm()
+    displayDialog.value = false
 }
 
 watch(() => props.address, (address) => {
@@ -80,6 +87,7 @@ watch(() => props.address, (address) => {
         >
             <VContainer>
                 <AddressFormComponent
+                    ref="addressForm"
                     v-model:address="form"
                     v-model:valid="formValid"
                     :edit="false"
@@ -88,7 +96,7 @@ watch(() => props.address, (address) => {
             <template #actions>
                 <VBtn
                     variant="text"
-                    @click="displayDialog = false"
+                    @click="close"
                 >
                     Annuler
                 </VBtn>

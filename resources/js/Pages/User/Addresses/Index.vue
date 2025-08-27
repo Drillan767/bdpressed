@@ -42,7 +42,7 @@ async function handleDefaultShipping(value: any, addressId: number, type: 'shipp
         billingLoading.value = true
     }
 
-    await router.post(route('user.addresses.update-default'), {
+    router.post(route('user.addresses.update-default'), {
         id: addressId,
         value: newValue,
         type,
