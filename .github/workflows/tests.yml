@@ -76,10 +76,10 @@ jobs:
 
       - name: Handling env file
         run: |
-          echo "APP_KEY=${{ secrets.TEST_APP_KEY }}" >> .env.testing
           echo "STRIPE_PUBLIC_KEY=${{ secrets.STRIPE_PUBLIC_KEY }}" >> .env.testing
           echo "STRIPE_SECRET_KEY=${{ secrets.STRIPE_SECRET_KEY }}" >> .env.testing
           echo "STRIPE_WEBHOOK_SECRET=${{ secrets.STRIPE_WEBHOOK_SECRET }}" >> .env.testing
+          sed -ie 's/DB_HOST=mariadb/DB_HOST=127.0.0.1/g' .env.testing
           cp .env.testing .env
 
       - name: Set directory permissions
