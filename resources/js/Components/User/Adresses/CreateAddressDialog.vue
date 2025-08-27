@@ -14,6 +14,7 @@ const displayDialog = defineModel<boolean>({ required: true })
 
 const loading = ref(false)
 const formValid = ref(false)
+const addressForm = ref<InstanceType<typeof AddressFormComponent>>()
 const form = ref<AddressFields>({
     firstName: '',
     lastName: '',
@@ -42,6 +43,12 @@ async function submit() {
     loading.value = false
     displayDialog.value = false
     emit('success')
+    addressForm.value?.resetForm()
+}
+
+function close() {
+    displayDialog.value = false
+    addressForm.value?.resetForm()
 }
 </script>
 
@@ -57,6 +64,7 @@ async function submit() {
         >
             <VContainer>
                 <AddressFormComponent
+                    ref="addressForm"
                     v-model:address="form"
                     v-model:valid="formValid"
                     :edit="false"
@@ -65,7 +73,7 @@ async function submit() {
             <template #actions>
                 <VBtn
                     variant="text"
-                    @click="displayDialog = false"
+                    @click="close"
                 >
                     Annuler
                 </VBtn>
