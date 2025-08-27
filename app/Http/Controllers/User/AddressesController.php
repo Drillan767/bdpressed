@@ -38,11 +38,30 @@ class AddressesController extends Controller
 
     public function store(Request $request): void
     {
+        $totalBillingAddresses = Address::where([
+            'user_id' => $request->user()->id,
+            'default_billing' => true,
+        ])->count();
+
+        $totalShippingAddresses = Address::where([
+            'user_id' => $request->user()->id,
+            'default_shipping' => true,
+        ])->count();
+
         $address = new Address;
         $address->fill($request->all());
-        // TODO: Fix later.
-        $address->street2 = '';
+
+        $address->street2 = request()->get('street2') ?? '';
         $address->user_id = $request->user()->id;
+
+        if ($totalBillingAddresses === 0) {
+            $address->default_billing = true;
+        }
+
+        if ($totalShippingAddresses === 0) {
+            $address->default_shipping = true;
+        }
+
         $address->save();
     }
 
