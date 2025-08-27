@@ -74,6 +74,17 @@ class HandleAddressesAction
         $fields = array_intersect_key($addresses[$addressType], array_flip($this->fields));
         $fields["default_$addressType"] = ! $this->guest;
 
+        if (!$this->guest) {
+            $hasExistingDefault = Address::where([
+                'user_id' => $this->authId,
+                "default_$addressType" => true,
+            ])->exists();
+
+            if (!$hasExistingDefault) {
+                $fields["default_$addressType"] = true;
+            }
+        }
+
         $fields[$relationColumn] = $this->authId;
 
         $address = Address::create($fields);
