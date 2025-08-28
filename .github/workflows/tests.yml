@@ -16,7 +16,7 @@ jobs:
         env:
           MARIADB_ROOT_PASSWORD: password
           MARIADB_DATABASE: testing
-          MARIADB_USER: laravel
+          MARIADB_USER: sail
           MARIADB_PASSWORD: password
         ports:
           - 3306:3306
