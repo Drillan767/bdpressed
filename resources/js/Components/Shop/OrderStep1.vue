@@ -137,7 +137,7 @@ watch(() => props.errors, (value) => {
                     label="Identifiant instagram"
                     prepend-inner-icon="mdi-at"
                     type="email"
-                    hint="exemple: bede.primee"
+                    hint="Ça sera plus facile pour moi de te contacter 🥹"
                 />
             </VCol>
         </VRow>
@@ -200,7 +200,7 @@ watch(() => props.errors, (value) => {
             </VCol>
         </VRow>
 
-        <VDivider class="mb-4" />
+        <VDivider class="my-4" />
 
         <VRow>
             <VCol>
