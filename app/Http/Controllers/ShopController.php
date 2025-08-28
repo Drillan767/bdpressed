@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Actions\Order\HandleAddressesAction;
 use App\Actions\Order\HandleGuestAction;
+use App\Actions\Order\HandleInstagranAction;
 use App\Actions\Order\HandleOrderAction;
 use App\Actions\Order\RegisterClientAction;
 use App\Events\OrderCreated;
@@ -66,6 +67,9 @@ class ShopController extends Controller
     public function order(OrderRequest $request)
     {
         if ($request->user()) {
+
+            new HandleInstagranAction()->handle($request);
+
             if ($request->has('addresses.shippingId')) {
                 $shippingId = $request->get('addresses')['shippingId'];
                 $billingId = $request->get('addresses')['billingId'];
@@ -76,7 +80,7 @@ class ShopController extends Controller
                     'same' => $shippingId === $billingId,
                 ]);
             } else {
-                $addressesInfos = (new HandleAddressesAction(false, $request->user()->id))->handle($request);
+                $addressesInfos = new HandleAddressesAction(false, $request->user()->id)->handle($request);
                 $order = (new HandleOrderAction)->handle($request, false, $request->user()->id, $addressesInfos);
             }
 
@@ -88,7 +92,7 @@ class ShopController extends Controller
                 ? (new HandleGuestAction)->handle($request)
                 : (new RegisterClientAction)->handle($request);
 
-            $addressesInfos = (new HandleAddressesAction($guest, $clientId))->handle($request);
+            $addressesInfos = new HandleAddressesAction($guest, $clientId)->handle($request);
 
             $order = (new HandleOrderAction)->handle($request, $guest, $clientId, $addressesInfos);
 
