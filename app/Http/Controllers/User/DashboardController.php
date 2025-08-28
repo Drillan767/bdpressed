@@ -12,16 +12,17 @@ use Inertia\Response;
 
 class DashboardController extends Controller
 {
-    public function index(Request $request, OrderService $orderService, IllustrationService $illustrationService): Response
+    public function index(Request $request, OrderService $orderService): Response
     {
-        $orders = Order::withCount('details', 'illustrations')
-            ->with('payments')
+        $orders = Order::withCount('illustrations')
+            ->with('payments', 'details:id,order_id,quantity')
             ->where('user_id', $request->user()->id)
             ->orderByDesc('created_at')
             ->get();
 
         // Add final amounts to each order
         $orders->each(function ($order) use ($orderService) {
+            $order->details_count = array_sum($order->details->pluck('quantity')->toArray());
             $order->final_amount = $orderService->getFinalAmount($order);
         });
 
