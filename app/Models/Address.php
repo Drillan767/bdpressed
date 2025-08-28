@@ -19,7 +19,8 @@ class Address extends Model
         'zipCode',
         'country',
         'type',
-        'default',
+        'default_shipping',
+        'default_billing',
         'user_id',
         'guest_id',
     ];

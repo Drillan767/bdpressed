@@ -52,7 +52,7 @@ watch([shippingAddress, useSameAddress, billingAddress], ([shipping, same, billi
 </script>
 
 <template>
-    <template v-if="authenticated">
+    <template v-if="authenticated && userAddresses.length > 0">
         <h2 class="mb-4">
             Adresse de livraison
         </h2>

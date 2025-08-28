@@ -26,41 +26,59 @@ class HandleAddressesAction
 
     public function handle(OrderRequest $request): array
     {
-        /** @var int | null $shippingId */
-        $shippingId = null;
-
-        /** @var int | null $billingId */
-        $billingId = null;
-
-        $useSame = $request->get('addresses')['same'];
         $addresses = $request->get('addresses');
-
-        // Handle shipping address
-        if (! $this->guest && isset($addresses['shipping_id'])) {
-            // User is logged in and selected existing shipping address
-            $shippingId = $addresses['shipping_id'];
-        } else {
-            // User is guest or filled shipping fields - create new shipping address
-            $shippingId = $this->storeAddress($request, AddressType::SHIPPING);
-        }
-
-        // Handle billing address
-        if ($useSame) {
-            // Use same address for billing (shipping address)
-            $billingId = $shippingId;
-        } elseif (! $this->guest && isset($addresses['billing_id'])) {
-            // User is logged in and selected existing billing address
-            $billingId = $addresses['billing_id'];
-        } else {
-            // User is guest or filled billing fields - create new billing address
-            $billingId = $this->storeAddress($request, AddressType::BILLING);
-        }
-
+        $useSame = $addresses['same'];
+        
+        $shippingId = $this->handleShippingAddress($request, $addresses);
+        $billingId = $useSame 
+            ? $this->handleSameAddress($shippingId)
+            : $this->handleBillingAddress($request, $addresses);
+        
         return [
             'shipping' => $shippingId,
             'billing' => $billingId,
             'same' => $useSame,
         ];
+    }
+
+    private function handleShippingAddress(OrderRequest $request, array $addresses): int
+    {
+        if (!$this->guest && isset($addresses['shipping_id'])) {
+            return $addresses['shipping_id'];
+        }
+        
+        return $this->storeAddress($request, AddressType::SHIPPING);
+    }
+
+    private function handleBillingAddress(OrderRequest $request, array $addresses): int
+    {
+        if (!$this->guest && isset($addresses['billing_id'])) {
+            return $addresses['billing_id'];
+        }
+        
+        return $this->storeAddress($request, AddressType::BILLING);
+    }
+
+    private function handleSameAddress(int $shippingId): int
+    {
+        $this->ensureDefaultBilling($shippingId);
+        return $shippingId;
+    }
+
+    private function ensureDefaultBilling(int $addressId): void
+    {
+        if ($this->guest) {
+            return;
+        }
+        
+        $hasExistingDefaultBilling = Address::where([
+            'user_id' => $this->authId,
+            'default_billing' => true,
+        ])->exists();
+        
+        if (!$hasExistingDefaultBilling) {
+            Address::find($addressId)->update(['default_billing' => true]);
+        }
     }
 
     private function storeAddress(
@@ -72,7 +90,7 @@ class HandleAddressesAction
         $relationColumn = $this->guest ? 'guest_id' : 'user_id';
 
         $fields = array_intersect_key($addresses[$addressType], array_flip($this->fields));
-        $fields["default_$addressType"] = ! $this->guest;
+        $fields["default_$addressType"] = false;
 
         if (!$this->guest) {
             $hasExistingDefault = Address::where([
