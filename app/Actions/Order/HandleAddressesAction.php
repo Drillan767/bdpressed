@@ -5,7 +5,6 @@ namespace App\Actions\Order;
 use App\Enums\AddressType;
 use App\Http\Requests\OrderRequest;
 use App\Models\Address;
-use App\Models\User;
 
 class HandleAddressesAction
 {
@@ -28,12 +27,12 @@ class HandleAddressesAction
     {
         $addresses = $request->get('addresses');
         $useSame = $addresses['same'];
-        
+
         $shippingId = $this->handleShippingAddress($request, $addresses);
-        $billingId = $useSame 
+        $billingId = $useSame
             ? $this->handleSameAddress($shippingId)
             : $this->handleBillingAddress($request, $addresses);
-        
+
         return [
             'shipping' => $shippingId,
             'billing' => $billingId,
@@ -43,25 +42,26 @@ class HandleAddressesAction
 
     private function handleShippingAddress(OrderRequest $request, array $addresses): int
     {
-        if (!$this->guest && isset($addresses['shipping_id'])) {
+        if (! $this->guest && isset($addresses['shipping_id'])) {
             return $addresses['shipping_id'];
         }
-        
+
         return $this->storeAddress($request, AddressType::SHIPPING);
     }
 
     private function handleBillingAddress(OrderRequest $request, array $addresses): int
     {
-        if (!$this->guest && isset($addresses['billing_id'])) {
+        if (! $this->guest && isset($addresses['billing_id'])) {
             return $addresses['billing_id'];
         }
-        
+
         return $this->storeAddress($request, AddressType::BILLING);
     }
 
     private function handleSameAddress(int $shippingId): int
     {
         $this->ensureDefaultBilling($shippingId);
+
         return $shippingId;
     }
 
@@ -70,13 +70,13 @@ class HandleAddressesAction
         if ($this->guest) {
             return;
         }
-        
+
         $hasExistingDefaultBilling = Address::where([
             'user_id' => $this->authId,
             'default_billing' => true,
         ])->exists();
-        
-        if (!$hasExistingDefaultBilling) {
+
+        if (! $hasExistingDefaultBilling) {
             Address::find($addressId)->update(['default_billing' => true]);
         }
     }
@@ -92,13 +92,13 @@ class HandleAddressesAction
         $fields = array_intersect_key($addresses[$addressType], array_flip($this->fields));
         $fields["default_$addressType"] = false;
 
-        if (!$this->guest) {
+        if (! $this->guest) {
             $hasExistingDefault = Address::where([
                 'user_id' => $this->authId,
                 "default_$addressType" => true,
             ])->exists();
 
-            if (!$hasExistingDefault) {
+            if (! $hasExistingDefault) {
                 $fields["default_$addressType"] = true;
             }
         }
