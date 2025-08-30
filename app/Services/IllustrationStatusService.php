@@ -14,8 +14,12 @@ use App\Notifications\IllustrationFinalLinkNotification;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
 
-class IllustrationStatusService
+readonly class IllustrationStatusService
 {
+    public function __construct(private OrderService $orderService)
+    {
+    }
+
     public function changed(Illustration $illustration, IllustrationStatus $newStatus): void
     {
         // Handle specific status changes
@@ -69,6 +73,15 @@ class IllustrationStatusService
         ]);
 
         $this->sendNotificationToCustomer($illustration, new IllustrationDepositPaidNotification($illustration));
+
+        // If this is an illustration-only order, sync the order status when work can begin
+        $order = $illustration->order;
+        if ($this->orderService->shouldSkipOrderPayment($order) && $order->status === \App\Enums\OrderStatus::NEW) {
+            $order->transitionTo(\App\Enums\OrderStatus::IN_PROGRESS, [
+                'triggered_by' => 'system',
+                'reason' => 'Illustration deposit paid - work can begin',
+            ]);
+        }
     }
 
     private function handleFinalPaymentPending(Illustration $illustration): void
@@ -99,6 +112,10 @@ class IllustrationStatusService
         ]);
 
         $this->sendNotificationToCustomer($illustration, new IllustrationCompletedNotification($illustration));
+
+        // Check if this completes the entire order (for illustration-only orders)
+        $order = $illustration->order;
+        $this->orderService->handleIllustrationOrderCompletion($order);
     }
 
     private function sendNotificationToCustomer(Illustration $illustration, $notification): void

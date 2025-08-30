@@ -21,10 +21,12 @@ class OrderStateMachine
             ],
             OrderStatus::IN_PROGRESS->value => [
                 OrderStatus::PENDING_PAYMENT->value,
+                OrderStatus::PAID->value, // Allow direct transition for illustration-only orders
                 OrderStatus::CANCELLED->value,
             ],
             OrderStatus::PAID->value => [
                 OrderStatus::TO_SHIP->value,
+                OrderStatus::DONE->value, // Allow direct completion for digital-only illustration orders
                 OrderStatus::CANCELLED->value, // Triggers refund
             ],
             OrderStatus::TO_SHIP->value => [

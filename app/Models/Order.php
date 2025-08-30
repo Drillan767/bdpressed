@@ -112,6 +112,18 @@ class Order extends Model
         return $this->getStateMachine()->getAvailableTransitions($this->status);
     }
 
+    public function isIllustrationOnlyOrder(): bool
+    {
+        $orderService = app(OrderService::class);
+        return $orderService->shouldSkipOrderPayment($this);
+    }
+
+    public function allIllustrationsCompleted(): bool
+    {
+        $orderService = app(OrderService::class);
+        return $orderService->areAllIllustrationsCompleted($this);
+    }
+
     public function stripeFees(): Attribute
     {
         return Attribute::make(
