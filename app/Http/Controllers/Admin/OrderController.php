@@ -70,11 +70,13 @@ class OrderController extends Controller
         $estimatedFees = $orderService->calculateFees($order);
 
         $allowedStatuses = $order->getAvailableStatuses();
+        $isIllustrationOnly = $order->isIllustrationOnlyOrder();
 
         return Inertia::render('Admin/Orders/Show', compact(
             'order',
             'allowedStatuses',
             'estimatedFees',
+            'isIllustrationOnly',
         ));
     }
 

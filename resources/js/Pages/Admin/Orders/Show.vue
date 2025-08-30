@@ -15,6 +15,7 @@ interface Props {
     order: OrderDetail
     estimatedFees: number
     allowedStatuses: OrderStatus[]
+    isIllustrationOnly: boolean
 }
 
 defineOptions({ layout: AdminLayout })
@@ -85,10 +86,25 @@ async function updateStatus() {
                 cols="12"
                 md="8"
             >
+                <VRow v-if="isIllustrationOnly">
+                    <VCol>
+                        <VAlert
+                            variant="outlined"
+                            color="info"
+                            icon="mdi-information"
+                        >
+                            <template #text>
+                                Cette commande ne contient que des illustrations personnalisées. 
+                                Le statut sera automatiquement mis à jour lorsque toutes les illustrations seront terminées et payées.
+                            </template>
+                        </VAlert>
+                    </VCol>
+                </VRow>
                 <VRow>
                     <VCol>
                         <VCard
                             :loading="loading"
+                            :disabled="isIllustrationOnly"
                             title="Statut de la commande"
                         >
                             <template #append>
