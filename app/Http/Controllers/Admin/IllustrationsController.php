@@ -89,7 +89,7 @@ class IllustrationsController extends Controller
 
         try {
             $newStatus = IllustrationStatus::from($request->get('status'));
-            
+
             // Use the state machine transition which handles payment creation automatically
             $illustration->transitionTo($newStatus, [
                 'reason' => $request->get('reason'),
