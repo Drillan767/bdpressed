@@ -76,7 +76,7 @@ class OrderService
     {
         // Skip order payment if order only contains illustrations (no regular products)
         $hasRegularProducts = $order->details()->exists();
-        $hasIllustrationsOnly = $order->illustrations()->exists() && !$hasRegularProducts;
+        $hasIllustrationsOnly = $order->illustrations()->exists() && ! $hasRegularProducts;
 
         return $hasIllustrationsOnly;
     }
@@ -104,11 +104,11 @@ class OrderService
      */
     public function handleIllustrationOrderCompletion(Order $order): void
     {
-        if (!$this->shouldSkipOrderPayment($order)) {
+        if (! $this->shouldSkipOrderPayment($order)) {
             return;
         }
 
-        if (!$this->areAllIllustrationsCompleted($order)) {
+        if (! $this->areAllIllustrationsCompleted($order)) {
             return;
         }
 

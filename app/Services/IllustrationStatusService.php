@@ -16,9 +16,7 @@ use Illuminate\Support\Facades\Notification;
 
 readonly class IllustrationStatusService
 {
-    public function __construct(private OrderService $orderService)
-    {
-    }
+    public function __construct(private OrderService $orderService) {}
 
     public function changed(Illustration $illustration, IllustrationStatus $newStatus): void
     {
@@ -54,7 +52,7 @@ readonly class IllustrationStatusService
             ->where('status', PaymentStatus::PENDING)
             ->first();
 
-        if (!$depositPayment || ! $depositPayment->stripe_payment_link) {
+        if (! $depositPayment || ! $depositPayment->stripe_payment_link) {
             Log::error('No deposit payment or payment link found for illustration', [
                 'illustration_id' => $illustration->id,
             ]);
