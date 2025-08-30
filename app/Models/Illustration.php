@@ -4,6 +4,9 @@ namespace App\Models;
 
 use App\Casts\MoneyCast;
 use App\Enums\IllustrationStatus;
+use App\Services\IllustrationService;
+use App\Services\IllustrationStatusService;
+use App\Services\StripeService;
 use App\StateMachines\IllustrationStateMachine;
 use App\Traits\HasStateMachine;
 use Illuminate\Database\Eloquent\Model;
@@ -113,5 +116,36 @@ class Illustration extends Model
             'triggered_by' => $context['triggered_by'] ?? 'manual',
             'user_id' => auth()->id(),
         ]);
+
+        // Handle payment link generation for specific transitions
+        if (! isset($context['skip_payment_creation'])) {
+            $this->handlePaymentTransitions($toState);
+        }
+
+        // Handle email notifications unless skipped
+        if (! isset($context['skip_notifications'])) {
+            $illustrationStatusService = app(IllustrationStatusService::class);
+            $illustrationStatusService->changed($this, $toState);
+        }
+
+        // Execute any registered callbacks (from the trait)
+        $key = static::getTransitionKey($fromState, $toState);
+        $callbacks = static::$afterTransitionCallbacks[static::class][$key] ?? [];
+
+        foreach ($callbacks as $callback) {
+            $callback($this, $fromState, $toState, $context);
+        }
+    }
+
+    private function handlePaymentTransitions(IllustrationStatus $toStatus): void
+    {
+        $illustrationService = app(IllustrationService::class);
+        $stripeService = app(StripeService::class);
+
+        match ($toStatus) {
+            IllustrationStatus::DEPOSIT_PENDING => $illustrationService->createDepositPayment($this, $stripeService),
+            IllustrationStatus::PAYMENT_PENDING => $illustrationService->createFinalPayment($this, $stripeService),
+            default => null,
+        };
     }
 }

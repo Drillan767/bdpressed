@@ -24,13 +24,13 @@ class IllustrationStateMachine
             ],
             IllustrationStatus::IN_PROGRESS->value => [
                 IllustrationStatus::CLIENT_REVIEW->value,
-                IllustrationStatus::PAYMENT_PENDING->value, // Skip review
+                IllustrationStatus::PAYMENT_PENDING->value,
                 IllustrationStatus::CANCELLED->value,
             ],
             IllustrationStatus::CLIENT_REVIEW->value => [
-                IllustrationStatus::IN_PROGRESS->value, // Unlimited revisions
-                IllustrationStatus::PAYMENT_PENDING->value, // Client approves - point of no return
-                IllustrationStatus::CANCELLED->value, // Artist discretion
+                IllustrationStatus::IN_PROGRESS->value,
+                IllustrationStatus::PAYMENT_PENDING->value,
+                IllustrationStatus::CANCELLED->value,
             ],
             IllustrationStatus::PAYMENT_PENDING->value => [
                 IllustrationStatus::COMPLETED->value,

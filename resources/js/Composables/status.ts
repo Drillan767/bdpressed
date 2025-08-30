@@ -83,6 +83,11 @@ export default function useStatus() {
             color: '#FF6F00',
         },
         {
+            internal: IllustrationStatus.PAYMENT_PENDING,
+            text: '💸 En attente de paiement',
+            color: '#FFFF00',
+        },
+        {
             internal: IllustrationStatus.COMPLETED,
             text: '✅ Terminé',
             color: '#4CAF50',

@@ -44,13 +44,14 @@ The application uses state machines for order and illustration workflows:
 - **Illustration Flow**: PENDING → DEPOSIT_PENDING → DEPOSIT_PAID → IN_PROGRESS → CLIENT_REVIEW → PAYMENT_PENDING → COMPLETED
 
 State transitions are managed by dedicated StateMachine classes with validation and automatic Stripe webhook integration.
-A file describing the workflow is available at `docs/STATE_MACHINES.md`
+A file describing the workflow is available at [docs/STATE_MACHINES.md](./docs/STATE_MACHINES.md) 
 
 ## Testing
 
 Uses **Pest PHP** for backend testing:
 - `./vendor/bin/sail test` - Run all tests
 - `./vendor/bin/sail test --filter=FeatureName` - Run specific test
+- Using the flag `--env=testing` is **mandatory**, otherwise the local database will be wiped.
 
 ## Key Configuration
 

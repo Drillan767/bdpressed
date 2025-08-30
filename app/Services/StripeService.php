@@ -533,4 +533,115 @@ class StripeService
             ]);
         }
     }
+
+    /**
+     * Create a Stripe payment link for an illustration payment (deposit or final)
+     */
+    public function createIllustrationPaymentLink(OrderPayment $payment): ?string
+    {
+        try {
+            $illustration = $payment->illustration;
+            $order = $payment->order ?? $illustration->order;
+
+            if (! $illustration || ! $order) {
+                Log::error('Missing illustration or order for payment link creation', [
+                    'payment_id' => $payment->id,
+                    'illustration_id' => $payment->illustration_id,
+                    'order_id' => $payment->order_id,
+                ]);
+
+                return null;
+            }
+
+            // Create a one-time product for this specific payment
+            $productName = $payment->type->value === 'illustration_deposit'
+                ? "Deposit - Custom Illustration #{$illustration->id}"
+                : "Final Payment - Custom Illustration #{$illustration->id}";
+
+            $product = $this->client->products->create([
+                'name' => $productName,
+                'description' => $payment->description ?? 'Payment for custom illustration',
+                'metadata' => [
+                    'illustration_id' => $illustration->id,
+                    'order_id' => $order->id,
+                    'payment_type' => $payment->type->value,
+                ],
+            ]);
+
+            // Create the price
+            $price = $this->client->prices->create([
+                'product' => $product->id,
+                'unit_amount' => $payment->amount->cents(),
+                'currency' => 'eur',
+            ]);
+
+            // Create the payment link
+            $paymentLink = $this->client->paymentLinks->create([
+                'line_items' => [
+                    [
+                        'price' => $price->id,
+                        'quantity' => 1,
+                    ],
+                ],
+                'metadata' => [
+                    'illustration_id' => $illustration->id,
+                    'order_id' => $order->id,
+                    'payment_id' => $payment->id,
+                    'payment_type' => $payment->type->value,
+                ],
+                'after_completion' => [
+                    'type' => 'redirect',
+                    'redirect' => [
+                        'url' => route('payment.success'),
+                    ],
+                ],
+            ]);
+
+            return $paymentLink->url;
+
+        } catch (\Exception $e) {
+            Log::error('Error creating Stripe payment link for illustration: '.$e->getMessage(), [
+                'payment_id' => $payment->id,
+                'illustration_id' => $payment->illustration_id,
+                'exception' => $e,
+            ]);
+
+            return null;
+        }
+    }
+
+    /**
+     * Find illustration payment metadata from payment intent by checking associated payment links
+     */
+    public function findIllustrationFromPaymentIntent(string $paymentIntentId): ?array
+    {
+        try {
+            // Search through recent payment links for illustration payments
+            $paymentLinks = $this->client->paymentLinks->all(['limit' => 100]);
+
+            foreach ($paymentLinks->data as $paymentLink) {
+                if (isset($paymentLink->metadata['illustration_id']) || isset($paymentLink->metadata['payment_id'])) {
+                    return [
+                        'illustration_id' => $paymentLink->metadata['illustration_id'] ?? null,
+                        'payment_id' => $paymentLink->metadata['payment_id'] ?? null,
+                        'order_id' => $paymentLink->metadata['order_id'] ?? null,
+                        'payment_type' => $paymentLink->metadata['payment_type'] ?? null,
+                    ];
+                }
+            }
+
+            Log::warning('No payment link found with illustration metadata for payment intent', [
+                'payment_intent_id' => $paymentIntentId,
+            ]);
+
+            return null;
+
+        } catch (\Exception $e) {
+            Log::error('Error finding illustration from payment intent: '.$e->getMessage(), [
+                'payment_intent_id' => $paymentIntentId,
+            ]);
+
+            return null;
+        }
+    }
 }

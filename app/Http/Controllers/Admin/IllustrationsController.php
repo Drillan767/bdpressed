@@ -89,9 +89,15 @@ class IllustrationsController extends Controller
 
         try {
             $newStatus = IllustrationStatus::from($request->get('status'));
-            $illustration->transitionTo($newStatus);
+            
+            // Use the state machine transition which handles payment creation automatically
+            $illustration->transitionTo($newStatus, [
+                'reason' => $request->get('reason'),
+                'triggered_by' => 'manual',
+                'user_id' => auth()->id(),
+            ]);
 
-            return back()->with('success', 'Order status updated successfully');
+            return back()->with('success', 'Illustration status updated successfully');
 
         } catch (\Exception $e) {
             return back()->with('error', 'Failed to update illustration status: '.$e->getMessage());

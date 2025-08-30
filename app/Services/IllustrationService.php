@@ -2,9 +2,13 @@
 
 namespace App\Services;
 
+use App\Enums\IllustrationStatus;
 use App\Enums\IllustrationType;
+use App\Enums\PaymentStatus;
+use App\Enums\PaymentType;
 use App\Models\Illustration;
 use App\Models\IllustrationPrice;
+use App\Models\OrderPayment;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Number;
 
@@ -234,5 +238,92 @@ class IllustrationService
 
         // Convert to cents (prices are stored as floats in euros)
         return intval($basePrice * 100);
+    }
+
+    /**
+     * Create a deposit payment for an illustration when transitioning to DEPOSIT_PENDING
+     */
+    public function createDepositPayment(Illustration $illustration, StripeService $stripeService): ?string
+    {
+        // Calculate deposit amount (50% of total)
+        $depositAmount = intval($illustration->price->cents() / 2);
+
+        // Create the payment record
+        $payment = OrderPayment::create([
+            'illustration_id' => $illustration->id,
+            'order_id' => $illustration->order_id,
+            'type' => PaymentType::ILLUSTRATION_DEPOSIT,
+            'status' => PaymentStatus::PENDING,
+            'amount' => $depositAmount,
+            'currency' => 'eur',
+            'description' => "Deposit payment for Custom Illustration #{$illustration->id}",
+        ]);
+
+        // Generate Stripe payment link
+        $paymentLink = $stripeService->createIllustrationPaymentLink($payment);
+
+        if ($paymentLink) {
+            $payment->update(['stripe_payment_link' => $paymentLink]);
+
+            return $paymentLink;
+        }
+
+        return null;
+    }
+
+    /**
+     * Create a final payment for an illustration when transitioning to PAYMENT_PENDING
+     */
+    public function createFinalPayment(Illustration $illustration, StripeService $stripeService): ?string
+    {
+        // Calculate final amount (50% of total)
+        $finalAmount = intval($illustration->price->cents() / 2);
+
+        // Create the payment record
+        $payment = OrderPayment::create([
+            'illustration_id' => $illustration->id,
+            'order_id' => $illustration->order_id,
+            'type' => PaymentType::ILLUSTRATION_FINAL,
+            'status' => PaymentStatus::PENDING,
+            'amount' => $finalAmount,
+            'currency' => 'eur',
+            'description' => "Final payment for Custom Illustration #{$illustration->id}",
+        ]);
+
+        // Generate Stripe payment link
+        $paymentLink = $stripeService->createIllustrationPaymentLink($payment);
+
+        if ($paymentLink) {
+            $payment->update(['stripe_payment_link' => $paymentLink]);
+
+            return $paymentLink;
+        }
+
+        return null;
+    }
+
+    /**
+     * Handle illustration state transition with payment link generation
+     */
+    public function transitionWithPayment(Illustration $illustration, IllustrationStatus $toStatus, array $context = []): bool
+    {
+        // Check if transition is valid
+        if (! $illustration->canTransitionTo($toStatus)) {
+            return false;
+        }
+
+        $stripeService = app(StripeService::class);
+
+        // Handle payment link generation for specific transitions
+        match ($toStatus) {
+            IllustrationStatus::DEPOSIT_PENDING => $this->createDepositPayment($illustration, $stripeService),
+            IllustrationStatus::PAYMENT_PENDING => $this->createFinalPayment($illustration, $stripeService),
+            default => null,
+        };
+
+        // Execute the state transition
+        $illustration->transitionTo($toStatus, $context);
+
+        return true;
     }
 }

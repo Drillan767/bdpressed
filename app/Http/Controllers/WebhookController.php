@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\IllustrationStatus;
 use App\Enums\OrderStatus;
 use App\Enums\PaymentStatus;
 use App\Enums\PaymentType;
+use App\Models\Illustration;
 use App\Models\Order;
 use App\Models\OrderPayment;
+use App\Services\IllustrationStatusService;
 use App\Services\OrderStatusService;
 use App\Services\StripeService;
 use Illuminate\Http\Request;
@@ -49,6 +52,90 @@ class WebhookController extends Controller
     }
 
     private function handlePaymentIntentSucceeded($paymentIntent, OrderStatusService $orderStatusService, StripeService $stripeService): void
+    {
+        // First, try to find illustration payment data
+        $illustrationData = $stripeService->findIllustrationFromPaymentIntent($paymentIntent['id']);
+
+        if ($illustrationData) {
+            $this->handleIllustrationPayment($paymentIntent, $illustrationData);
+
+            return;
+        }
+
+        // Fall back to order payment handling
+        $this->handleOrderPayment($paymentIntent, $orderStatusService, $stripeService);
+    }
+
+    private function handleIllustrationPayment($paymentIntent, $illustrationData): void
+    {
+        $paymentId = $illustrationData['payment_id'];
+        $illustrationId = $illustrationData['illustration_id'];
+        $paymentType = $illustrationData['payment_type'];
+
+        // Find the payment record
+        $payment = OrderPayment::find($paymentId);
+        if (! $payment && $illustrationId) {
+            // Fallback: find pending payment by illustration and type
+            $payment = OrderPayment::where('illustration_id', $illustrationId)
+                ->where('status', PaymentStatus::PENDING)
+                ->where('type', PaymentType::from($paymentType))
+                ->first();
+        }
+
+        if (! $payment) {
+            Log::error('Illustration payment not found for payment intent', [
+                'payment_id' => $paymentId,
+                'illustration_id' => $illustrationId,
+                'payment_intent_id' => $paymentIntent['id'],
+            ]);
+
+            return;
+        }
+
+        // Update payment record
+        $payment->update([
+            'status' => PaymentStatus::PAID,
+            'paid_at' => now(),
+            'stripe_payment_intent_id' => $paymentIntent['id'],
+            'stripe_fee' => $paymentIntent['charges']['data'][0]['balance_transaction']['fee'] ?? null,
+            'stripe_metadata' => $paymentIntent,
+        ]);
+
+        // Get the illustration and transition its status
+        $illustration = $payment->illustration;
+        if ($illustration) {
+            $newStatus = match ($payment->type) {
+                PaymentType::ILLUSTRATION_DEPOSIT => IllustrationStatus::DEPOSIT_PAID,
+                PaymentType::ILLUSTRATION_FINAL => IllustrationStatus::COMPLETED,
+                default => null,
+            };
+
+            if ($newStatus) {
+                $illustration->transitionTo($newStatus, [
+                    'triggered_by' => 'webhook',
+                    'skip_notifications' => true, // We'll handle notifications manually
+                    'metadata' => [
+                        'payment_intent_id' => $paymentIntent['id'],
+                        'stripe_event' => 'payment_intent.succeeded',
+                        'payment_type' => $payment->type->value,
+                    ],
+                ]);
+
+                Log::info('Illustration payment completed and status updated', [
+                    'illustration_id' => $illustration->id,
+                    'payment_type' => $payment->type->value,
+                    'new_status' => $newStatus->value,
+                    'payment_intent_id' => $paymentIntent['id'],
+                ]);
+
+                // Trigger email notifications for illustration payments
+                $illustrationStatusService = app(IllustrationStatusService::class);
+                $illustrationStatusService->changed($illustration, $newStatus);
+            }
+        }
+    }
+
+    private function handleOrderPayment($paymentIntent, OrderStatusService $orderStatusService, StripeService $stripeService): void
     {
         // Use StripeService to find order metadata from payment links
         $orderData = $stripeService->findOrderFromPaymentIntent($paymentIntent['id']);
@@ -110,6 +197,7 @@ class WebhookController extends Controller
         $payment->update([
             'status' => PaymentStatus::PAID,
             'paid_at' => now(),
+            'stripe_fee' => $paymentIntent['charges']['data'][0]['balance_transaction']['fee'] ?? null,
             'stripe_metadata' => $paymentIntent,
         ]);
 
