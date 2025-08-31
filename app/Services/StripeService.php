@@ -644,4 +644,29 @@ class StripeService
             return null;
         }
     }
+
+    /**
+     * Retrieve Stripe fee from a balance transaction
+     */
+    public function getStripeFeeFromPaymentIntent(array $paymentIntent): ?int
+    {
+        // Check if charges exist and have the balance transaction
+        if (! isset($paymentIntent['charges']['data'][0]['balance_transaction'])) {
+            return null;
+        }
+
+        try {
+            $balanceTransactionId = $paymentIntent['charges']['data'][0]['balance_transaction'];
+            $balanceTransaction = $this->client->balanceTransactions->retrieve($balanceTransactionId);
+
+            return $balanceTransaction->fee;
+        } catch (\Exception $e) {
+            Log::warning('Failed to retrieve Stripe fee from balance transaction', [
+                'balance_transaction_id' => $balanceTransactionId ?? 'missing',
+                'error' => $e->getMessage(),
+            ]);
+
+            return null;
+        }
+    }
 }
