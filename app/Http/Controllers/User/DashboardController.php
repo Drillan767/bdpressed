@@ -4,8 +4,10 @@ namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
 use App\Models\Order;
+use App\Models\OrderPayment;
 use App\Services\IllustrationService;
 use App\Services\OrderService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -87,5 +89,44 @@ class DashboardController extends Controller
         ];
 
         return Inertia::render('User/Order/Show', compact('order'));
+    }
+
+    public function paymentHistory(Request $request): JsonResponse
+    {
+        $user = $request->user();
+
+        // Get all payments for user's orders (including illustration payments)
+        $payments = OrderPayment::with(['order', 'illustration'])
+            ->whereHas('order', function ($query) use ($user) {
+                $query->where('user_id', $user->id);
+            })
+            ->orderByDesc('created_at')
+            ->get();
+
+        // Transform payments for frontend display
+        $paymentHistory = $payments->map(function ($payment) {
+            $isIllustration = $payment->isForIllustration();
+
+            // Determine item title
+            if ($isIllustration && $payment->illustration) {
+                $title = "Illustration #{$payment->illustration->order->reference}";
+            } else {
+                $title = "Commande #{$payment->order->reference}";
+            }
+
+            return [
+                'id' => $payment->id,
+                'order_reference' => $payment->order->reference,
+                'title' => $title,
+                'type' => $payment->type->value,
+                'amount' => $payment->amount->formatted(),
+                'status' => $payment->status->value,
+                'paid_at' => $payment->paid_at?->format('d/m/Y à H:i'),
+                'payment_link' => $payment->status->value === 'pending' ? $payment->stripe_payment_link : null,
+                'is_illustration' => $isIllustration,
+            ];
+        });
+
+        return response()->json($paymentHistory);
     }
 }

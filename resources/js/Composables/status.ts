@@ -27,7 +27,7 @@ export default function useStatus() {
         {
             internal: OrderStatus.PENDING_PAYMENT,
             text: '💸 En attente de paiement',
-            color: '#FFFF00',
+            color: '#cd0bd4',
         },
         {
             internal: OrderStatus.PAID,
@@ -65,7 +65,7 @@ export default function useStatus() {
         {
             internal: IllustrationStatus.DEPOSIT_PENDING,
             text: '💰 Accompte en attente',
-            color: '#FDD835',
+            color: '#cd0bd4',
         },
         {
             internal: IllustrationStatus.DEPOSIT_PAID,
@@ -85,7 +85,7 @@ export default function useStatus() {
         {
             internal: IllustrationStatus.PAYMENT_PENDING,
             text: '💸 En attente de paiement',
-            color: '#FFFF00',
+            color: '#cd0bd4',
         },
         {
             internal: IllustrationStatus.COMPLETED,
