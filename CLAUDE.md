@@ -79,3 +79,8 @@ The application handles Stripe processing fees in two phases:
 - Email notifications and fee displays should use actual fees when available, estimated fees otherwise
 - `OrderService::calculateFees()` automatically handles this logic
 - Estimated fees are used for order confirmations, actual fees for payment confirmations
+
+## Available MCPs
+
+- [Vuetify](https://github.com/vuetifyjs/mcp)
+- [Stripe](https://mcp.stripe.com)
