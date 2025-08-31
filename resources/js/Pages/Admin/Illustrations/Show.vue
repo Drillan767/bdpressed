@@ -39,6 +39,7 @@ const props = defineProps<{
     illustration: Illustration
     availableStatuses: IllustrationStatus[]
     details: Record<string, IllustrationDetail>
+    paymentHistory: Payment[]
     client: {
         guest: boolean
         email: string

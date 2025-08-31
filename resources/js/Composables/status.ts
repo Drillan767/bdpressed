@@ -1,4 +1,4 @@
-import { IllustrationStatus, OrderStatus, StatusTriggers } from '@/types/enums'
+import { IllustrationStatus, OrderStatus, PaymentStatus, StatusTriggers } from '@/types/enums'
 
 interface StatusInfo {
     internal: OrderStatus | IllustrationStatus
@@ -99,10 +99,33 @@ export default function useStatus() {
         },
     ] as const
 
+    const paymentStatus = [
+        {
+            internal: PaymentStatus.PENDING,
+            text: '⌚ En attente',
+            color: '#FF6F00',
+        },
+        {
+            internal: PaymentStatus.PAID,
+            text: '💶 Payé',
+            color: '#00C853',
+        },
+        {
+            internal: PaymentStatus.FAILED,
+            text: '❌ Échoué',
+            color: '#F44336',
+        },
+        {
+            internal: PaymentStatus.REFUNDED,
+            text: '🔄 Remboursé',
+            color: '#0288D1',
+        },
+    ] as const
+
     const statusTriggers = [
         {
             internal: StatusTriggers.MANUAL,
-            text: '💪 Manuel',
+            text: '✊ Manuel',
             color: '#4CAF50',
         },
         {
@@ -125,6 +148,7 @@ export default function useStatus() {
     // Create Maps for O(1) lookup performance
     const orderStatusMap = new Map(orderStatus.map(item => [item.internal as OrderStatus, item]))
     const illustrationStatusMap = new Map(illustrationStatus.map(item => [item.internal as IllustrationStatus, item]))
+    const paymentStatusMap = new Map(paymentStatus.map(item => [item.internal as PaymentStatus, item]))
     const statusTriggersMap = new Map(statusTriggers.map(item => [item.internal as StatusTriggers, item]))
 
     function getOrderStatus(label: OrderStatus): StatusInfo {
@@ -151,6 +175,22 @@ export default function useStatus() {
         return illustrationStatus.filter(i => states.includes(i.internal))
     }
 
+    function listPaymentStatuses(states: PaymentStatus[]) {
+        return paymentStatus.filter(i => states.includes(i.internal))
+    }
+
+    function getPaymentStatus(label: PaymentStatus) {
+        const status = paymentStatusMap.get(label)
+        if (!status) {
+            throw new Error(`Invalid payment status: ${label}`)
+        }
+        return status
+    }
+
+    function listTriggers(states: StatusTriggers[]) {
+        return statusTriggers.filter(i => states.includes(i.internal))
+    }
+
     function getTrigger(label: StatusTriggers): TriggerInfo {
         const trigger = statusTriggersMap.get(label)
         if (!trigger) {
@@ -160,13 +200,21 @@ export default function useStatus() {
     }
 
     return {
+        // Order Status
         orderStatus,
         getOrderStatus,
         listAvailableStatuses,
+        // Illustrations Status
         illustrationStatus,
         listIllustrationStatuses,
         getIllustrationStatus,
+        // Payment Status
+        paymentStatus,
+        getPaymentStatus,
+        listPaymentStatuses,
+        // Triggers
         statusTriggers,
         getTrigger,
+        listTriggers,
     }
 }

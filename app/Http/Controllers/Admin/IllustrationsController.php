@@ -53,7 +53,6 @@ class IllustrationsController extends Controller
             'order:id,reference,user_id,guest_id',
             'order.user:id,email',
             'order.guest:id,email',
-            'payments',
         );
 
         $details = $illustrationService->getSingleIllustrationDetail($illustration);
@@ -70,10 +69,14 @@ class IllustrationsController extends Controller
             'guest' => (bool) $illustration->order->guest_id,
         ];
 
+        $illustration->loadMissing('payments');
+        $paymentHistory = $illustration->payments->map->adminDisplay;
+
         return Inertia::render('Admin/Illustrations/Show', compact(
             'illustration',
             'details',
             'availableStatuses',
+            'paymentHistory',
             'client',
         ));
     }

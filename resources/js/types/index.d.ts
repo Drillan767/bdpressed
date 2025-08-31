@@ -317,3 +317,15 @@ export interface IllustrationForm {
         description: string
     }
 }
+
+export interface OrderPayment {
+    id: number
+    amount: string
+    paid_at: string | null
+    stripe_fee: number
+    description: string | null
+    stripe_payment_intent_id: string
+    stripe_payment_link: string | null
+
+
+}
