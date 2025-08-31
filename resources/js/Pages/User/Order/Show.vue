@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Address, Money } from '@/types'
+import type { Address, Money, UserPaymentHistory as Payments } from '@/types'
 import type { IllustrationStatus, OrderStatus } from '@/types/enums'
 import useNumbers from '@/Composables/numbers'
 import useStatus from '@/Composables/status'
@@ -49,6 +49,7 @@ interface OrderDetail {
     shippingAddress: Address
     billingAddress: Address
     status: OrderStatus
+    payments: Payments[]
     items: (ArticleItem | IllustrationItem)[]
 }
 
@@ -306,7 +307,7 @@ function openIllustrationDetails(illustration: IllustrationItem) {
                 </VRow>
                 <VRow>
                     <VCol>
-                        <PaymentHistory />
+                        <PaymentHistory :payments="order.payments" />
                     </VCol>
                 </VRow>
             </VCol>

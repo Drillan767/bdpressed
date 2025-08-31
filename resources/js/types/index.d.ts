@@ -1,4 +1,4 @@
-import type { IllustrationStatus, OrderStatus, StatusTriggers } from '@/types/enums'
+import type { IllustrationStatus, OrderStatus, PaymentType, StatusTriggers } from '@/types/enums'
 import type { Config } from 'ziggy-js'
 
 export interface Money {
@@ -326,6 +326,15 @@ export interface OrderPayment {
     description: string | null
     stripe_payment_intent_id: string
     stripe_payment_link: string | null
+}
 
-
+export interface UserPaymentHistory {
+    id: number
+    title: string
+    type: PaymentType
+    amount: string
+    status: string
+    paid_at: string | null
+    payment_link: string | null
+    is_illustration: boolean
 }

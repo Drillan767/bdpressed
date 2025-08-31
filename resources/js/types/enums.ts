@@ -27,6 +27,12 @@ export enum PaymentStatus {
     REFUNDED = 'REFUNDED',
 }
 
+export enum PaymentType {
+    ORDER_FULL = 'order_full',
+    ILLUSTRATION_DEPOSIT = 'illustration_deposit',
+    ILLUSTRATION_FINAL = 'illustration_final',
+}
+
 export enum StatusTriggers {
     MANUAL = 'manual',
     WEBHOOK = 'webhook',

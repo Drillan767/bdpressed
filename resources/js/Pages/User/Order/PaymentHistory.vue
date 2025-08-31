@@ -1,37 +1,91 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
-import { route } from 'ziggy-js'
-import { PaymentStatus } from '@/types/enums'
+import type { UserPaymentHistory } from '@/types'
+import useStatus from '@/Composables/status'
 
-interface History {
+defineProps<{
+    payments: UserPaymentHistory[]
+}>()
 
-}
-
-const loading = ref(false)
-
-const test = ref([])
-
-async function fetchHistory() {
-    loading.value = true
-
-    test.value = await fetch(route('user.payment-history'))
-        .then(response => response.json())
-        .then(data => data)
-
-    loading.value = false
-}
-
-onMounted(fetchHistory);
+const { getPaymentType } = useStatus()
 </script>
 
 <template>
-    <VCard
-        v-if="test.length > 0"
-        :loading
-        title="Historique des paiements"
-    >
+    <VCard title="Historique des paiements">
         <template #text>
-            {{ test }}
+            <VTimeline
+                v-if="payments.length > 0"
+                side="end"
+                density="compact"
+            >
+                <VTimelineItem
+                    v-for="payment in payments"
+                    :key="payment.id"
+                    :dot-color="payment.status === 'pending' ? 'orange' : 'success'"
+                    size="small"
+                    width="100%"
+                >
+                    <VCard
+                        variant="tonal"
+                        density="compact"
+                    >
+                        <template #title>
+                            <span class="text-caption text-medium-emphasis">
+                                {{ payment.paid_at || 'En attente' }}
+                            </span>
+                        </template>
+                        <template #append>
+                            <VChip
+                                v-bind="getPaymentType(payment.type)"
+                            />
+                        </template>
+                        <template #text>
+                            <span class="font-weight-medium">
+                                {{ payment.title }}
+                            </span>
+
+                            <VChip
+                                size="small"
+                                :color="payment.status === 'pending' ? 'orange' : 'success'"
+                                :text="payment.amount"
+                                class="ml-2"
+                            />
+                        </template>
+                        <template #actions>
+                            <VChip
+                                size="small"
+                                variant="flat"
+                                :color="payment.status === 'pending' ? 'orange' : 'success'"
+                                :text="payment.status === 'pending' ? 'En attente' : 'Payé'"
+                            />
+
+                            <VSpacer />
+
+                            <VBtn
+                                v-if="payment.payment_link"
+                                :href="payment.payment_link"
+                                target="_blank"
+                                color="primary"
+                                variant="outlined"
+                                size="small"
+                                prepend-icon="mdi-credit-card"
+                            >
+                                Payer
+                            </VBtn>
+                        </template>
+                    </VCard>
+                </VTimelineItem>
+            </VTimeline>
+            <div
+                v-else
+                class="text-center py-8 text-medium-emphasis"
+            >
+                <VIcon
+                    icon="mdi-credit-card-outline"
+                    size="48"
+                    class="mb-2"
+                />
+                <p>Aucun paiement pour le moment</p>
+            </div>
         </template>
     </VCard>
 </template>
