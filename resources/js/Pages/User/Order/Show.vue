@@ -8,6 +8,7 @@ import UserLayout from '@/Layouts/UserLayout.vue'
 import { useHead } from '@vueuse/head'
 import { ref } from 'vue'
 import { route } from 'ziggy-js'
+import PaymentHistory from './PaymentHistory.vue'
 
 interface IllustrationDetail {
     name: string
@@ -301,6 +302,11 @@ function openIllustrationDetails(illustration: IllustrationItem) {
                                 </p>
                             </template>
                         </VCard>
+                    </VCol>
+                </VRow>
+                <VRow>
+                    <VCol>
+                        <PaymentHistory />
                     </VCol>
                 </VRow>
             </VCol>
