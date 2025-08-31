@@ -32,11 +32,13 @@ class DashboardController extends Controller
     }
 
     public function showOrder(
+        Request $request,
         string $reference,
         OrderService $orderService,
         IllustrationService $illustrationService
     ): Response {
-        $rawOrder = Order::with('shippingAddress', 'billingAddress', 'details.product', 'illustrations', 'payments')
+        $user = $request->user();
+        $rawOrder = Order::with('shippingAddress', 'billingAddress', 'details.product', 'illustrations')
             ->where('reference', $reference)
             ->firstOrFail();
 
@@ -72,6 +74,35 @@ class DashboardController extends Controller
 
         $estimatedFees = $orderService->calculateFees($rawOrder);
 
+        $payments = OrderPayment::with(['order', 'illustration'])
+            ->whereHas('order', function ($query) use ($user, $reference) {
+                $query->where('user_id', $user->id);
+                $query->where('reference', $reference);
+            })
+            ->orderByDesc('created_at')
+            ->get()
+            ->map(function ($payment) {
+                $isIllustration = $payment->isForIllustration();
+
+                // Determine item title
+                if ($isIllustration && $payment->illustration) {
+                    $title = "Illustration #{$payment->illustration->order->reference}";
+                } else {
+                    $title = "Commande #{$payment->order->reference}";
+                }
+
+                return [
+                    'id' => $payment->id,
+                    'title' => $title,
+                    'type' => $payment->type->value,
+                    'amount' => $payment->amount->formatted(),
+                    'status' => $payment->status->value,
+                    'paid_at' => $payment->paid_at?->format('d/m/Y à H:i'),
+                    'payment_link' => $payment->status->value === 'pending' ? $payment->stripe_payment_link : null,
+                    'is_illustration' => $isIllustration,
+                ];
+            });
+
         $order = [
             'id' => $rawOrder->id,
             'total' => $rawOrder->total,
@@ -86,47 +117,9 @@ class DashboardController extends Controller
             'items' => $items->values()->toArray(),
             'estimatedFees' => $estimatedFees,
             'finalAmount' => $orderService->getFinalAmount($rawOrder),
+            'payments' => $payments,
         ];
 
         return Inertia::render('User/Order/Show', compact('order'));
-    }
-
-    public function paymentHistory(Request $request): JsonResponse
-    {
-        $user = $request->user();
-
-        // Get all payments for user's orders (including illustration payments)
-        $payments = OrderPayment::with(['order', 'illustration'])
-            ->whereHas('order', function ($query) use ($user) {
-                $query->where('user_id', $user->id);
-            })
-            ->orderByDesc('created_at')
-            ->get();
-
-        // Transform payments for frontend display
-        $paymentHistory = $payments->map(function ($payment) {
-            $isIllustration = $payment->isForIllustration();
-
-            // Determine item title
-            if ($isIllustration && $payment->illustration) {
-                $title = "Illustration #{$payment->illustration->order->reference}";
-            } else {
-                $title = "Commande #{$payment->order->reference}";
-            }
-
-            return [
-                'id' => $payment->id,
-                'order_reference' => $payment->order->reference,
-                'title' => $title,
-                'type' => $payment->type->value,
-                'amount' => $payment->amount->formatted(),
-                'status' => $payment->status->value,
-                'paid_at' => $payment->paid_at?->format('d/m/Y à H:i'),
-                'payment_link' => $payment->status->value === 'pending' ? $payment->stripe_payment_link : null,
-                'is_illustration' => $isIllustration,
-            ];
-        });
-
-        return response()->json($paymentHistory);
     }
 }

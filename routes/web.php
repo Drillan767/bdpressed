@@ -96,7 +96,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::middleware('role:user')->prefix('/utilisateur')->group(function () {
         Route::get('', [UserDashboardController::class, 'index'])->name('user.dashboard');
         Route::get('/commande/{reference}', [UserDashboardController::class, 'showOrder'])->name('user.order.show');
-        Route::get('/historique-paiements', [UserDashboardController::class, 'paymentHistory'])->name('user.payment-history');
 
         Route::controller(AddressesController::class)->group(function () {
             Route::get('/adresses', 'index')->name('user.addresses.index');
