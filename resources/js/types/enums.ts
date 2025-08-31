@@ -20,6 +20,13 @@ export enum IllustrationStatus {
     CANCELLED = 'CANCELLED',
 }
 
+export enum PaymentStatus {
+    PENDING = 'PENDING',
+    PAID = 'PAID',
+    FAILED = 'FAILED',
+    REFUNDED = 'REFUNDED',
+}
+
 export enum StatusTriggers {
     MANUAL = 'manual',
     WEBHOOK = 'webhook',
