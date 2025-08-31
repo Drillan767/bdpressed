@@ -92,12 +92,16 @@ class WebhookController extends Controller
             return;
         }
 
+        // Get the actual Stripe fee by retrieving the balance transaction
+        $stripeService = app(StripeService::class);
+        $stripeFee = $stripeService->getStripeFeeFromPaymentIntent($paymentIntent);
+
         // Update payment record
         $payment->update([
             'status' => PaymentStatus::PAID,
             'paid_at' => now(),
             'stripe_payment_intent_id' => $paymentIntent['id'],
-            'stripe_fee' => $paymentIntent['charges']['data'][0]['balance_transaction']['fee'] ?? null,
+            'stripe_fee' => $stripeFee,
             'stripe_metadata' => $paymentIntent,
         ]);
 
@@ -193,11 +197,15 @@ class WebhookController extends Controller
             return;
         }
 
+        // Get the actual Stripe fee by retrieving the balance transaction
+        $stripeService = app(StripeService::class);
+        $stripeFee = $stripeService->getStripeFeeFromPaymentIntent($paymentIntent);
+
         // Update payment status (simple, no state machine)
         $payment->update([
             'status' => PaymentStatus::PAID,
             'paid_at' => now(),
-            'stripe_fee' => $paymentIntent['charges']['data'][0]['balance_transaction']['fee'] ?? null,
+            'stripe_fee' => $stripeFee,
             'stripe_metadata' => $paymentIntent,
         ]);
 

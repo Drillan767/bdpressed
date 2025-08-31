@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Casts\MoneyCast;
 use App\Enums\PaymentStatus;
 use App\Enums\PaymentType;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -71,5 +72,23 @@ class OrderPayment extends Model
     public function isFullyRefunded(): bool
     {
         return $this->refunded_amount >= $this->amount;
+    }
+
+    public function adminDisplay(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => [
+                'id' => $this->id,
+                'type' => $this->type->value === 'illustration_deposit' ? 'Acompte' : 'Paiement final',
+                'amount' => $this->amount->formatted(),
+                'status' => $this->status->value,
+                'paid_at' => $this->paid_at?->format('d/m/Y H:i'),
+                'stripe_payment_intent_id' => $this->stripe_payment_intent_id,
+                'stripe_fee' => $this->stripe_fee ?? 0,
+                // 'stripe_fee' => $this->stripe_fee ? MoneyCast::of($this->stripe_fee, 'EUR')->formatted() : null,
+                'stripe_payment_link' => $this->status === PaymentStatus::PENDING ? $this->stripe_payment_link : null,
+                'description' => $this->description,
+            ]
+        );
     }
 }
