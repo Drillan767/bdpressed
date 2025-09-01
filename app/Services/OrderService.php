@@ -74,7 +74,8 @@ readonly class OrderService
     {
         // Skip order payment if order only contains illustrations (no regular products)
         $hasRegularProducts = $order->details()->exists();
-        return $order->illustrations()->exists() && !$hasRegularProducts;
+
+        return $order->illustrations()->exists() && ! $hasRegularProducts;
     }
 
     /**

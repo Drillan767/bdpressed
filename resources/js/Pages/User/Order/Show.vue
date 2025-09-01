@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Address, Money, PaymentHistory as Payments } from '@/types'
+import type { Address, Money, PaymentHistory as Payment } from '@/types'
 import type { IllustrationStatus, OrderStatus } from '@/types/enums'
 import PaymentTimeline from '@/Components/Order/PaymentTimeline.vue'
 import useNumbers from '@/Composables/numbers'
@@ -49,7 +49,7 @@ interface OrderDetail {
     shippingAddress: Address
     billingAddress: Address
     status: OrderStatus
-    payments: Payments[]
+    payments: Payment[]
     items: (ArticleItem | IllustrationItem)[]
 }
 

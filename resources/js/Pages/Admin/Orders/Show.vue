@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { OrderDetail } from '@/types'
+import type { OrderDetail, PaymentHistory as Payment } from '@/types'
 import type { OrderStatus } from '@/types/enums'
 import StatusChangeHistory from '@/Components/Admin/StatusChangeHistory.vue'
 import PaymentTimeline from '@/Components/Order/PaymentTimeline.vue'
@@ -17,6 +17,7 @@ interface Props {
     estimatedFees: number
     allowedStatuses: OrderStatus[]
     isIllustrationOnly: boolean
+    paymentHistory: Payment[]
 }
 
 defineOptions({ layout: AdminLayout })
@@ -341,7 +342,7 @@ async function updateStatus() {
                 </VRow>
                 <VRow>
                     <VCol>
-                        <!-- TODO implement history -->
+                        <PaymentTimeline :payments="paymentHistory" />
                     </VCol>
                 </VRow>
                 <VRow>
