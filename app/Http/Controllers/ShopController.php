@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Actions\Order\HandleAddressesAction;
 use App\Actions\Order\HandleGuestAction;
-use App\Actions\Order\HandleInstagranAction;
+use App\Actions\Order\HandleInstagramAction;
 use App\Actions\Order\HandleOrderAction;
 use App\Actions\Order\RegisterClientAction;
 use App\Events\OrderCreated;
@@ -68,7 +68,7 @@ class ShopController extends Controller
     {
         if ($request->user()) {
 
-            new HandleInstagranAction()->handle($request);
+            new HandleInstagramAction()->handle($request);
 
             if ($request->has('addresses.shippingId')) {
                 $shippingId = $request->get('addresses')['shippingId'];
