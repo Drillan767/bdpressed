@@ -12,6 +12,7 @@ readonly class OrderService
     public function __construct(
         private StripeService $stripeService,
         private MoneyService $moneyService,
+        private RefundService $refundService,
     ) {}
 
     /**
@@ -22,7 +23,7 @@ readonly class OrderService
     {
         // Check if payments are loaded and we have actual payment data
         if ($order->relationLoaded('payments')) {
-            $actualPayment = $order->payments->whereIn('status', [PaymentStatus::PAID, PaymentStatus::REFUNDED])->first();
+            $actualPayment = $order->payments->whereIn('status', [PaymentStatus::PAID, PaymentStatus::PARTIALLY_REFUNDED, PaymentStatus::REFUNDED])->first();
 
             if ($actualPayment) {
                 // Use actual fees from completed payment
@@ -45,7 +46,7 @@ readonly class OrderService
     {
         // Check if payments are loaded and we have actual payment data
         if ($order->relationLoaded('payments')) {
-            $actualPayment = $order->payments->whereIn('status', [PaymentStatus::PAID, PaymentStatus::REFUNDED])->first();
+            $actualPayment = $order->payments->whereIn('status', [PaymentStatus::PAID, PaymentStatus::PARTIALLY_REFUNDED, PaymentStatus::REFUNDED])->first();
 
             if ($actualPayment && $actualPayment->stripe_fee) {
                 // Return actual Stripe fee as Money object
@@ -146,5 +147,46 @@ readonly class OrderService
                 ]);
                 break;
         }
+    }
+
+    /**
+     * Cancel an order and process refunds if necessary
+     */
+    public function cancelOrder(Order $order, string $reason): array
+    {
+        // Check if refund is required
+        $refundResult = [];
+        if ($order->requiresRefundOnCancellation()) {
+            $refundResult = $this->refundService->processOrderCancellationRefund($order, $reason);
+
+            if (! $refundResult['success']) {
+                return [
+                    'success' => false,
+                    'error' => 'Failed to process refunds',
+                    'refund_details' => $refundResult,
+                ];
+            }
+        }
+
+        // Transition to cancelled state
+        $order->transitionTo(OrderStatus::CANCELLED, [
+            'triggered_by' => auth()->check() ? 'user' : 'system',
+            'reason' => $reason,
+        ]);
+
+        return [
+            'success' => true,
+            'message' => 'Order cancelled successfully',
+            'refund_processed' => ! empty($refundResult['refunds']),
+            'refund_details' => $refundResult,
+        ];
+    }
+
+    /**
+     * Get refund information for an order
+     */
+    public function getRefundSummary(Order $order): array
+    {
+        return $this->refundService->getOrderRefundSummary($order);
     }
 }

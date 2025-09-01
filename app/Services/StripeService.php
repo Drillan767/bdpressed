@@ -669,4 +669,68 @@ class StripeService
             return null;
         }
     }
+
+    /**
+     * Create a refund for a payment intent
+     * Reason is required for audit trail
+     */
+    public function refundPayment(string $paymentIntentId, int $amount, string $reason): array
+    {
+        try {
+            $refundData = [
+                'payment_intent' => $paymentIntentId,
+                'amount' => $amount,
+                'reason' => $reason,
+            ];
+
+            $refund = $this->client->refunds->create($refundData);
+
+            return [
+                'success' => true,
+                'refund' => $refund,
+                'refund_id' => $refund->id,
+                'amount' => $refund->amount,
+                'status' => $refund->status,
+            ];
+
+        } catch (\Exception $e) {
+            Log::error('Error creating Stripe refund: '.$e->getMessage(), [
+                'payment_intent_id' => $paymentIntentId,
+                'amount' => $amount,
+                'reason' => $reason,
+            ]);
+
+            return [
+                'success' => false,
+                'error' => $e->getMessage(),
+            ];
+        }
+    }
+
+    /**
+     * Get refunds for a payment intent
+     */
+    public function getRefunds(string $paymentIntentId): array
+    {
+        try {
+            $refunds = $this->client->refunds->all([
+                'payment_intent' => $paymentIntentId,
+            ]);
+
+            return [
+                'success' => true,
+                'refunds' => $refunds->data,
+            ];
+
+        } catch (\Exception $e) {
+            Log::error('Error retrieving Stripe refunds: '.$e->getMessage(), [
+                'payment_intent_id' => $paymentIntentId,
+            ]);
+
+            return [
+                'success' => false,
+                'error' => $e->getMessage(),
+            ];
+        }
+    }
 }
