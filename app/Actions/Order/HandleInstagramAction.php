@@ -5,7 +5,7 @@ namespace App\Actions\Order;
 use App\Http\Requests\OrderRequest;
 use App\Models\User;
 
-class HandleInstagranAction
+class HandleInstagramAction
 {
     public function handle(OrderRequest $request): void
     {
