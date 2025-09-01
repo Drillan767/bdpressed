@@ -1,6 +1,6 @@
-import {IllustrationStatus, OrderStatus} from '@/types/enums'
+import { IllustrationStatus, OrderStatus } from '@/types/enums'
 
-interface TransitionWarning<T extends OrderStatus | IllustrationStatus> {
+export interface TransitionWarning<T extends OrderStatus | IllustrationStatus> {
     status: T
     type: 'info' | 'warning' | 'destructive'
     title: string

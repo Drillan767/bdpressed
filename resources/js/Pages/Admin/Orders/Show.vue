@@ -1,11 +1,14 @@
 <script setup lang="ts">
+import type { TransitionWarning } from '@/Composables/warnings'
 import type { OrderDetail, PaymentHistory as Payment } from '@/types'
 import type { OrderStatus } from '@/types/enums'
 import StatusChangeHistory from '@/Components/Admin/StatusChangeHistory.vue'
 import PaymentTimeline from '@/Components/Order/PaymentTimeline.vue'
+import StatusChangeWarning from '@/Components/Order/StatusChangeWarning.vue'
 import useNumbers from '@/Composables/numbers'
 import useStatus from '@/Composables/status'
 import useStrings from '@/Composables/strings'
+import useWarnings from '@/Composables/warnings'
 import AdminLayout from '@/Layouts/AdminLayout.vue'
 import { router } from '@inertiajs/vue3'
 import { useHead } from '@vueuse/head'
@@ -31,9 +34,12 @@ useHead({
 const { formatPrice } = useNumbers()
 const { getOrderStatus, getIllustrationStatus, listAvailableStatuses, getTrigger } = useStatus()
 const { toParagraphs } = useStrings()
+const { orderChangeWarning } = useWarnings()
 
 const loading = ref(false)
 const status = ref<OrderStatus>()
+const warning = ref<TransitionWarning<OrderStatus>>()
+const scw = ref<InstanceType<typeof StatusChangeWarning>>()
 
 const statusList = computed(() => listAvailableStatuses(props.allowedStatuses))
 
@@ -48,14 +54,25 @@ const statusChangesDisplay = computed(() => {
     }))
 })
 
-// Add warning for when the order is canceled
-// See: https://github.com/Drillan767/bdpressed/issues/82
+// lmao.
+function triggerWarning() {
+    if (!status.value)
+        return
+
+    warning.value = orderChangeWarning(props.order.status, status.value)
+}
+
+function handleCancel() {
+    warning.value = undefined
+    status.value = undefined
+}
 
 async function updateStatus() {
     loading.value = true
 
     router.post(route('orders.update-status', { reference: props.order.reference }), {
         status: status.value,
+        reason: scw.value?.reason,
     })
 
     status.value = undefined
@@ -131,7 +148,7 @@ async function updateStatus() {
                                     :disabled="!status"
                                     color="primary"
                                     variant="flat"
-                                    @click="updateStatus"
+                                    @click="triggerWarning"
                                 >
                                     Enregistrer
                                 </VBtn>
@@ -352,5 +369,11 @@ async function updateStatus() {
                 </VRow>
             </VCol>
         </VRow>
+        <StatusChangeWarning
+            ref="scw"
+            :warning
+            @submit="updateStatus"
+            @cancel="handleCancel"
+        />
     </VContainer>
 </template>

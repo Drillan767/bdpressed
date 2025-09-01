@@ -1,10 +1,13 @@
 <script setup lang="ts">
+import type { TransitionWarning } from '@/Composables/warnings'
 import type { Money, PaymentHistory as Payment, StatusChange } from '@/types'
 import type { IllustrationStatus } from '@/types/enums'
 import StatusChangeHistory from '@/Components/Admin/StatusChangeHistory.vue'
 import PaymentTimeline from '@/Components/Order/PaymentTimeline.vue'
+import StatusChangeWarning from '@/Components/Order/StatusChangeWarning.vue'
 import useStatus from '@/Composables/status'
 import useStrings from '@/Composables/strings'
+import useWarnings from '@/Composables/warnings'
 import AdminLayout from '@/Layouts/AdminLayout.vue'
 import { router } from '@inertiajs/vue3'
 import { useHead } from '@vueuse/head'
@@ -49,6 +52,7 @@ useHead({
 
 const { getIllustrationStatus, listIllustrationStatuses, getTrigger } = useStatus()
 const { toParagraphs } = useStrings()
+const { illustrationChange } = useWarnings()
 
 const statusList = computed(() => listIllustrationStatuses(props.availableStatuses))
 
@@ -65,11 +69,27 @@ const statusChangesDisplay = computed(() => {
 
 const loading = ref(false)
 const status = ref<IllustrationStatus>()
+const warning = ref<TransitionWarning<IllustrationStatus>>()
+const scw = ref<InstanceType<typeof StatusChangeWarning>>()
+
+// lmao.
+function triggerWarning() {
+    if (!status.value)
+        return
+
+    warning.value = illustrationChange(props.illustration.status, status.value)
+}
+
+function handleCancel() {
+    warning.value = undefined
+    status.value = undefined
+}
 
 async function updateStatus() {
     loading.value = true
     router.post(route('admin.illustrations.update-status', { illustration: props.illustration.id }), {
         status: status.value,
+        reason: scw.value?.reason,
     })
 
     status.value = undefined
@@ -131,7 +151,7 @@ async function updateStatus() {
                                     :disabled="!status"
                                     color="primary"
                                     variant="flat"
-                                    @click="updateStatus"
+                                    @click="triggerWarning"
                                 >
                                     Enregistrer
                                 </VBtn>
@@ -211,5 +231,11 @@ async function updateStatus() {
                 </VRow>
             </VCol>
         </VRow>
+        <StatusChangeWarning
+            ref="scw"
+            :warning
+            @submit="updateStatus"
+            @cancel="handleCancel"
+        />
     </VContainer>
 </template>
