@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import type { UserPaymentHistory } from '@/types'
+import type { PaymentHistory } from '@/types'
 import useStatus from '@/Composables/status'
 
 defineProps<{
-    payments: UserPaymentHistory[]
+    payments: PaymentHistory[]
+    interactive?: boolean
 }>()
 
 const { getPaymentType } = useStatus()
@@ -61,7 +62,7 @@ const { getPaymentType } = useStatus()
                             <VSpacer />
 
                             <VBtn
-                                v-if="payment.payment_link"
+                                v-if="payment.payment_link && interactive"
                                 :href="payment.payment_link"
                                 target="_blank"
                                 color="primary"

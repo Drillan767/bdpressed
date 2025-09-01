@@ -2,6 +2,7 @@
 import type { OrderDetail } from '@/types'
 import type { OrderStatus } from '@/types/enums'
 import StatusChangeHistory from '@/Components/Admin/StatusChangeHistory.vue'
+import PaymentTimeline from '@/Components/Order/PaymentTimeline.vue'
 import useNumbers from '@/Composables/numbers'
 import useStatus from '@/Composables/status'
 import useStrings from '@/Composables/strings'
@@ -94,7 +95,7 @@ async function updateStatus() {
                             icon="mdi-information"
                         >
                             <template #text>
-                                Cette commande ne contient que des illustrations personnalisées. 
+                                Cette commande ne contient que des illustrations personnalisées.
                                 Le statut sera automatiquement mis à jour lorsque toutes les illustrations seront terminées et payées.
                             </template>
                         </VAlert>
@@ -336,6 +337,11 @@ async function updateStatus() {
                                 </p>
                             </template>
                         </VCard>
+                    </VCol>
+                </VRow>
+                <VRow>
+                    <VCol>
+                        <!-- TODO implement history -->
                     </VCol>
                 </VRow>
                 <VRow>

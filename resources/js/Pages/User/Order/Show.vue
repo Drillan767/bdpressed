@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import type { Address, Money, UserPaymentHistory as Payments } from '@/types'
+import type { Address, Money, PaymentHistory as Payments } from '@/types'
 import type { IllustrationStatus, OrderStatus } from '@/types/enums'
+import PaymentTimeline from '@/Components/Order/PaymentTimeline.vue'
 import useNumbers from '@/Composables/numbers'
 import useStatus from '@/Composables/status'
 import useStrings from '@/Composables/strings'
@@ -8,7 +9,6 @@ import UserLayout from '@/Layouts/UserLayout.vue'
 import { useHead } from '@vueuse/head'
 import { ref } from 'vue'
 import { route } from 'ziggy-js'
-import PaymentHistory from './PaymentHistory.vue'
 
 interface IllustrationDetail {
     name: string
@@ -307,7 +307,7 @@ function openIllustrationDetails(illustration: IllustrationItem) {
                 </VRow>
                 <VRow>
                     <VCol>
-                        <PaymentHistory :payments="order.payments" />
+                        <PaymentTimeline :payments="order.payments" />
                     </VCol>
                 </VRow>
             </VCol>

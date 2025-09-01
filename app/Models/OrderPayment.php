@@ -79,13 +79,12 @@ class OrderPayment extends Model
         return Attribute::make(
             get: fn () => [
                 'id' => $this->id,
-                'type' => $this->type->value === 'illustration_deposit' ? 'Acompte' : 'Paiement final',
+                'type' => $this->type,
                 'amount' => $this->amount->formatted(),
                 'status' => $this->status->value,
                 'paid_at' => $this->paid_at?->format('d/m/Y H:i'),
                 'stripe_payment_intent_id' => $this->stripe_payment_intent_id,
                 'stripe_fee' => $this->stripe_fee ?? 0,
-                // 'stripe_fee' => $this->stripe_fee ? MoneyCast::of($this->stripe_fee, 'EUR')->formatted() : null,
                 'stripe_payment_link' => $this->status === PaymentStatus::PENDING ? $this->stripe_payment_link : null,
                 'description' => $this->description,
             ]

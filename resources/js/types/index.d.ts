@@ -328,7 +328,7 @@ export interface OrderPayment {
     stripe_payment_link: string | null
 }
 
-export interface UserPaymentHistory {
+export interface PaymentHistory {
     id: number
     title: string
     type: PaymentType
