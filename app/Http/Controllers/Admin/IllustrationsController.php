@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Enums\IllustrationStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Illustration;
+use App\Models\OrderPayment;
 use App\Services\IllustrationService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -69,8 +70,31 @@ class IllustrationsController extends Controller
             'guest' => (bool) $illustration->order->guest_id,
         ];
 
-        $illustration->loadMissing('payments');
-        $paymentHistory = $illustration->payments->map->adminDisplay;
+        $paymentHistory = OrderPayment::with(['order', 'illustration'])
+            ->where('illustration_id', $illustration->id)
+            ->orderByDesc('created_at')
+            ->get()
+            ->map(function ($payment) {
+                $isIllustration = $payment->isForIllustration();
+
+                // Determine item title
+                if ($isIllustration && $payment->illustration) {
+                    $title = "Illustration #{$payment->illustration->order->reference}";
+                } else {
+                    $title = "Commande #{$payment->order->reference}";
+                }
+
+                return [
+                    'id' => $payment->id,
+                    'title' => $title,
+                    'type' => $payment->type->value,
+                    'amount' => $payment->amount->formatted(),
+                    'status' => $payment->status->value,
+                    'paid_at' => $payment->paid_at?->format('d/m/Y à H:i'),
+                    'payment_link' => $payment->status->value === 'pending' ? $payment->stripe_payment_link : null,
+                    'is_illustration' => $isIllustration,
+                ];
+            });
 
         return Inertia::render('Admin/Illustrations/Show', compact(
             'illustration',

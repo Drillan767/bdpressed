@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Enums\OrderStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
+use App\Models\OrderPayment;
 use App\Services\IllustrationService;
 use App\Services\OrderService;
 use App\Services\OrderStatusService;
@@ -72,11 +73,39 @@ class OrderController extends Controller
         $allowedStatuses = $order->getAvailableStatuses();
         $isIllustrationOnly = $order->isIllustrationOnlyOrder();
 
+        $paymentHistory = OrderPayment::with(['order', 'illustration'])
+            ->where('order_id', $order->id)
+            ->whereNull('illustration_id') // Exclude illustration payments
+            ->orderByDesc('created_at')
+            ->get()
+            ->map(function ($payment) {
+                $isIllustration = $payment->isForIllustration();
+
+                // Determine item title
+                if ($isIllustration && $payment->illustration) {
+                    $title = "Illustration #{$payment->illustration->order->reference}";
+                } else {
+                    $title = "Commande #{$payment->order->reference}";
+                }
+
+                return [
+                    'id' => $payment->id,
+                    'title' => $title,
+                    'type' => $payment->type->value,
+                    'amount' => $payment->amount->formatted(),
+                    'status' => $payment->status->value,
+                    'paid_at' => $payment->paid_at?->format('d/m/Y à H:i'),
+                    'payment_link' => $payment->status->value === 'pending' ? $payment->stripe_payment_link : null,
+                    'is_illustration' => $isIllustration,
+                ];
+            });
+
         return Inertia::render('Admin/Orders/Show', compact(
             'order',
             'allowedStatuses',
             'estimatedFees',
             'isIllustrationOnly',
+            'paymentHistory',
         ));
     }
 

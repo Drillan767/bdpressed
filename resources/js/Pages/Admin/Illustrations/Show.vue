@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import type { Money, StatusChange } from '@/types'
+import type { Money, PaymentHistory as Payment, StatusChange } from '@/types'
 import type { IllustrationStatus } from '@/types/enums'
 import StatusChangeHistory from '@/Components/Admin/StatusChangeHistory.vue'
+import PaymentTimeline from '@/Components/Order/PaymentTimeline.vue'
 import useStatus from '@/Composables/status'
 import useStrings from '@/Composables/strings'
 import AdminLayout from '@/Layouts/AdminLayout.vue'
@@ -13,10 +14,6 @@ import { route } from 'ziggy-js'
 interface IllustrationDetail {
     name: string
     price: string
-}
-
-interface Payment {
-
 }
 
 interface Illustration {
@@ -204,9 +201,7 @@ async function updateStatus() {
             >
                 <VRow>
                     <VCol>
-                        <VCard title="Historique des paiements">
-                            <template #text />
-                        </VCard>
+                        <PaymentTimeline :payments="paymentHistory" />
                     </VCol>
                 </VRow>
                 <VRow>
