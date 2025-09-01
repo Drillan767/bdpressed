@@ -44,7 +44,7 @@ The application uses state machines for order and illustration workflows:
 - **Illustration Flow**: PENDING → DEPOSIT_PENDING → DEPOSIT_PAID → IN_PROGRESS → CLIENT_REVIEW → PAYMENT_PENDING → COMPLETED
 
 State transitions are managed by dedicated StateMachine classes with validation and automatic Stripe webhook integration.
-A file describing the workflow is available at [docs/STATE_MACHINES.md](./docs/STATE_MACHINES.md) 
+A file describing the workflow is available at [docs/STATE_MACHINES.md](./docs/STATE_MACHINES.md)
 
 ## Testing
 

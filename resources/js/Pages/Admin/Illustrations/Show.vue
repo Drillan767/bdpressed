@@ -204,14 +204,14 @@ async function updateStatus() {
             >
                 <VRow>
                     <VCol>
-                        <StatusChangeHistory :status-changes="statusChangesDisplay" />
+                        <VCard title="Historique des paiements">
+                            <template #text />
+                        </VCard>
                     </VCol>
                 </VRow>
                 <VRow>
                     <VCol>
-                        <VCard title="Historique des paiements">
-                            <template #text />
-                        </VCard>
+                        <StatusChangeHistory :status-changes="statusChangesDisplay" />
                     </VCol>
                 </VRow>
             </VCol>

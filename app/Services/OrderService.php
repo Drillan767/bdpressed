@@ -6,14 +6,12 @@ use App\Enums\IllustrationStatus;
 use App\Enums\OrderStatus;
 use App\Enums\PaymentStatus;
 use App\Models\Order;
-use App\Settings\WebsiteSettings;
 
-class OrderService
+readonly class OrderService
 {
     public function __construct(
-        private readonly WebsiteSettings $websiteSettings,
-        private readonly StripeService $stripeService,
-        private readonly MoneyService $moneyService,
+        private StripeService $stripeService,
+        private MoneyService $moneyService,
     ) {}
 
     /**
@@ -76,9 +74,7 @@ class OrderService
     {
         // Skip order payment if order only contains illustrations (no regular products)
         $hasRegularProducts = $order->details()->exists();
-        $hasIllustrationsOnly = $order->illustrations()->exists() && ! $hasRegularProducts;
-
-        return $hasIllustrationsOnly;
+        return $order->illustrations()->exists() && !$hasRegularProducts;
     }
 
     /**
@@ -120,43 +116,34 @@ class OrderService
         // For illustration-only orders, we need to transition through proper states
         // since illustrations handle their own payments
 
-        if ($order->status === OrderStatus::NEW) {
-            // Edge case: illustration completed before deposit was paid
-            // Transition to IN_PROGRESS first
-            $order->transitionTo(OrderStatus::IN_PROGRESS, [
-                'triggered_by' => 'system',
-                'reason' => 'Illustration completed - moving to in progress',
-            ]);
-
-            // Refresh the order to get the updated status
-            $order = $order->fresh();
-        }
-
-        if ($order->status === OrderStatus::IN_PROGRESS) {
-            // Transition to PAID (illustrations already handled payment)
-            $order->transitionTo(OrderStatus::PAID, [
-                'triggered_by' => 'system',
-                'reason' => 'Illustrations completed - payments handled separately',
-            ]);
-
-            // Refresh the order to get the updated status
-            $order = $order->fresh();
-        }
-
-        if ($order->status === OrderStatus::PAID) {
-            if ($needsShipping) {
-                // Has physical items to ship
-                $order->transitionTo(OrderStatus::TO_SHIP, [
+        switch ($order->status) {
+            case OrderStatus::NEW:
+                // Edge case: illustration completed before deposit was paid
+                // Transition to IN_PROGRESS first
+                $order->transitionTo(OrderStatus::IN_PROGRESS, [
                     'triggered_by' => 'system',
-                    'reason' => 'All illustrations completed with print option',
+                    'reason' => 'Illustration(s) terminée(s) - Transition en cours',
                 ]);
-            } else {
-                // Digital only - complete immediately
+
+                // Refresh the order to get the updated status
+                $order = $order->fresh();
+
+            case OrderStatus::IN_PROGRESS:
+                // Transition to PAID (illustrations already handled payment)
+                $order->transitionTo(OrderStatus::PAID, [
+                    'triggered_by' => 'system',
+                    'reason' => 'Illustration(s) terminée(s) - Paiement géré séparément',
+                ]);
+
+                // Refresh the order to get the updated status
+                $order = $order->fresh();
+
+            case OrderStatus::PAID:
                 $order->transitionTo(OrderStatus::DONE, [
                     'triggered_by' => 'system',
-                    'reason' => 'All digital illustrations completed',
+                    'reason' => 'Illustration(s) terminée(s)',
                 ]);
-            }
+                break;
         }
     }
 }
