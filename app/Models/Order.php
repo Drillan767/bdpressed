@@ -6,6 +6,7 @@ use App\Actions\StatusTransitions\CreateOrderPaymentAction;
 use App\Actions\StatusTransitions\RefundOrderAction;
 use App\Actions\StatusTransitions\SendOrderPaymentLinkAction;
 use App\Actions\StatusTransitions\SendPaymentConfirmationAction;
+use App\Actions\StatusTransitions\UpdateInventoryAction;
 use App\Casts\MoneyCast;
 use App\Enums\OrderStatus;
 use App\Services\OrderService;
@@ -60,11 +61,17 @@ class Order extends Model
             fn ($model, $from, $to, $context) => app(SendOrderPaymentLinkAction::class)->execute($model, $from, $to, $context)
         );
 
-        // PENDING_PAYMENT -> PAID: Send payment confirmation
+        // PENDING_PAYMENT -> PAID: Send payment confirmation and update inventory
         static::afterTransition(
             OrderStatus::PENDING_PAYMENT,
             OrderStatus::PAID,
             fn ($model, $from, $to, $context) => app(SendPaymentConfirmationAction::class)->execute($model, $from, $to, $context)
+        );
+
+        static::afterTransition(
+            OrderStatus::PENDING_PAYMENT,
+            OrderStatus::PAID,
+            fn ($model, $from, $to, $context) => app(UpdateInventoryAction::class)->execute($model, $from, $to, $context)
         );
 
         // PAID/TO_SHIP -> CANCELLED: Process refund (before transition to ensure payment data is available)
@@ -78,6 +85,25 @@ class Order extends Model
             OrderStatus::TO_SHIP,
             OrderStatus::CANCELLED,
             fn ($model, $from, $to, $context) => app(RefundOrderAction::class)->execute($model, $from, $to, $context)
+        );
+
+        // PAID/TO_SHIP/SHIPPED -> CANCELLED: Restore inventory
+        static::beforeTransition(
+            OrderStatus::PAID,
+            OrderStatus::CANCELLED,
+            fn ($model, $from, $to, $context) => app(UpdateInventoryAction::class)->execute($model, $from, $to, $context)
+        );
+
+        static::beforeTransition(
+            OrderStatus::TO_SHIP,
+            OrderStatus::CANCELLED,
+            fn ($model, $from, $to, $context) => app(UpdateInventoryAction::class)->execute($model, $from, $to, $context)
+        );
+
+        static::beforeTransition(
+            OrderStatus::SHIPPED,
+            OrderStatus::CANCELLED,
+            fn ($model, $from, $to, $context) => app(UpdateInventoryAction::class)->execute($model, $from, $to, $context)
         );
     }
 
