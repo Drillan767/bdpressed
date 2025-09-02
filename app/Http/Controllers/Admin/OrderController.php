@@ -8,7 +8,6 @@ use App\Models\Order;
 use App\Models\OrderPayment;
 use App\Services\IllustrationService;
 use App\Services\OrderService;
-use App\Services\OrderStatusService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -119,7 +118,6 @@ class OrderController extends Controller
     public function updateStatus(
         Request $request,
         string $reference,
-        OrderStatusService $orderStatusService,
     ): RedirectResponse {
         $request->validate([
             'status' => 'required|string',
@@ -132,10 +130,16 @@ class OrderController extends Controller
 
             $newStatus = OrderStatus::from($request->get('status'));
 
-            $order->transitionTo($newStatus);
+            // Get additional context from the request (from status change warning component)
+            $payload = $request->get('payload', []);
+            $context = [
+                'triggered_by' => 'manual',
+                'reason' => $payload['reason'] ?? 'Status changed manually',
+                'user_id' => auth()->id(),
+            ];
 
-            // Notify the status service of the change
-            $orderStatusService->changed($order, $newStatus);
+            // The transition will automatically trigger all registered actions
+            $order->transitionTo($newStatus, $context);
 
             return back()->with('success', 'Order status updated successfully');
         } catch (\Exception $e) {
