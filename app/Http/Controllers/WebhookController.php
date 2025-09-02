@@ -9,7 +9,6 @@ use App\Enums\PaymentType;
 use App\Models\Illustration;
 use App\Models\Order;
 use App\Models\OrderPayment;
-use App\Services\IllustrationStatusService;
 use App\Services\OrderStatusService;
 use App\Services\StripeService;
 use Illuminate\Http\Request;
@@ -132,9 +131,6 @@ class WebhookController extends Controller
                     'payment_intent_id' => $paymentIntent['id'],
                 ]);
 
-                // Trigger email notifications for illustration payments
-                $illustrationStatusService = app(IllustrationStatusService::class);
-                $illustrationStatusService->changed($illustration, $newStatus);
             }
         }
     }

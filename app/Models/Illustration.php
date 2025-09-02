@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Actions\StatusTransitions\SendIllustrationNotificationAction;
+use App\Actions\StatusTransitions\SyncOrderStatusAction;
 use App\Casts\MoneyCast;
 use App\Enums\IllustrationStatus;
 use App\Services\IllustrationService;
@@ -33,6 +35,55 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Illustration extends Model
 {
     use HasStateMachine;
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        // Register status transition actions
+        static::registerStatusTransitionActions();
+    }
+
+    protected static function registerStatusTransitionActions(): void
+    {
+        // Send notifications for specific transitions
+        static::afterTransition(
+            IllustrationStatus::PENDING,
+            IllustrationStatus::DEPOSIT_PENDING,
+            fn ($model, $from, $to, $context) => app(SendIllustrationNotificationAction::class)->execute($model, $from, $to, $context)
+        );
+
+        static::afterTransition(
+            IllustrationStatus::DEPOSIT_PENDING,
+            IllustrationStatus::DEPOSIT_PAID,
+            fn ($model, $from, $to, $context) => app(SendIllustrationNotificationAction::class)->execute($model, $from, $to, $context)
+        );
+
+        static::afterTransition(
+            IllustrationStatus::CLIENT_REVIEW,
+            IllustrationStatus::PAYMENT_PENDING,
+            fn ($model, $from, $to, $context) => app(SendIllustrationNotificationAction::class)->execute($model, $from, $to, $context)
+        );
+
+        static::afterTransition(
+            IllustrationStatus::PAYMENT_PENDING,
+            IllustrationStatus::COMPLETED,
+            fn ($model, $from, $to, $context) => app(SendIllustrationNotificationAction::class)->execute($model, $from, $to, $context)
+        );
+
+        // Sync order status for specific transitions
+        static::afterTransition(
+            IllustrationStatus::DEPOSIT_PENDING,
+            IllustrationStatus::DEPOSIT_PAID,
+            fn ($model, $from, $to, $context) => app(SyncOrderStatusAction::class)->execute($model, $from, $to, $context)
+        );
+
+        static::afterTransition(
+            IllustrationStatus::PAYMENT_PENDING,
+            IllustrationStatus::COMPLETED,
+            fn ($model, $from, $to, $context) => app(SyncOrderStatusAction::class)->execute($model, $from, $to, $context)
+        );
+    }
 
     protected $casts = [
         'created_at' => 'datetime:d/m/Y H:i',
