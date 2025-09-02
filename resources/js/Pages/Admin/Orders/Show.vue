@@ -72,7 +72,7 @@ async function updateStatus() {
 
     router.post(route('orders.update-status', { reference: props.order.reference }), {
         status: status.value,
-        reason: scw.value?.reason,
+        payload: scw.value?.payload,
     })
 
     status.value = undefined

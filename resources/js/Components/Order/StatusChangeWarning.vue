@@ -10,7 +10,7 @@ interface Props {
 }
 
 interface Form {
-    reason: string
+    payload: string
 }
 
 const props = defineProps<Props>()
@@ -22,11 +22,11 @@ const emit = defineEmits<{
 
 const { defineField, resetForm, controlledValues } = useForm<Form>({
     validationSchema: computed(() => ({
-        reason: props.warning?.requiresReason ? 'required|min:10' : '',
+        payload: props.warning?.requiresReason ? 'required|min:10' : '',
     })),
 })
 
-const [reason, reasonProp] = defineField('reason', validationConfig)
+const [reason, reasonProp] = defineField('payload', validationConfig)
 const formValid = useIsFormValid()
 
 const open = ref(false)
@@ -74,7 +74,7 @@ watch(() => props.warning, (value) => {
 })
 
 defineExpose({
-    reason: computed(() => controlledValues.value.reason),
+    payload: computed(() => controlledValues.value.payload),
 })
 </script>
 
