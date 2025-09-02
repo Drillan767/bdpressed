@@ -89,7 +89,7 @@ async function updateStatus() {
     loading.value = true
     router.post(route('admin.illustrations.update-status', { illustration: props.illustration.id }), {
         status: status.value,
-        reason: scw.value?.reason,
+        payload: scw.value?.payload,
     })
 
     status.value = undefined
