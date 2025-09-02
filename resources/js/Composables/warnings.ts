@@ -44,14 +44,6 @@ const orderStateMachine = new Map<OrderStatus, TransitionWarning<OrderStatus>[]>
     ]],
     [OrderStatus.PAID, [
         {
-            status: OrderStatus.TO_SHIP,
-            type: 'info',
-            title: 'Envoyer la commande ?',
-            message: 'Un email contenant le numéro de suivi va être envoyé au client. Continuer ?',
-            requiresReason: true,
-            reasonLabel: 'Numéro de suivi',
-        },
-        {
             status: OrderStatus.DONE,
             type: 'info',
             title: 'Finaliser la commande ?',
@@ -68,10 +60,20 @@ const orderStateMachine = new Map<OrderStatus, TransitionWarning<OrderStatus>[]>
     ]],
     [OrderStatus.TO_SHIP, [
         {
-            status: OrderStatus.DONE,
+            status: OrderStatus.SHIPPED,
             type: 'info',
-            title: 'Finaliser la commande ?',
-            message: 'L\'action est irréversible. Si le client n\'a pas créé de compte, ses données seront anonymisées dans 15 jours. Confirmer ?',
+            title: 'Envoyer la commande ?',
+            message: 'Un email contenant le numéro de suivi va être envoyé au client. Continuer ?',
+            requiresReason: true,
+            reasonLabel: 'Numéro de suivi',
+        },
+        {
+            status: OrderStatus.CANCELLED,
+            type: 'destructive',
+            title: 'Annuler la commande ?',
+            message: 'L\'action est irréversible, et le client va recevoir un email lui informant de son annulation ainsi que la raison. De plus, son paiment sera remboursé. Continuer ?',
+            requiresReason: true,
+            reasonLabel: 'Raison de l\'annulation',
         },
     ]],
 ])
