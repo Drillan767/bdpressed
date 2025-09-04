@@ -8,7 +8,7 @@ use App\Models\Product;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\OrderDetail>
+ * @extends Factory<OrderDetail>
  */
 class OrderDetailFactory extends Factory
 {
