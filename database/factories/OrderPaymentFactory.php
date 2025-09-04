@@ -7,7 +7,7 @@ use App\Models\OrderPayment;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\OrderPayment>
+ * @extends Factory<OrderPayment>
  */
 class OrderPaymentFactory extends Factory
 {

@@ -10,9 +10,9 @@ class HandleInstagramAction
     public function handle(OrderRequest $request): void
     {
         $currentUser = User::select(['id', 'instagram'])->findOrFail($request->user()->id);
-        $instagram = $request->get('user')['instagram'];
+        $instagram = $request->get('user')['instagram'] ?? null;
 
-        if ($currentUser->instagram !== $instagram) {
+        if (!!$instagram && $currentUser->instagram !== $instagram) {
             $currentUser->instagram = $request->get('user')['instagram'];
             $currentUser->save();
         }

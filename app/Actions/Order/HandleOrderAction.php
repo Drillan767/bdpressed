@@ -33,7 +33,12 @@ class HandleOrderAction
         $order->total = $totalPrice;
         $order->shipmentFees = $shipFee;
         $order->reference = $this->defineReference();
-        $order->additionalInfos = $request->get('user')['additionalInfos'];
+        // Get additionalInfos from the right place based on user type
+        // For authenticated users: additionalInfos is at root level
+        // For guests/new users: additionalInfos is in user array
+        $order->additionalInfos = $request->has('user.additionalInfos')
+            ? $request->get('user')['additionalInfos'] ?? ''
+            : $request->get('additionalInfos', '');
 
         if ($guest) {
             $order->guest_id = $authId;

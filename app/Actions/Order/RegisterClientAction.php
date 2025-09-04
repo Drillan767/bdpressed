@@ -13,7 +13,7 @@ class RegisterClientAction
     {
         $user = User::create([
             'email' => $request->get('user')['email'],
-            'instagram' => $request->get('user')['instagram'],
+            'instagram' => $request->get('user')['instagram'] ?? null,
             'password' => Hash::make($request->get('user')['password']),
         ]);
 
