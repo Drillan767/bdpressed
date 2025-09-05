@@ -2,6 +2,7 @@
 
 use App\Enums\OrderStatus;
 use App\Events\OrderCreated;
+use App\Models\IllustrationPrice;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\User;
@@ -19,6 +20,9 @@ beforeEach(function () {
     // Create roles for testing
     Role::create(['name' => 'admin']);
     Role::create(['name' => 'user']);
+
+    IllustrationPrice::unsetEventDispatcher();
+    $this->artisan('db:seed', ['--class' => 'IllustrationPriceSeeder']);
 });
 
 describe('Order Process Scenarios', function () {
@@ -49,7 +53,6 @@ describe('Order Process Scenarios', function () {
 
         $response = $this
             ->actingAs($user)
-            ->withoutMiddleware()
             ->post('/checkout', $orderData);
 
         $response->assertRedirect('/merci');
@@ -90,7 +93,6 @@ describe('Order Process Scenarios', function () {
 
         $response = $this
             ->actingAs($user)
-            ->withoutMiddleware()
             ->post('/checkout', $orderData);
 
         $response->assertRedirect('/merci');
@@ -139,7 +141,6 @@ describe('Order Process Scenarios', function () {
 
         $this
             ->actingAs($user)
-            ->withoutMiddleware()
             ->post('/checkout', $orderData);
 
         // The exact response depends on how stock validation is implemented
@@ -176,7 +177,6 @@ describe('Order Process Scenarios', function () {
 
         $this
             ->actingAs($user)
-            ->withoutMiddleware()
             ->post('/checkout', $orderData);
 
         // Should fail due to out of stock item
@@ -193,11 +193,11 @@ describe('Order Process Scenarios', function () {
                 [
                     'type' => 'illustration',
                     'illustrationDetails' => [
-                        'illustrationType' => 'bust',
+                        'illustrationType' => 'BUST',
                         'addedHuman' => 1,
                         'addedAnimal' => 0,
-                        'pose' => 'standing',
-                        'background' => 'simple',
+                        'pose' => 'SIMPLE',
+                        'background' => 'SIMPLE',
                         'print' => true,
                         'addTracking' => false,
                         'description' => 'Portrait of my character'
@@ -219,7 +219,6 @@ describe('Order Process Scenarios', function () {
 
         $response = $this
             ->actingAs($user)
-            ->withoutMiddleware()
             ->post('/checkout', $orderData);
 
         $response->assertRedirect('/merci');
@@ -229,11 +228,11 @@ describe('Order Process Scenarios', function () {
             ->and($order->illustrations)->toHaveCount(1);
 
         $illustration = $order->illustrations->first();
-        expect($illustration->type)->toBe('bust')
+        expect($illustration->type)->toBe('BUST')
             ->and($illustration->nbHumans)->toBe(1)
             ->and($illustration->nbAnimals)->toBe(0)
-            ->and($illustration->pose)->toBe('standing')
-            ->and($illustration->background)->toBe('simple')
+            ->and($illustration->pose)->toBe('SIMPLE')
+            ->and($illustration->background)->toBe('SIMPLE')
             ->and($illustration->print)->toBeTrue()
             ->and($illustration->addTracking)->toBeFalse()
             ->and($illustration->description)->toBe('Portrait of my character');
@@ -249,11 +248,11 @@ describe('Order Process Scenarios', function () {
                 [
                     'type' => 'illustration',
                     'illustrationDetails' => [
-                        'illustrationType' => 'bust',
+                        'illustrationType' => 'BUST',
                         'addedHuman' => 1,
                         'addedAnimal' => 0,
-                        'pose' => 'standing',
-                        'background' => 'simple',
+                        'pose' => 'SIMPLE',
+                        'background' => 'SIMPLE',
                         'print' => true,
                         'addTracking' => false,
                         'description' => 'First character'
@@ -262,11 +261,11 @@ describe('Order Process Scenarios', function () {
                 [
                     'type' => 'illustration',
                     'illustrationDetails' => [
-                        'illustrationType' => 'fl',
+                        'illustrationType' => 'FULL_LENGTH',
                         'addedHuman' => 2,
                         'addedAnimal' => 1,
-                        'pose' => 'action',
-                        'background' => 'detailed',
+                        'pose' => 'COMPLEX',
+                        'background' => 'COMPLEX',
                         'print' => false,
                         'addTracking' => true,
                         'description' => 'Group scene'
@@ -287,7 +286,6 @@ describe('Order Process Scenarios', function () {
         ];
 
         $response = $this->actingAs($user)
-            ->withoutMiddleware()
             ->post('/checkout', $orderData);
 
         $response->assertRedirect('/merci');
@@ -296,8 +294,8 @@ describe('Order Process Scenarios', function () {
         expect($order)->not->toBeNull()
             ->and($order->illustrations)->toHaveCount(2);
 
-        $firstIllustration = $order->illustrations->where('type', 'bust')->first();
-        $secondIllustration = $order->illustrations->where('type', 'full_length')->first();
+        $firstIllustration = $order->illustrations->where('type', 'BUST')->first();
+        $secondIllustration = $order->illustrations->where('type', 'FULL_LENGTH')->first();
 
         expect($firstIllustration)->not->toBeNull()
             ->and($secondIllustration)->not->toBeNull()
@@ -318,11 +316,11 @@ describe('Order Process Scenarios', function () {
                 [
                     'type' => 'illustration',
                     'illustrationDetails' => [
-                        'illustrationType' => 'animal',
+                        'illustrationType' => 'ANIMAL',
                         'addedHuman' => 0,
                         'addedAnimal' => 2,
-                        'pose' => 'sitting',
-                        'background' => 'transparent',
+                        'pose' => 'SIMPLE',
+                        'background' => 'UNIFIED',
                         'print' => false,
                         'addTracking' => false,
                         'description' => 'Two cats together'
@@ -343,7 +341,6 @@ describe('Order Process Scenarios', function () {
         ];
 
         $response = $this->actingAs($user)
-            ->withoutMiddleware()
             ->post('/checkout', $orderData);
 
         $response->assertRedirect('/merci');
@@ -356,7 +353,7 @@ describe('Order Process Scenarios', function () {
         // One illustration
 
         $illustration = $order->illustrations->first();
-        expect($illustration->type)->toBe('animal')
+        expect($illustration->type)->toBe('ANIMAL')
             ->and($illustration->nbAnimals)->toBe(2)
             ->and($illustration->description)->toBe('Two cats together')
             ->and($order->isIllustrationOnlyOrder())->toBeTrue();
@@ -377,11 +374,11 @@ describe('Order Process Scenarios', function () {
                 [
                     'type' => 'illustration',
                     'illustrationDetails' => [
-                        'illustrationType' => 'animal',
+                        'illustrationType' => 'ANIMAL',
                         'addedHuman' => 0,
                         'addedAnimal' => 1,
-                        'pose' => 'sitting',
-                        'background' => 'transparent',
+                        'pose' => 'SIMPLE',
+                        'background' => 'UNIFIED',
                         'print' => true,
                         'addTracking' => false,
                         'description' => 'Pet portrait'
@@ -402,7 +399,6 @@ describe('Order Process Scenarios', function () {
         ];
 
         $response = $this->actingAs($user)
-            ->withoutMiddleware()
             ->post('/checkout', $orderData);
 
         $response->assertRedirect('/merci');
@@ -422,7 +418,7 @@ describe('Order Process Scenarios', function () {
 
         // Verify the illustration
         $illustration = $order->illustrations->first();
-        expect($illustration->type)->toBe('animal')
+        expect($illustration->type)->toBe('ANIMAL')
             ->and($illustration->description)->toBe('Pet portrait')
             ->and($illustration->print)->toBeTrue()
             ->and($order->isIllustrationOnlyOrder())->toBeFalse();
@@ -456,7 +452,6 @@ describe('Order Process Scenarios', function () {
         ];
 
         $response = $this->actingAs($user)
-            ->withoutMiddleware()
             ->post('/checkout', $orderData);
 
         $order = Order::where('user_id', $user->id)->first();
@@ -489,7 +484,6 @@ describe('Order Process Scenarios', function () {
         ];
 
         $response = $this->actingAs($user)
-            ->withoutMiddleware()
             ->post('/checkout', $orderData);
 
         $order = Order::where('user_id', $user->id)->first();
@@ -506,11 +500,11 @@ describe('Order Process Scenarios', function () {
                 [
                     'type' => 'illustration',
                     'illustrationDetails' => [
-                        'illustrationType' => 'bust',
+                        'illustrationType' => 'BUST',
                         'addedHuman' => 1,
                         'addedAnimal' => 0,
-                        'pose' => 'standing',
-                        'background' => 'simple',
+                        'pose' => 'SIMPLE',
+                        'background' => 'SIMPLE',
                         'print' => true, // Illustrations add 15g weight when printed
                         'addTracking' => false,
                         'description' => 'Test illustration'
@@ -531,7 +525,6 @@ describe('Order Process Scenarios', function () {
         ];
 
         $response = $this->actingAs($user)
-            ->withoutMiddleware()
             ->post('/checkout', $orderData);
 
         $order = Order::where('user_id', $user->id)->first();
@@ -584,8 +577,8 @@ describe('Order Process Scenarios', function () {
         ];
 
         // Create both orders
-        $this->actingAs($user1)->withoutMiddleware()->post('/checkout', $orderData1);
-        $this->actingAs($user2)->withoutMiddleware()->post('/checkout', $orderData2);
+        $this->actingAs($user1)->post('/checkout', $orderData1);
+        $this->actingAs($user2)->post('/checkout', $orderData2);
 
         $order1 = Order::where('user_id', $user1->id)->first();
         $order2 = Order::where('user_id', $user2->id)->first();

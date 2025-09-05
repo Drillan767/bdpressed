@@ -50,7 +50,6 @@ describe('Order Authorization', function () {
         ];
 
         $response = $this->actingAs($admin)
-            ->withoutMiddleware()
             ->post('/checkout', $orderData);
 
         $response->assertStatus(403);
@@ -86,8 +85,7 @@ describe('Order Authorization', function () {
             ]
         ];
 
-        $response = $this->withoutMiddleware()
-            ->post('/checkout', $orderData);
+        $response = $this->post('/checkout', $orderData);
 
         $response->assertRedirect('/merci');
 
@@ -141,8 +139,7 @@ describe('Order Authorization', function () {
             ]
         ];
 
-        $response = $this->withoutMiddleware()
-            ->post('/checkout', $orderData);
+        $response = $this->post('/checkout', $orderData);
 
         $response->assertRedirect('/merci');
 
@@ -195,9 +192,7 @@ describe('Order Authorization', function () {
             ]
         ];
 
-        $response = $this->actingAs($user)
-            ->withoutMiddleware()
-            ->post('/checkout', $orderData);
+        $response = $this->actingAs($user)->post('/checkout', $orderData);
 
         $response->assertRedirect('/merci');
 
@@ -248,9 +243,7 @@ describe('Order Authorization', function () {
             ]
         ];
 
-        $response = $this->actingAs($user)
-            ->withoutMiddleware()
-            ->post('/checkout', $orderData);
+        $response = $this->actingAs($user)->post('/checkout', $orderData);
 
         $response->assertRedirect('/merci');
 
@@ -299,8 +292,7 @@ describe('Order Authorization', function () {
             ]
         ];
 
-        $response = $this->withoutMiddleware()
-            ->post('/checkout', $orderData);
+        $response = $this->post('/checkout', $orderData);
 
         $response->assertSessionHasErrors(['user.email']);
 
@@ -336,8 +328,7 @@ describe('Order Authorization', function () {
             ]
         ];
 
-        $response = $this->withoutMiddleware()
-            ->post('/checkout', $orderData);
+        $response = $this->post('/checkout', $orderData);
 
         $response->assertSessionHasErrors(['user.email']);
 

@@ -14,7 +14,7 @@ uses(RefreshDatabase::class);
 beforeEach(function () {
     Event::fake();
     Mail::fake();
-    
+
     // Create roles for testing
     Role::create(['name' => 'admin']);
     Role::create(['name' => 'user']);
@@ -25,9 +25,9 @@ describe('Order Validation and Integration', function () {
     it('validates required address fields correctly', function () {
         $user = User::factory()->create();
         $user->assignRole('user');
-        
+
         $product = Product::factory()->inStock(5)->create();
-        
+
         // Missing required address fields
         $invalidOrderData = [
             'additionalInfos' => '',
@@ -44,7 +44,7 @@ describe('Order Validation and Integration', function () {
         ];
 
         $response = $this->actingAs($user)->post('/checkout', $invalidOrderData);
-        
+
         $response->assertSessionHasErrors([
             'addresses.shipping.lastName',
             'addresses.shipping.street',
@@ -52,7 +52,7 @@ describe('Order Validation and Integration', function () {
             'addresses.shipping.zipCode',
             'addresses.shipping.country',
         ]);
-        
+
         // Verify no order was created
         expect(Order::where('user_id', $user->id)->count())->toBe(0);
     });
@@ -60,9 +60,9 @@ describe('Order Validation and Integration', function () {
     it('validates billing address when different from shipping', function () {
         $user = User::factory()->create();
         $user->assignRole('user');
-        
+
         $product = Product::factory()->inStock(5)->create();
-        
+
         $invalidOrderData = [
             'additionalInfos' => '',
             'products' => [
@@ -86,7 +86,7 @@ describe('Order Validation and Integration', function () {
         ];
 
         $response = $this->actingAs($user)->post('/checkout', $invalidOrderData);
-        
+
         $response->assertSessionHasErrors([
             'addresses.billing.lastName',
             'addresses.billing.street',
@@ -94,16 +94,16 @@ describe('Order Validation and Integration', function () {
             'addresses.billing.zipCode',
             'addresses.billing.country',
         ]);
-        
+
         expect(Order::where('user_id', $user->id)->count())->toBe(0);
     });
 
     it('validates product exists and has valid data', function () {
         $user = User::factory()->create();
         $user->assignRole('user');
-        
+
         $nonExistentProductId = 99999;
-        
+
         $invalidOrderData = [
             'additionalInfos' => '',
             'products' => [
@@ -123,18 +123,18 @@ describe('Order Validation and Integration', function () {
         ];
 
         $response = $this->actingAs($user)->post('/checkout', $invalidOrderData);
-        
+
         $response->assertSessionHasErrors(['products.0.id']);
-        
+
         expect(Order::where('user_id', $user->id)->count())->toBe(0);
     });
 
     it('validates product quantity is positive', function () {
         $user = User::factory()->create();
         $user->assignRole('user');
-        
+
         $product = Product::factory()->inStock(5)->create();
-        
+
         $invalidOrderData = [
             'additionalInfos' => '',
             'products' => [
@@ -154,16 +154,16 @@ describe('Order Validation and Integration', function () {
         ];
 
         $response = $this->actingAs($user)->post('/checkout', $invalidOrderData);
-        
+
         $response->assertSessionHasErrors(['products.0.quantity']);
-        
+
         expect(Order::where('user_id', $user->id)->count())->toBe(0);
     });
 
     it('validates illustration details when ordering illustration', function () {
         $user = User::factory()->create();
         $user->assignRole('user');
-        
+
         $invalidOrderData = [
             'additionalInfos' => '',
             'products' => [
@@ -191,22 +191,22 @@ describe('Order Validation and Integration', function () {
         // This test depends on how illustration validation is implemented
         // The exact validation rules may be in the service layer or request validation
         $response = $this->actingAs($user)->post('/checkout', $invalidOrderData);
-        
+
         // We expect some form of error (either validation or service-level)
         if ($response->status() === 302) {
             // Redirect back with errors
             $response->assertSessionHasErrors();
         }
-        
+
         expect(Order::where('user_id', $user->id)->count())->toBe(0);
     });
 
     it('sends order confirmation email to user', function () {
         $user = User::factory()->create();
         $user->assignRole('user');
-        
+
         $product = Product::factory()->inStock(3)->create();
-        
+
         $orderData = [
             'additionalInfos' => 'Email test order',
             'products' => [
@@ -226,18 +226,18 @@ describe('Order Validation and Integration', function () {
         ];
 
         $response = $this->actingAs($user)->post('/checkout', $orderData);
-        
+
         $response->assertRedirect('/merci');
-        
+
         // Verify OrderCreated event was dispatched
         Event::assertDispatched(OrderCreated::class, function ($event) use ($user) {
-            return $event->order->user_id === $user->id && $event->isNewUser === false;
+            return $event->order->user_id === $user->id && $event->accountCreated === false;
         });
     });
 
     it('sends order confirmation email to guest', function () {
         $product = Product::factory()->inStock(3)->create();
-        
+
         $orderData = [
             'user' => [
                 'email' => 'guest@gmail.com',
@@ -261,18 +261,18 @@ describe('Order Validation and Integration', function () {
         ];
 
         $response = $this->post('/checkout', $orderData);
-        
+
         $response->assertRedirect('/merci');
-        
+
         // Verify OrderCreated event was dispatched for guest
-        Event::assertDispatched(OrderCreated::class, function ($event) {
-            return $event->order->guest_id !== null && $event->isNewUser === false;
-        });
+Event::assertDispatched(OrderCreated::class, function ($event) {
+    return $event->order->guest_id !== null && $event->accountCreated === false;
+});
     });
 
     it('sends welcome email to new user', function () {
         $product = Product::factory()->inStock(3)->create();
-        
+
         $orderData = [
             'user' => [
                 'email' => 'newuser@gmail.com',
@@ -298,21 +298,21 @@ describe('Order Validation and Integration', function () {
         ];
 
         $response = $this->post('/checkout', $orderData);
-        
+
         $response->assertRedirect('/merci');
-        
+
         // Verify OrderCreated event was dispatched for new user
         Event::assertDispatched(OrderCreated::class, function ($event) {
-            return $event->order->user_id !== null && $event->isNewUser === true;
+            return $event->order->user_id !== null && $event->accountCreated === true;
         });
     });
 
     it('validates email uniqueness for new user accounts', function () {
         // Create existing user
         $existingUser = User::factory()->create(['email' => 'taken@gmail.com']);
-        
+
         $product = Product::factory()->inStock(5)->create();
-        
+
         $orderData = [
             'user' => [
                 'email' => 'taken@gmail.com', // Already taken
@@ -338,15 +338,15 @@ describe('Order Validation and Integration', function () {
         ];
 
         $response = $this->post('/checkout', $orderData);
-        
+
         $response->assertSessionHasErrors(['user.email']);
-        
+
         expect(Order::count())->toBe(0);
     });
 
     it('validates password requirements for new user accounts', function () {
         $product = Product::factory()->inStock(5)->create();
-        
+
         $orderData = [
             'user' => [
                 'email' => 'newuser@gmail.com',
@@ -372,15 +372,15 @@ describe('Order Validation and Integration', function () {
         ];
 
         $response = $this->post('/checkout', $orderData);
-        
+
         $response->assertSessionHasErrors(['user.password']);
-        
+
         expect(Order::count())->toBe(0);
     });
 
     it('validates password confirmation for new user accounts', function () {
         $product = Product::factory()->inStock(5)->create();
-        
+
         $orderData = [
             'user' => [
                 'email' => 'newuser@gmail.com',
@@ -406,15 +406,15 @@ describe('Order Validation and Integration', function () {
         ];
 
         $response = $this->post('/checkout', $orderData);
-        
+
         $response->assertSessionHasErrors(['user.password']);
-        
+
         expect(Order::count())->toBe(0);
     });
 
     it('validates email format', function () {
         $product = Product::factory()->inStock(5)->create();
-        
+
         $orderData = [
             'user' => [
                 'email' => 'invalid-email', // Invalid format
@@ -438,16 +438,16 @@ describe('Order Validation and Integration', function () {
         ];
 
         $response = $this->post('/checkout', $orderData);
-        
+
         $response->assertSessionHasErrors(['user.email']);
-        
+
         expect(Order::count())->toBe(0);
     });
 
     it('prevents empty product array', function () {
         $user = User::factory()->create();
         $user->assignRole('user');
-        
+
         $orderData = [
             'additionalInfos' => '',
             'products' => [], // Empty products
@@ -465,12 +465,12 @@ describe('Order Validation and Integration', function () {
         ];
 
         $response = $this->actingAs($user)->post('/checkout', $orderData);
-        
+
         // Should have validation error or fail at service level
         if ($response->status() === 302) {
             $response->assertSessionHasErrors();
         }
-        
+
         expect(Order::where('user_id', $user->id)->count())->toBe(0);
     });
 
