@@ -1,7 +1,5 @@
 <?php
 
-use App\Enums\OrderStatus;
-use App\Events\OrderCreated;
 use App\Models\IllustrationPrice;
 use App\Models\Order;
 use App\Models\Product;
@@ -36,7 +34,7 @@ describe('Order Process Scenarios', function () {
         $orderData = [
             'additionalInfos' => '',
             'products' => [
-                ['id' => $product->id, 'quantity' => 2, 'type' => 'item']
+                ['id' => $product->id, 'quantity' => 2, 'type' => 'item'],
             ],
             'addresses' => [
                 'shipping' => [
@@ -47,8 +45,8 @@ describe('Order Process Scenarios', function () {
                     'zipCode' => '75001',
                     'country' => 'France',
                 ],
-                'same' => true
-            ]
+                'same' => true,
+            ],
         ];
 
         $response = $this
@@ -76,7 +74,7 @@ describe('Order Process Scenarios', function () {
             'additionalInfos' => '',
             'products' => [
                 ['id' => $product1->id, 'quantity' => 2, 'type' => 'item'],
-                ['id' => $product2->id, 'quantity' => 3, 'type' => 'item']
+                ['id' => $product2->id, 'quantity' => 3, 'type' => 'item'],
             ],
             'addresses' => [
                 'shipping' => [
@@ -87,8 +85,8 @@ describe('Order Process Scenarios', function () {
                     'zipCode' => '69001',
                     'country' => 'France',
                 ],
-                'same' => true
-            ]
+                'same' => true,
+            ],
         ];
 
         $response = $this
@@ -124,7 +122,7 @@ describe('Order Process Scenarios', function () {
         $orderData = [
             'additionalInfos' => '',
             'products' => [
-                ['id' => $product->id, 'quantity' => 1, 'type' => 'item']
+                ['id' => $product->id, 'quantity' => 1, 'type' => 'item'],
             ],
             'addresses' => [
                 'shipping' => [
@@ -135,8 +133,8 @@ describe('Order Process Scenarios', function () {
                     'zipCode' => '13001',
                     'country' => 'France',
                 ],
-                'same' => true
-            ]
+                'same' => true,
+            ],
         ];
 
         $this
@@ -160,7 +158,7 @@ describe('Order Process Scenarios', function () {
             'additionalInfos' => '',
             'products' => [
                 ['id' => $inStockProduct->id, 'quantity' => 1, 'type' => 'item'],
-                ['id' => $outOfStockProduct->id, 'quantity' => 1, 'type' => 'item']
+                ['id' => $outOfStockProduct->id, 'quantity' => 1, 'type' => 'item'],
             ],
             'addresses' => [
                 'shipping' => [
@@ -171,8 +169,8 @@ describe('Order Process Scenarios', function () {
                     'zipCode' => '06000',
                     'country' => 'France',
                 ],
-                'same' => true
-            ]
+                'same' => true,
+            ],
         ];
 
         $this
@@ -200,9 +198,9 @@ describe('Order Process Scenarios', function () {
                         'background' => 'SIMPLE',
                         'print' => true,
                         'addTracking' => false,
-                        'description' => 'Portrait of my character'
-                    ]
-                ]
+                        'description' => 'Portrait of my character',
+                    ],
+                ],
             ],
             'addresses' => [
                 'shipping' => [
@@ -213,8 +211,8 @@ describe('Order Process Scenarios', function () {
                     'zipCode' => '06000',
                     'country' => 'France',
                 ],
-                'same' => true
-            ]
+                'same' => true,
+            ],
         ];
 
         $response = $this
@@ -255,8 +253,8 @@ describe('Order Process Scenarios', function () {
                         'background' => 'SIMPLE',
                         'print' => true,
                         'addTracking' => false,
-                        'description' => 'First character'
-                    ]
+                        'description' => 'First character',
+                    ],
                 ],
                 [
                     'type' => 'illustration',
@@ -268,9 +266,9 @@ describe('Order Process Scenarios', function () {
                         'background' => 'COMPLEX',
                         'print' => false,
                         'addTracking' => true,
-                        'description' => 'Group scene'
-                    ]
-                ]
+                        'description' => 'Group scene',
+                    ],
+                ],
             ],
             'addresses' => [
                 'shipping' => [
@@ -281,8 +279,8 @@ describe('Order Process Scenarios', function () {
                     'zipCode' => '06400',
                     'country' => 'France',
                 ],
-                'same' => true
-            ]
+                'same' => true,
+            ],
         ];
 
         $response = $this->actingAs($user)
@@ -323,9 +321,9 @@ describe('Order Process Scenarios', function () {
                         'background' => 'UNIFIED',
                         'print' => false,
                         'addTracking' => false,
-                        'description' => 'Two cats together'
-                    ]
-                ]
+                        'description' => 'Two cats together',
+                    ],
+                ],
             ],
             'addresses' => [
                 'shipping' => [
@@ -336,8 +334,8 @@ describe('Order Process Scenarios', function () {
                     'zipCode' => '84000',
                     'country' => 'France',
                 ],
-                'same' => true
-            ]
+                'same' => true,
+            ],
         ];
 
         $response = $this->actingAs($user)
@@ -381,9 +379,9 @@ describe('Order Process Scenarios', function () {
                         'background' => 'UNIFIED',
                         'print' => true,
                         'addTracking' => false,
-                        'description' => 'Pet portrait'
-                    ]
-                ]
+                        'description' => 'Pet portrait',
+                    ],
+                ],
             ],
             'addresses' => [
                 'shipping' => [
@@ -394,8 +392,8 @@ describe('Order Process Scenarios', function () {
                     'zipCode' => '67000',
                     'country' => 'France',
                 ],
-                'same' => true
-            ]
+                'same' => true,
+            ],
         ];
 
         $response = $this->actingAs($user)
@@ -436,7 +434,7 @@ describe('Order Process Scenarios', function () {
         $orderData = [
             'additionalInfos' => '',
             'products' => [
-                ['id' => $lightProduct->id, 'quantity' => 2, 'type' => 'item'] // 200g total
+                ['id' => $lightProduct->id, 'quantity' => 2, 'type' => 'item'], // 200g total
             ],
             'addresses' => [
                 'shipping' => [
@@ -447,8 +445,8 @@ describe('Order Process Scenarios', function () {
                     'zipCode' => '75001',
                     'country' => 'France',
                 ],
-                'same' => true
-            ]
+                'same' => true,
+            ],
         ];
 
         $response = $this->actingAs($user)
@@ -468,7 +466,7 @@ describe('Order Process Scenarios', function () {
         $orderData = [
             'additionalInfos' => '',
             'products' => [
-                ['id' => $heavyProduct->id, 'quantity' => 2, 'type' => 'item'] // 600g total
+                ['id' => $heavyProduct->id, 'quantity' => 2, 'type' => 'item'], // 600g total
             ],
             'addresses' => [
                 'shipping' => [
@@ -479,8 +477,8 @@ describe('Order Process Scenarios', function () {
                     'zipCode' => '69001',
                     'country' => 'France',
                 ],
-                'same' => true
-            ]
+                'same' => true,
+            ],
         ];
 
         $response = $this->actingAs($user)
@@ -507,9 +505,9 @@ describe('Order Process Scenarios', function () {
                         'background' => 'SIMPLE',
                         'print' => true, // Illustrations add 15g weight when printed
                         'addTracking' => false,
-                        'description' => 'Test illustration'
-                    ]
-                ]
+                        'description' => 'Test illustration',
+                    ],
+                ],
             ],
             'addresses' => [
                 'shipping' => [
@@ -520,8 +518,8 @@ describe('Order Process Scenarios', function () {
                     'zipCode' => '06000',
                     'country' => 'France',
                 ],
-                'same' => true
-            ]
+                'same' => true,
+            ],
         ];
 
         $response = $this->actingAs($user)
@@ -543,7 +541,7 @@ describe('Order Process Scenarios', function () {
         $orderData1 = [
             'additionalInfos' => '',
             'products' => [
-                ['id' => $product->id, 'quantity' => 1, 'type' => 'item']
+                ['id' => $product->id, 'quantity' => 1, 'type' => 'item'],
             ],
             'addresses' => [
                 'shipping' => [
@@ -554,14 +552,14 @@ describe('Order Process Scenarios', function () {
                     'zipCode' => '75001',
                     'country' => 'France',
                 ],
-                'same' => true
-            ]
+                'same' => true,
+            ],
         ];
 
         $orderData2 = [
             'additionalInfos' => '',
             'products' => [
-                ['id' => $product->id, 'quantity' => 1, 'type' => 'item']
+                ['id' => $product->id, 'quantity' => 1, 'type' => 'item'],
             ],
             'addresses' => [
                 'shipping' => [
@@ -572,8 +570,8 @@ describe('Order Process Scenarios', function () {
                     'zipCode' => '69001',
                     'country' => 'France',
                 ],
-                'same' => true
-            ]
+                'same' => true,
+            ],
         ];
 
         // Create both orders

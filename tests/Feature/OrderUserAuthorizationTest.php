@@ -1,7 +1,6 @@
 <?php
 
 use App\Enums\OrderStatus;
-use App\Events\OrderCreated;
 use App\Models\Address;
 use App\Models\Guest;
 use App\Models\Order;
@@ -34,7 +33,7 @@ describe('Order Authorization', function () {
         $orderData = [
             'additionalInfos' => '',
             'products' => [
-                ['id' => $product->id, 'quantity' => 1, 'type' => 'item']
+                ['id' => $product->id, 'quantity' => 1, 'type' => 'item'],
             ],
             'addresses' => [
                 'shipping' => [
@@ -45,8 +44,8 @@ describe('Order Authorization', function () {
                     'zipCode' => '75001',
                     'country' => 'France',
                 ],
-                'same' => true
-            ]
+                'same' => true,
+            ],
         ];
 
         $response = $this->actingAs($admin)
@@ -67,10 +66,10 @@ describe('Order Authorization', function () {
                 'password' => 'password123',
                 'password_confirmation' => 'password123',
                 'guest' => false,
-                'additionalInfos' => 'Please handle with care'
+                'additionalInfos' => 'Please handle with care',
             ],
             'products' => [
-                ['id' => $product->id, 'quantity' => 2, 'type' => 'item']
+                ['id' => $product->id, 'quantity' => 2, 'type' => 'item'],
             ],
             'addresses' => [
                 'shipping' => [
@@ -81,8 +80,8 @@ describe('Order Authorization', function () {
                     'zipCode' => '69001',
                     'country' => 'France',
                 ],
-                'same' => true
-            ]
+                'same' => true,
+            ],
         ];
 
         $response = $this->post('/checkout', $orderData);
@@ -121,10 +120,10 @@ describe('Order Authorization', function () {
             'user' => [
                 'email' => 'guest@gmail.com',
                 'guest' => true,
-                'additionalInfos' => ''
+                'additionalInfos' => '',
             ],
             'products' => [
-                ['id' => $product->id, 'quantity' => 1, 'type' => 'item']
+                ['id' => $product->id, 'quantity' => 1, 'type' => 'item'],
             ],
             'addresses' => [
                 'shipping' => [
@@ -135,8 +134,8 @@ describe('Order Authorization', function () {
                     'zipCode' => '13001',
                     'country' => 'France',
                 ],
-                'same' => true
-            ]
+                'same' => true,
+            ],
         ];
 
         $response = $this->post('/checkout', $orderData);
@@ -169,7 +168,7 @@ describe('Order Authorization', function () {
         $orderData = [
             'additionalInfos' => 'Fragile items',
             'products' => [
-                ['id' => $product->id, 'quantity' => 1, 'type' => 'item']
+                ['id' => $product->id, 'quantity' => 1, 'type' => 'item'],
             ],
             'addresses' => [
                 'shipping' => [
@@ -188,8 +187,8 @@ describe('Order Authorization', function () {
                     'zipCode' => '06000',
                     'country' => 'France',
                 ],
-                'same' => false
-            ]
+                'same' => false,
+            ],
         ];
 
         $response = $this->actingAs($user)->post('/checkout', $orderData);
@@ -235,12 +234,12 @@ describe('Order Authorization', function () {
         $orderData = [
             'additionalInfos' => 'Use saved addresses',
             'products' => [
-                ['id' => $product->id, 'quantity' => 3, 'type' => 'item']
+                ['id' => $product->id, 'quantity' => 3, 'type' => 'item'],
             ],
             'addresses' => [
                 'shippingId' => $shippingAddress->id,
                 'billingId' => $billingAddress->id,
-            ]
+            ],
         ];
 
         $response = $this->actingAs($user)->post('/checkout', $orderData);
@@ -274,10 +273,10 @@ describe('Order Authorization', function () {
                 'password' => 'password123',
                 'password_confirmation' => 'password123',
                 'guest' => false,
-                'additionalInfos' => ''
+                'additionalInfos' => '',
             ],
             'products' => [
-                ['id' => $product->id, 'quantity' => 1, 'type' => 'item']
+                ['id' => $product->id, 'quantity' => 1, 'type' => 'item'],
             ],
             'addresses' => [
                 'shipping' => [
@@ -288,8 +287,8 @@ describe('Order Authorization', function () {
                     'zipCode' => '75001',
                     'country' => 'France',
                 ],
-                'same' => true
-            ]
+                'same' => true,
+            ],
         ];
 
         $response = $this->post('/checkout', $orderData);
@@ -310,10 +309,10 @@ describe('Order Authorization', function () {
             'user' => [
                 'email' => 'existing@gmail.com', // Same email
                 'guest' => true,
-                'additionalInfos' => ''
+                'additionalInfos' => '',
             ],
             'products' => [
-                ['id' => $product->id, 'quantity' => 1, 'type' => 'item']
+                ['id' => $product->id, 'quantity' => 1, 'type' => 'item'],
             ],
             'addresses' => [
                 'shipping' => [
@@ -324,8 +323,8 @@ describe('Order Authorization', function () {
                     'zipCode' => '75001',
                     'country' => 'France',
                 ],
-                'same' => true
-            ]
+                'same' => true,
+            ],
         ];
 
         $response = $this->post('/checkout', $orderData);
