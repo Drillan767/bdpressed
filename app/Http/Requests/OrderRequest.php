@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rules\Password;
@@ -52,7 +51,7 @@ class OrderRequest extends FormRequest
                     if (DB::table('products')->where('id', $value)->where('stock', '=', 0)->exists()) {
                         $fail('Article en rupture de stock.');
                     }
-                }
+                },
             ],
             'products.*.quantity' => ['required_if:products.*.type,item', 'integer', 'min:1'],
 

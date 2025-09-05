@@ -12,7 +12,7 @@ class HandleInstagramAction
         $currentUser = User::select(['id', 'instagram'])->findOrFail($request->user()->id);
         $instagram = $request->get('user')['instagram'] ?? null;
 
-        if (!!$instagram && $currentUser->instagram !== $instagram) {
+        if ((bool) $instagram && $currentUser->instagram !== $instagram) {
             $currentUser->instagram = $request->get('user')['instagram'];
             $currentUser->save();
         }

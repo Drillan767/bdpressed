@@ -32,15 +32,15 @@ describe('Order Validation and Integration', function () {
         $invalidOrderData = [
             'additionalInfos' => '',
             'products' => [
-                ['id' => $product->id, 'quantity' => 1, 'type' => 'item']
+                ['id' => $product->id, 'quantity' => 1, 'type' => 'item'],
             ],
             'addresses' => [
                 'shipping' => [
                     'firstName' => 'Invalid',
                     // Missing lastName, street, city, zipCode, country
                 ],
-                'same' => true
-            ]
+                'same' => true,
+            ],
         ];
 
         $response = $this->actingAs($user)->post('/checkout', $invalidOrderData);
@@ -66,7 +66,7 @@ describe('Order Validation and Integration', function () {
         $invalidOrderData = [
             'additionalInfos' => '',
             'products' => [
-                ['id' => $product->id, 'quantity' => 1, 'type' => 'item']
+                ['id' => $product->id, 'quantity' => 1, 'type' => 'item'],
             ],
             'addresses' => [
                 'shipping' => [
@@ -81,8 +81,8 @@ describe('Order Validation and Integration', function () {
                     'firstName' => 'Jane',
                     // Missing required billing fields
                 ],
-                'same' => false
-            ]
+                'same' => false,
+            ],
         ];
 
         $response = $this->actingAs($user)->post('/checkout', $invalidOrderData);
@@ -107,7 +107,7 @@ describe('Order Validation and Integration', function () {
         $invalidOrderData = [
             'additionalInfos' => '',
             'products' => [
-                ['id' => $nonExistentProductId, 'quantity' => 1, 'type' => 'item']
+                ['id' => $nonExistentProductId, 'quantity' => 1, 'type' => 'item'],
             ],
             'addresses' => [
                 'shipping' => [
@@ -118,8 +118,8 @@ describe('Order Validation and Integration', function () {
                     'zipCode' => '75001',
                     'country' => 'France',
                 ],
-                'same' => true
-            ]
+                'same' => true,
+            ],
         ];
 
         $response = $this->actingAs($user)->post('/checkout', $invalidOrderData);
@@ -138,7 +138,7 @@ describe('Order Validation and Integration', function () {
         $invalidOrderData = [
             'additionalInfos' => '',
             'products' => [
-                ['id' => $product->id, 'quantity' => 0, 'type' => 'item'] // Invalid quantity
+                ['id' => $product->id, 'quantity' => 0, 'type' => 'item'], // Invalid quantity
             ],
             'addresses' => [
                 'shipping' => [
@@ -149,8 +149,8 @@ describe('Order Validation and Integration', function () {
                     'zipCode' => '75001',
                     'country' => 'France',
                 ],
-                'same' => true
-            ]
+                'same' => true,
+            ],
         ];
 
         $response = $this->actingAs($user)->post('/checkout', $invalidOrderData);
@@ -172,8 +172,8 @@ describe('Order Validation and Integration', function () {
                     'illustrationDetails' => [
                         'illustrationType' => 'invalid_type', // Invalid type
                         // Missing other required fields
-                    ]
-                ]
+                    ],
+                ],
             ],
             'addresses' => [
                 'shipping' => [
@@ -184,8 +184,8 @@ describe('Order Validation and Integration', function () {
                     'zipCode' => '75001',
                     'country' => 'France',
                 ],
-                'same' => true
-            ]
+                'same' => true,
+            ],
         ];
 
         // This test depends on how illustration validation is implemented
@@ -210,7 +210,7 @@ describe('Order Validation and Integration', function () {
         $orderData = [
             'additionalInfos' => 'Email test order',
             'products' => [
-                ['id' => $product->id, 'quantity' => 1, 'type' => 'item']
+                ['id' => $product->id, 'quantity' => 1, 'type' => 'item'],
             ],
             'addresses' => [
                 'shipping' => [
@@ -221,8 +221,8 @@ describe('Order Validation and Integration', function () {
                     'zipCode' => '75001',
                     'country' => 'France',
                 ],
-                'same' => true
-            ]
+                'same' => true,
+            ],
         ];
 
         $response = $this->actingAs($user)->post('/checkout', $orderData);
@@ -242,10 +242,10 @@ describe('Order Validation and Integration', function () {
             'user' => [
                 'email' => 'guest@gmail.com',
                 'guest' => true,
-                'additionalInfos' => 'Guest email test'
+                'additionalInfos' => 'Guest email test',
             ],
             'products' => [
-                ['id' => $product->id, 'quantity' => 1, 'type' => 'item']
+                ['id' => $product->id, 'quantity' => 1, 'type' => 'item'],
             ],
             'addresses' => [
                 'shipping' => [
@@ -256,8 +256,8 @@ describe('Order Validation and Integration', function () {
                     'zipCode' => '69001',
                     'country' => 'France',
                 ],
-                'same' => true
-            ]
+                'same' => true,
+            ],
         ];
 
         $response = $this->post('/checkout', $orderData);
@@ -265,9 +265,9 @@ describe('Order Validation and Integration', function () {
         $response->assertRedirect('/merci');
 
         // Verify OrderCreated event was dispatched for guest
-Event::assertDispatched(OrderCreated::class, function ($event) {
-    return $event->order->guest_id !== null && $event->accountCreated === false;
-});
+        Event::assertDispatched(OrderCreated::class, function ($event) {
+            return $event->order->guest_id !== null && $event->accountCreated === false;
+        });
     });
 
     it('sends welcome email to new user', function () {
@@ -279,10 +279,10 @@ Event::assertDispatched(OrderCreated::class, function ($event) {
                 'password' => 'password123',
                 'password_confirmation' => 'password123',
                 'guest' => false,
-                'additionalInfos' => 'New user welcome test'
+                'additionalInfos' => 'New user welcome test',
             ],
             'products' => [
-                ['id' => $product->id, 'quantity' => 1, 'type' => 'item']
+                ['id' => $product->id, 'quantity' => 1, 'type' => 'item'],
             ],
             'addresses' => [
                 'shipping' => [
@@ -293,8 +293,8 @@ Event::assertDispatched(OrderCreated::class, function ($event) {
                     'zipCode' => '13001',
                     'country' => 'France',
                 ],
-                'same' => true
-            ]
+                'same' => true,
+            ],
         ];
 
         $response = $this->post('/checkout', $orderData);
@@ -319,10 +319,10 @@ Event::assertDispatched(OrderCreated::class, function ($event) {
                 'password' => 'password123',
                 'password_confirmation' => 'password123',
                 'guest' => false,
-                'additionalInfos' => ''
+                'additionalInfos' => '',
             ],
             'products' => [
-                ['id' => $product->id, 'quantity' => 1, 'type' => 'item']
+                ['id' => $product->id, 'quantity' => 1, 'type' => 'item'],
             ],
             'addresses' => [
                 'shipping' => [
@@ -333,8 +333,8 @@ Event::assertDispatched(OrderCreated::class, function ($event) {
                     'zipCode' => '75001',
                     'country' => 'France',
                 ],
-                'same' => true
-            ]
+                'same' => true,
+            ],
         ];
 
         $response = $this->post('/checkout', $orderData);
@@ -353,10 +353,10 @@ Event::assertDispatched(OrderCreated::class, function ($event) {
                 'password' => '123', // Too weak
                 'password_confirmation' => '123',
                 'guest' => false,
-                'additionalInfos' => ''
+                'additionalInfos' => '',
             ],
             'products' => [
-                ['id' => $product->id, 'quantity' => 1, 'type' => 'item']
+                ['id' => $product->id, 'quantity' => 1, 'type' => 'item'],
             ],
             'addresses' => [
                 'shipping' => [
@@ -367,8 +367,8 @@ Event::assertDispatched(OrderCreated::class, function ($event) {
                     'zipCode' => '75001',
                     'country' => 'France',
                 ],
-                'same' => true
-            ]
+                'same' => true,
+            ],
         ];
 
         $response = $this->post('/checkout', $orderData);
@@ -387,10 +387,10 @@ Event::assertDispatched(OrderCreated::class, function ($event) {
                 'password' => 'password123',
                 'password_confirmation' => 'different', // Mismatch
                 'guest' => false,
-                'additionalInfos' => ''
+                'additionalInfos' => '',
             ],
             'products' => [
-                ['id' => $product->id, 'quantity' => 1, 'type' => 'item']
+                ['id' => $product->id, 'quantity' => 1, 'type' => 'item'],
             ],
             'addresses' => [
                 'shipping' => [
@@ -401,8 +401,8 @@ Event::assertDispatched(OrderCreated::class, function ($event) {
                     'zipCode' => '75001',
                     'country' => 'France',
                 ],
-                'same' => true
-            ]
+                'same' => true,
+            ],
         ];
 
         $response = $this->post('/checkout', $orderData);
@@ -419,10 +419,10 @@ Event::assertDispatched(OrderCreated::class, function ($event) {
             'user' => [
                 'email' => 'invalid-email', // Invalid format
                 'guest' => true,
-                'additionalInfos' => ''
+                'additionalInfos' => '',
             ],
             'products' => [
-                ['id' => $product->id, 'quantity' => 1, 'type' => 'item']
+                ['id' => $product->id, 'quantity' => 1, 'type' => 'item'],
             ],
             'addresses' => [
                 'shipping' => [
@@ -433,8 +433,8 @@ Event::assertDispatched(OrderCreated::class, function ($event) {
                     'zipCode' => '75001',
                     'country' => 'France',
                 ],
-                'same' => true
-            ]
+                'same' => true,
+            ],
         ];
 
         $response = $this->post('/checkout', $orderData);
@@ -460,8 +460,8 @@ Event::assertDispatched(OrderCreated::class, function ($event) {
                     'zipCode' => '75001',
                     'country' => 'France',
                 ],
-                'same' => true
-            ]
+                'same' => true,
+            ],
         ];
 
         $response = $this->actingAs($user)->post('/checkout', $orderData);
