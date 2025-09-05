@@ -58,6 +58,14 @@ class OrderRequest extends FormRequest
 
             // Illustration details only required for illustrations
             'products.*.illustrationDetails' => ['required_if:products.*.type,illustration', 'array'],
+            'products.*.illustrationDetails.illustrationType' => ['required_if:products.*.type,illustration', 'string', 'in:BUST,FULL_LENGTH,ANIMAL'],
+            'products.*.illustrationDetails.addedHuman' => ['required_if:products.*.type,illustration', 'integer', 'min:0'],
+            'products.*.illustrationDetails.addedAnimal' => ['required_if:products.*.type,illustration', 'integer', 'min:0'],
+            'products.*.illustrationDetails.pose' => ['required_if:products.*.type,illustration', 'string', 'in:SIMPLE,COMPLEX'],
+            'products.*.illustrationDetails.background' => ['required_if:products.*.type,illustration', 'string', 'in:UNIFIED,GRADIENT,SIMPLE,COMPLEX'],
+            'products.*.illustrationDetails.print' => ['required_if:products.*.type,illustration', 'boolean'],
+            'products.*.illustrationDetails.addTracking' => ['required_if:products.*.type,illustration', 'boolean'],
+            'products.*.illustrationDetails.description' => ['required_if:products.*.type,illustration', 'string', 'max:1000'],
 
             // Additional info (moved from user object)
             'additionalInfos' => ['nullable', 'string'],
@@ -109,6 +117,14 @@ class OrderRequest extends FormRequest
 
             // Illustration details only required for illustrations
             'products.*.illustrationDetails' => ['required_if:products.*.type,illustration', 'array'],
+            'products.*.illustrationDetails.illustrationType' => ['required_if:products.*.type,illustration', 'string', 'in:BUST,FULL_LENGTH,ANIMAL'],
+            'products.*.illustrationDetails.addedHuman' => ['required_if:products.*.type,illustration', 'integer', 'min:0'],
+            'products.*.illustrationDetails.addedAnimal' => ['required_if:products.*.type,illustration', 'integer', 'min:0'],
+            'products.*.illustrationDetails.pose' => ['required_if:products.*.type,illustration', 'string', 'in:SIMPLE,COMPLEX'],
+            'products.*.illustrationDetails.background' => ['required_if:products.*.type,illustration', 'string', 'in:UNIFIED,GRADIENT,SIMPLE,COMPLEX'],
+            'products.*.illustrationDetails.print' => ['required_if:products.*.type,illustration', 'boolean'],
+            'products.*.illustrationDetails.addTracking' => ['required_if:products.*.type,illustration', 'boolean'],
+            'products.*.illustrationDetails.description' => ['required_if:products.*.type,illustration', 'string', 'max:1000'],
 
             // Address validation (always new addresses for guests)
             ...$this->getNewAddressRules(),
