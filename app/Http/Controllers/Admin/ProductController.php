@@ -35,6 +35,15 @@ class ProductController extends Controller
     {
         $product = Product::where('slug', $slug)->firstOrFail();
 
+        $illustrations = array_map(function ($path) {
+            return [
+                'path' => $path,
+                'type' => Storage::mimeType(str_replace('/storage', '', $path)),
+            ];
+        }, $product->illustrations ?? []);
+
+        $product->illustrations = $illustrations;
+
         return Inertia::render('Admin/Products/Show', compact('product'));
     }
 
@@ -136,8 +145,7 @@ class ProductController extends Controller
         // Get current illustrations or initialize as empty array if null
         $illustrations = $product->illustrations ?? [];
 
-        // Extract paths from illustrations if they exist
-        $illustrationsPaths = is_array($illustrations) ? array_column($illustrations, 'path') : [];
+        $illustrationsPaths = is_array($illustrations) ? $illustrations : [];
 
         foreach ($request->file('illustrations') as $illustration) {
             Storage::putFileAs(
@@ -152,7 +160,14 @@ class ProductController extends Controller
         $product->illustrations = $illustrationsPaths;
         $product->save();
 
-        return response()->json(['illustrations' => $product->illustrations]);
+        $illustrations = array_map(function ($path) {
+            return [
+                'path' => $path,
+                'type' => Storage::mimeType(str_replace('/storage', '', $path)),
+            ];
+        }, $illustrationsPaths);
+
+        return response()->json(compact('illustrations'));
     }
 
     public function removeMedia(Request $request, Product $product): JsonResponse
@@ -163,8 +178,7 @@ class ProductController extends Controller
         // Get current illustrations or initialize as empty array if null
         $illustrations = $product->illustrations ?? [];
 
-        // Extract paths from illustrations if they exist
-        $illustrationsList = is_array($illustrations) ? array_column($illustrations, 'path') : [];
+        $illustrationsList = is_array($illustrations) ? $illustrations : [];
 
         $index = array_search("/storage/articles/$product->id/$base", $illustrationsList);
         if ($index !== false) {
@@ -176,6 +190,13 @@ class ProductController extends Controller
 
         Storage::delete($realPath);
 
-        return response()->json(['illustrations' => $product->illustrations]);
+        $illustrations = array_map(function ($path) {
+            return [
+                'path' => $path,
+                'type' => Storage::mimeType(str_replace('/storage', '', $path)),
+            ];
+        }, $illustrationsList);
+
+        return response()->json(compact('illustrations'));
     }
 }
