@@ -94,7 +94,7 @@ onMounted(() => {
 </script>
 
 <template>
-    <VRow v-if="illustrations.length > 0">
+    <VRow>
         <VCol
             v-for="(preview, index) in imagesPreviews"
             :key="index"

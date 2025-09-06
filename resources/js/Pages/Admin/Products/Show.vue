@@ -79,7 +79,7 @@ useHead({
         </VRow>
         <VRow>
             <VCol>
-                <VCard v-if="product">
+                <VCard>
                     <template #text>
                         <VRow>
                             <VCol cols="12" md="6">
@@ -121,24 +121,22 @@ useHead({
                                 />
                             </vcol>
                         </VRow>
-                        <template v-if="product.illustrations.length > 0">
-                            <VDivider
-                                class="my-4"
-                            />
+                        <VDivider
+                            class="my-4"
+                        />
 
-                            <VRow>
-                                <VCol cols="12">
-                                    <p class="text-h6">
-                                        Illustrations
-                                    </p>
-                                </VCol>
-                            </VRow>
+                        <VRow>
+                            <VCol cols="12">
+                                <p class="text-h6">
+                                    Illustrations
+                                </p>
+                            </VCol>
+                        </VRow>
 
-                            <EditIllustrationsForm
-                                :illustrations="product.illustrations"
-                                :product-id="product.id"
-                            />
-                        </template>
+                        <EditIllustrationsForm
+                            :illustrations="product.illustrations"
+                            :product-id="product.id"
+                        />
                     </template>
                 </VCard>
             </VCol>

@@ -26,7 +26,7 @@ const headers: DataTableHeader[] = [
     },
     {
         title: 'Prix',
-        key: 'price',
+        key: 'price.formatted',
         sortable: true,
         cellProps: {
             class: 'text-no-wrap',
@@ -120,9 +120,6 @@ useHead({
                     Créer un article
                 </VBtn>
             </div>
-        </template>
-        <template #item.price="{ item }">
-            {{ item.price.formatted }}
         </template>
         <template #item.weight="{ item }">
             {{ item.weight }} g.

@@ -14,6 +14,7 @@ use App\Models\Product;
 use App\Settings\IllustrationSettings;
 use App\Settings\WebsiteSettings;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -48,6 +49,15 @@ class ShopController extends Controller
     public function show(string $slug): Response
     {
         $product = Product::where('slug', $slug)->firstOrFail();
+
+        $illustrations = array_map(function ($path) {
+            return [
+                'path' => $path,
+                'type' => Storage::mimeType(str_replace('/storage', '', $path)),
+            ];
+        }, $product->illustrations ?? []);
+
+        $product->illustrations = $illustrations;
 
         return Inertia::render('Visitors/Shop/Show', compact('product'));
     }

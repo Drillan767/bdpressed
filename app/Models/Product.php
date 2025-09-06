@@ -5,10 +5,8 @@ namespace App\Models;
 use App\Casts\MoneyCast;
 use App\Observers\ProductObserver;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
-use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Storage;
 
 /**
  * @property int $id
@@ -35,27 +33,4 @@ class Product extends Model
         'illustrations' => 'array',
         'price' => MoneyCast::class,
     ];
-
-    public function illustrations(): Attribute
-    {
-        return Attribute::make(
-            get: function ($illustrations) {
-                $parsedPaths = json_decode($illustrations, true);
-
-                // Handle cases where json_decode returns null or non-array
-                if (! is_array($parsedPaths)) {
-                    return [];
-                }
-
-                return array_map(function ($illustration) {
-                    $realPath = str_replace('/storage', '', $illustration);
-
-                    return [
-                        'path' => $illustration,
-                        'type' => Storage::mimeType($realPath),
-                    ];
-                }, $parsedPaths);
-            }
-        );
-    }
 }
