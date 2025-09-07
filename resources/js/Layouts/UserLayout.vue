@@ -62,25 +62,18 @@ provide('csrfToken', page.props.csrf_token)
         >
             <VList nav>
                 <VListItem
-                    :active="$page.url === '/utilisateur' || $page.url.includes('/commande')"
+                    :active="page.url === '/utilisateur' || page.url.includes('/commande')"
                     prepend-icon="mdi-package-variant"
                     title="Commandes"
                     nav
                     @click="router.visit(route('user.dashboard'))"
                 />
                 <VListItem
-                    :active="$page.url.includes('/adresses')"
+                    :active="page.url.includes('/adresses')"
                     prepend-icon="mdi-map-marker-outline"
                     title="Adresses"
                     nav
                     @click="router.visit(route('user.addresses.index'))"
-                />
-                <VDivider />
-                <VListItem
-                    prepend-icon="mdi-account-edit"
-                    title="Informations personnelles"
-                    nav
-                    @click="router.visit(route('profile.edit'))"
                 />
             </VList>
         </VNavigationDrawer>
