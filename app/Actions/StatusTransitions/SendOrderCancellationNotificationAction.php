@@ -29,12 +29,11 @@ class SendOrderCancellationNotificationAction extends BaseTransitionAction
 
         // Only send notification for transitions to CANCELLED status
         if ($toState !== OrderStatus::CANCELLED) {
-            logger('Action skipped: not transitioning to CANCELLED');
             return;
         }
 
         // Get cancellation reason from context
-        $reason = $context['cancellation_reason'] ?? null;
+        $reason = $context['cancellation_reason'] ?? 'Non spécifiée';
 
         // Determine if a refund was processed
         $wasRefunded = $order->requiresRefundOnCancellation();

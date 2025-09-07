@@ -16,9 +16,12 @@ class OrderCancelledNotification extends Notification
     /**
      * Create a new notification instance.
      */
-    public function __construct(private readonly Order $order, private readonly bool $refunded, private readonly ?string $reason = null)
-    {
-    }
+    public function __construct(
+        private readonly Order $order,
+        private readonly bool $refunded,
+        private readonly string $reason
+    )
+    {}
 
     /**
      * Get the notification's delivery channels.
@@ -37,7 +40,7 @@ class OrderCancelledNotification extends Notification
     {
         $orderRef = $this->order->reference;
         $cancellationReason = $this->reason ?? $this->order->getCancellationReason() ?? 'Non spécifiée';
-        
+
         $message = new MailMessage()
             ->greeting('Bonjour !')
             ->line(new HtmlString("Vous recevez cet email car votre commande <b>#$orderRef</b> a été annulée pour la raison suivante :"))

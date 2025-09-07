@@ -124,7 +124,6 @@ class OrderController extends Controller
             'payload' => 'required_if:status,SHIPPED,CANCELLED'
         ]);
 
-        dd($request);
 
         try {
             $order = Order::with('details.product', 'illustrations', 'user', 'guest', 'payments')
@@ -134,10 +133,13 @@ class OrderController extends Controller
             $newStatus = OrderStatus::from($request->get('status'));
 
             // Get additional context from the request (from status change warning component)
-            $payload = $request->get('payload', []);
+            $payload = $request->get('payload');
+            
             $context = [
                 'triggered_by' => 'manual',
-                'reason' => $payload['reason'] ?? 'Status changed manually',
+                'reason' => $payload ?? 'Status changed manually',
+                'cancellation_reason' => $newStatus === OrderStatus::CANCELLED ? $payload : null,
+                'tracking_number' => $newStatus === OrderStatus::SHIPPED ? $payload : null,
                 'user_id' => auth()->id(),
             ];
 
