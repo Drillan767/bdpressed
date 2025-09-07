@@ -191,19 +191,19 @@ class OrderStateTestHelpers
     }
 
     /**
-     * Assert that a specific email was sent
+     * Assert that a specific notification was sent to a notifiable
      */
-    public static function assertEmailSent(string $mailable): void
+    public static function assertNotificationSentTo($notifiable, string $notificationClass, ?callable $callback = null): void
     {
-        Mail::assertSent($mailable);
+        Notification::assertSentTo($notifiable, $notificationClass, $callback);
     }
 
     /**
-     * Assert that no emails were sent
+     * Assert that no notifications were sent
      */
-    public static function assertNoEmailsSent(): void
+    public static function assertNoNotificationsSent(): void
     {
-        Mail::assertNothingSent();
+        Notification::assertNothingSent();
     }
 
     /**

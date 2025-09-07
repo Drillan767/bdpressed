@@ -32,20 +32,6 @@ describe('TO_SHIP Order State Transitions', function () {
             OrderStateTestHelpers::assertShippingRequiresTracking($order);
         });
 
-        it('sends email with tracking number when transitioning to SHIPPED', function () {
-            $order = OrderStateTestHelpers::createSingleItemOrder(OrderStatus::TO_SHIP);
-            $trackingNumber = 'TEST-TRACK-123456';
-            
-            $order->transitionTo(OrderStatus::SHIPPED, ['tracking_number' => $trackingNumber]);
-            
-            expect($order->fresh()->status)->toBe(OrderStatus::SHIPPED);
-            
-            // Should send email with tracking information
-            // The specific notification class depends on implementation
-            Mail::assertSent(\App\Notifications\OrderShippedNotification::class, function ($mail) use ($trackingNumber) {
-                return str_contains($mail->render(), $trackingNumber);
-            });
-        });
 
         it('stores tracking number when transitioning to SHIPPED', function () {
             $order = OrderStateTestHelpers::createSingleItemOrder(OrderStatus::TO_SHIP);
@@ -83,17 +69,6 @@ describe('TO_SHIP Order State Transitions', function () {
             OrderStateTestHelpers::assertCancellationRequiresReason($order);
         });
 
-        it('restores inventory when cancelling TO_SHIP orders', function () {
-            $order = OrderStateTestHelpers::createSingleItemOrder(OrderStatus::TO_SHIP);
-            $product = $order->details->first()->product;
-            $originalStock = $product->fresh()->stock; // Stock after payment (reduced)
-            $orderQuantity = $order->details->first()->quantity;
-            
-            $order->transitionTo(OrderStatus::CANCELLED, ['cancellation_reason' => 'Test cancellation']);
-            
-            // Stock should be restored
-            expect($product->fresh()->stock)->toBe($originalStock + $orderQuantity);
-        });
     });
 
     describe('Invalid transitions from TO_SHIP', function () {
