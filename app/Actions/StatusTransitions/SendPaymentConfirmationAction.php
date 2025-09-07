@@ -7,7 +7,6 @@ use App\Models\Order;
 use App\Notifications\AdminPaymentNotification;
 use App\Notifications\PaymentConfirmationNotification;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
 
 class SendPaymentConfirmationAction extends BaseTransitionAction

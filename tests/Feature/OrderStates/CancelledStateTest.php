@@ -2,9 +2,7 @@
 
 use App\Enums\OrderStatus;
 use App\Exceptions\InvalidStateTransitionException;
-use App\Notifications\OrderCancelledNotification;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Notification;
 use Tests\Helpers\OrderStateTestHelpers;
 
 uses(RefreshDatabase::class);
@@ -92,9 +90,9 @@ describe('CANCELLED Order State (Terminal)', function () {
         it('throws exception when trying to force any transition from CANCELLED', function () {
             $order = OrderStateTestHelpers::createSingleItemOrder(OrderStatus::CANCELLED);
 
-            expect(fn() => $order->transitionTo(OrderStatus::NEW))
+            expect(fn () => $order->transitionTo(OrderStatus::NEW))
                 ->toThrow(InvalidStateTransitionException::class)
-                ->and(fn() => $order->transitionTo(OrderStatus::DONE))
+                ->and(fn () => $order->transitionTo(OrderStatus::DONE))
                 ->toThrow(InvalidStateTransitionException::class);
 
         });

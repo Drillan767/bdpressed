@@ -121,9 +121,8 @@ class OrderController extends Controller
     ): RedirectResponse {
         $request->validate([
             'status' => 'required|string',
-            'payload' => 'required_if:status,SHIPPED,CANCELLED'
+            'payload' => 'required_if:status,SHIPPED,CANCELLED',
         ]);
-
 
         try {
             $order = Order::with('details.product', 'illustrations', 'user', 'guest', 'payments')
@@ -134,7 +133,7 @@ class OrderController extends Controller
 
             // Get additional context from the request (from status change warning component)
             $payload = $request->get('payload');
-            
+
             $context = [
                 'triggered_by' => 'manual',
                 'reason' => $payload ?? 'Status changed manually',

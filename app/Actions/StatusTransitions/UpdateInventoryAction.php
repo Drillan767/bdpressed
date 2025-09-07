@@ -7,7 +7,6 @@ use App\Models\Order;
 use App\Models\Product;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class UpdateInventoryAction extends BaseTransitionAction
 {

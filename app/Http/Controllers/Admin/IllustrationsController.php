@@ -111,7 +111,7 @@ class IllustrationsController extends Controller
     ): RedirectResponse {
         $request->validate([
             'status' => 'required|string',
-            'payload' => 'required_if:status,CANCELLED'
+            'payload' => 'required_if:status,CANCELLED',
         ]);
 
         try {

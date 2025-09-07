@@ -1,7 +1,6 @@
 <?php
 
 use App\Enums\OrderStatus;
-use App\Notifications\OrderConfirmationNotification;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Helpers\OrderStateTestHelpers;
 

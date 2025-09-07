@@ -2,7 +2,6 @@
 
 namespace App\Actions\StatusTransitions;
 
-use App\Enums\OrderStatus;
 use App\Enums\PaymentStatus;
 use App\Enums\PaymentType;
 use App\Models\Order;

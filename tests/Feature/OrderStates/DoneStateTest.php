@@ -90,9 +90,9 @@ describe('DONE Order State (Terminal)', function () {
         it('throws exception when trying to force transition from DONE', function () {
             $order = OrderStateTestHelpers::createSingleItemOrder(OrderStatus::DONE);
 
-            expect(fn() => $order->transitionTo(OrderStatus::NEW))
+            expect(fn () => $order->transitionTo(OrderStatus::NEW))
                 ->toThrow(InvalidStateTransitionException::class)
-                ->and(fn() => $order->transitionTo(OrderStatus::CANCELLED, ['cancellation_reason' => 'test']))
+                ->and(fn () => $order->transitionTo(OrderStatus::CANCELLED, ['cancellation_reason' => 'test']))
                 ->toThrow(InvalidStateTransitionException::class);
         });
 

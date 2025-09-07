@@ -26,10 +26,10 @@ class OrderStateTestHelpers
         Notification::fake();
 
         // Create roles if they don't exist
-        if (!Role::where('name', 'admin')->exists()) {
+        if (! Role::where('name', 'admin')->exists()) {
             Role::create(['name' => 'admin']);
         }
-        if (!Role::where('name', 'user')->exists()) {
+        if (! Role::where('name', 'user')->exists()) {
             Role::create(['name' => 'user']);
         }
     }
@@ -148,7 +148,7 @@ class OrderStateTestHelpers
      */
     public static function assertTransitionFailsValidation(Order $order, OrderStatus $toStatus): void
     {
-        expect(fn() => $order->transitionTo($toStatus))
+        expect(fn () => $order->transitionTo($toStatus))
             ->toThrow(\Exception::class);
     }
 
@@ -219,7 +219,7 @@ class OrderStateTestHelpers
             OrderStatus::TO_SHIP,
             OrderStatus::SHIPPED,
             OrderStatus::DONE,
-            OrderStatus::CANCELLED
+            OrderStatus::CANCELLED,
         ];
 
         foreach ($allStates as $state) {

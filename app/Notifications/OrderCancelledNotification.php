@@ -4,7 +4,6 @@ namespace App\Notifications;
 
 use App\Models\Order;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use Illuminate\Support\HtmlString;
@@ -20,8 +19,7 @@ class OrderCancelledNotification extends Notification
         private readonly Order $order,
         private readonly bool $refunded,
         private readonly string $reason
-    )
-    {}
+    ) {}
 
     /**
      * Get the notification's delivery channels.

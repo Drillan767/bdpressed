@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Actions\StatusTransitions\CreateOrderPaymentAction;
 use App\Actions\StatusTransitions\RefundOrderAction;
+use App\Actions\StatusTransitions\SendOrderCancellationNotificationAction;
 use App\Actions\StatusTransitions\SendOrderPaymentLinkAction;
 use App\Actions\StatusTransitions\SendPaymentConfirmationAction;
 use App\Actions\StatusTransitions\UpdateInventoryAction;
@@ -104,6 +105,43 @@ class Order extends Model
             OrderStatus::SHIPPED,
             OrderStatus::CANCELLED,
             fn ($model, $from, $to, $context) => app(UpdateInventoryAction::class)->execute($model, $from, $to, $context)
+        );
+
+        // Send cancellation notification for all CANCELLED transitions
+        static::afterTransition(
+            OrderStatus::NEW,
+            OrderStatus::CANCELLED,
+            fn ($model, $from, $to, $context) => app(SendOrderCancellationNotificationAction::class)->execute($model, $from, $to, $context)
+        );
+
+        static::afterTransition(
+            OrderStatus::IN_PROGRESS,
+            OrderStatus::CANCELLED,
+            fn ($model, $from, $to, $context) => app(SendOrderCancellationNotificationAction::class)->execute($model, $from, $to, $context)
+        );
+
+        static::afterTransition(
+            OrderStatus::PENDING_PAYMENT,
+            OrderStatus::CANCELLED,
+            fn ($model, $from, $to, $context) => app(SendOrderCancellationNotificationAction::class)->execute($model, $from, $to, $context)
+        );
+
+        static::afterTransition(
+            OrderStatus::PAID,
+            OrderStatus::CANCELLED,
+            fn ($model, $from, $to, $context) => app(SendOrderCancellationNotificationAction::class)->execute($model, $from, $to, $context)
+        );
+
+        static::afterTransition(
+            OrderStatus::TO_SHIP,
+            OrderStatus::CANCELLED,
+            fn ($model, $from, $to, $context) => app(SendOrderCancellationNotificationAction::class)->execute($model, $from, $to, $context)
+        );
+
+        static::afterTransition(
+            OrderStatus::SHIPPED,
+            OrderStatus::CANCELLED,
+            fn ($model, $from, $to, $context) => app(SendOrderCancellationNotificationAction::class)->execute($model, $from, $to, $context)
         );
     }
 
@@ -217,5 +255,27 @@ class Order extends Model
             ->where('to_status', OrderStatus::CANCELLED)
             ->first()
             ?->reason;
+    }
+
+    protected function executeAfterTransitionCallbacks($fromState, $toState, array $context): void
+    {
+        // Always log status changes regardless of specific transition
+        $reason = null;
+        if (isset($context['cancellation_reason'])) {
+            $reason = $context['cancellation_reason'];
+        } elseif (isset($context['tracking_number'])) {
+            $reason = 'Tracking number: '.$context['tracking_number'];
+        } elseif (isset($context['reason'])) {
+            $reason = $context['reason'];
+        }
+
+        $this->statusChanges()->create([
+            'from_status' => $fromState?->value,
+            'to_status' => $toState->value,
+            'reason' => $reason,
+            'metadata' => $context['metadata'] ?? null,
+            'triggered_by' => $context['triggered_by'] ?? 'manual',
+            'user_id' => auth()->id(),
+        ]);
     }
 }

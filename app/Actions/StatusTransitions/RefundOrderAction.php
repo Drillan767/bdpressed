@@ -6,7 +6,6 @@ use App\Enums\OrderStatus;
 use App\Models\Order;
 use App\Services\RefundService;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Log;
 
 class RefundOrderAction extends BaseTransitionAction
 {
@@ -29,7 +28,7 @@ class RefundOrderAction extends BaseTransitionAction
         }
 
         // Check if this order requires refund based on its previous state
-        if (!$order->requiresRefundOnCancellation()) {
+        if (! $order->requiresRefundOnCancellation()) {
             return;
         }
 
@@ -39,7 +38,7 @@ class RefundOrderAction extends BaseTransitionAction
         // Process the refund
         $refundResult = $this->refundService->processOrderCancellationRefund($order, $reason);
 
-        if (!$refundResult['success']) {
+        if (! $refundResult['success']) {
             throw new \Exception('Failed to process refunds for order cancellation: '.$refundResult['message']);
         }
     }

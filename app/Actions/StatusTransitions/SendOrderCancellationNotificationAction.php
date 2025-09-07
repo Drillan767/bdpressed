@@ -21,6 +21,7 @@ class SendOrderCancellationNotificationAction extends BaseTransitionAction
 
         if ($this->shouldSkipAction($context)) {
             logger('Action skipped due to context');
+
             return;
         }
 

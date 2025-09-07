@@ -102,7 +102,7 @@ describe('SHIPPED Order State Transitions', function () {
                 OrderStatus::PENDING_PAYMENT,
                 OrderStatus::PAID,
                 OrderStatus::TO_SHIP,
-                OrderStatus::CANCELLED
+                OrderStatus::CANCELLED,
             ];
 
             foreach ($blockedStates as $state) {
