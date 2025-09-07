@@ -33,4 +33,8 @@ class Product extends Model
         'illustrations' => 'array',
         'price' => MoneyCast::class,
     ];
+
+    protected $fillable = [
+        'stock',
+    ];
 }

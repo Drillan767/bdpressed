@@ -23,11 +23,11 @@ class IllustrationFactory extends Factory
     {
         return [
             'order_id' => Order::factory(),
-            'type' => $this->faker->randomElement(['bust', 'full_length', 'animal']),
+            'type' => $this->faker->randomElement(['BUST', 'FULL_LENGTH', 'ANIMAL']),
             'nbHumans' => $this->faker->numberBetween(0, 3),
             'nbAnimals' => $this->faker->numberBetween(0, 2),
-            'pose' => $this->faker->randomElement(['standing', 'sitting', 'action']),
-            'background' => $this->faker->randomElement(['simple', 'detailed', 'transparent']),
+            'pose' => $this->faker->randomElement(['SIMPLE', 'COMPLEX']),
+            'background' => $this->faker->randomElement(['SIMPLE', 'COMPLEX']),
             'status' => IllustrationStatus::PENDING,
             'description' => $this->faker->paragraph(),
             'price' => $this->faker->numberBetween(5000, 15000), // €50-150 in cents
