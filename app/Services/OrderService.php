@@ -171,7 +171,7 @@ readonly class OrderService
         // Transition to cancelled state
         $order->transitionTo(OrderStatus::CANCELLED, [
             'triggered_by' => auth()->check() ? 'user' : 'system',
-            'reason' => $reason,
+            'cancellation_reason' => $reason,
         ]);
 
         return [

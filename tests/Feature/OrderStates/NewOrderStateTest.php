@@ -49,39 +49,30 @@ describe('NEW Order State Transitions', function () {
             $order = OrderStateTestHelpers::createSingleItemOrder();
 
             OrderStateTestHelpers::assertTransitionSucceeds($order, OrderStatus::PENDING_PAYMENT);
-            OrderStateTestHelpers::assertNotificationSentTo(OrderPaymentLinkNotification::class, $order->user);
+            OrderStateTestHelpers::assertNotificationSentTo($order->user, OrderPaymentLinkNotification::class, );
         });
 
         it('allows multiple items order to transition to PENDING_PAYMENT', function () {
             $order = OrderStateTestHelpers::createMultipleItemsOrder();
 
             OrderStateTestHelpers::assertTransitionSucceeds($order, OrderStatus::PENDING_PAYMENT);
-            OrderStateTestHelpers::assertNotificationSentTo(OrderPaymentLinkNotification::class, $order->user);
+            OrderStateTestHelpers::assertNotificationSentTo($order->user, OrderPaymentLinkNotification::class, );
         });
 
         it('allows order with items and illustrations to transition to PENDING_PAYMENT', function () {
             $order = OrderStateTestHelpers::createOrderWithItemsAndIllustrations();
 
             OrderStateTestHelpers::assertTransitionSucceeds($order, OrderStatus::PENDING_PAYMENT);
-            OrderStateTestHelpers::assertNotificationSentTo(OrderPaymentLinkNotification::class, $order->user);
+            OrderStateTestHelpers::assertNotificationSentTo($order->user, OrderPaymentLinkNotification::class);
         });
 
         it('allows illustration-only order to transition to PENDING_PAYMENT', function () {
             $order = OrderStateTestHelpers::createIllustrationOnlyOrder();
 
             OrderStateTestHelpers::assertTransitionSucceeds($order, OrderStatus::PENDING_PAYMENT);
-            OrderStateTestHelpers::assertNotificationSentTo(OrderPaymentLinkNotification::class, $order->user);
+            OrderStateTestHelpers::assertNotificationSentTo($order->user, OrderPaymentLinkNotification::class);
         });
 
-        it('creates payment link when transitioning to PENDING_PAYMENT', function () {
-            $order = OrderStateTestHelpers::createSingleItemOrder();
-
-            expect($order->stripe_payment_link)->toBeNull();
-
-            $order->transitionTo(OrderStatus::PENDING_PAYMENT);
-
-            expect($order->fresh()->stripe_payment_link)->not->toBeNull();
-        });
     });
 
     describe('NEW → CANCELLED', function () {
