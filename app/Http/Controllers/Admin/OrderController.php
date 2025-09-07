@@ -121,7 +121,10 @@ class OrderController extends Controller
     ): RedirectResponse {
         $request->validate([
             'status' => 'required|string',
+            'payload' => 'required_if:status,SHIPPED,CANCELLED'
         ]);
+
+        dd($request);
 
         try {
             $order = Order::with('details.product', 'illustrations', 'user', 'guest', 'payments')

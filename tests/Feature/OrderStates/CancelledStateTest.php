@@ -2,7 +2,9 @@
 
 use App\Enums\OrderStatus;
 use App\Exceptions\InvalidStateTransitionException;
+use App\Notifications\OrderCancelledNotification;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Notification;
 use Tests\Helpers\OrderStateTestHelpers;
 
 uses(RefreshDatabase::class);
@@ -150,12 +152,19 @@ describe('CANCELLED Order State (Terminal)', function () {
             $order = OrderStateTestHelpers::createSingleItemOrder(OrderStatus::NEW);
             $reason = 'Out of stock - unable to fulfill order';
 
+            // Debug: check if user exists
+            expect($order->user)->not->toBeNull('Order should have a user');
+            
             $order->transitionTo(OrderStatus::CANCELLED, ['cancellation_reason' => $reason]);
 
-            // Should send cancellation email to customer with reason
-            Mail::assertSent(\App\Notifications\OrderCancelledNotification::class, function ($mail) use ($reason) {
-                return str_contains($mail->render(), $reason);
-            });
+            // Should send cancellation notification to customer with reason
+            Notification::assertSentTo(
+                $order->user,
+                OrderCancelledNotification::class,
+                function ($notification, $channels) use ($reason) {
+                    return str_contains($notification->toMail($notification)->render(), $reason);
+                }
+            );
         });
     });
 

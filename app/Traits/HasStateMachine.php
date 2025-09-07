@@ -31,6 +31,24 @@ trait HasStateMachine
             );
         }
 
+        // Validate cancellation reason requirement
+        if (method_exists($stateMachine, 'requiresCancellationReason') && 
+            $stateMachine->requiresCancellationReason($currentState, $toState) && 
+            empty($context['cancellation_reason'])) {
+            throw new InvalidStateTransitionException(
+                "Cancellation reason is required when transitioning to CANCELLED status"
+            );
+        }
+
+        // Validate tracking number requirement
+        if (method_exists($stateMachine, 'requiresTrackingNumber') && 
+            $stateMachine->requiresTrackingNumber($currentState, $toState) && 
+            empty($context['tracking_number'])) {
+            throw new InvalidStateTransitionException(
+                "Tracking number is required when transitioning to SHIPPED status"
+            );
+        }
+
         $this->executeBeforeTransitionCallbacks($currentState, $toState, $context);
 
         $this->setCurrentState($toState);

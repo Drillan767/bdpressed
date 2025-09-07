@@ -11,6 +11,7 @@ use App\Models\Product;
 use App\Models\User;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Notification;
 use Spatie\Permission\Models\Role;
 
 class OrderStateTestHelpers
@@ -22,6 +23,7 @@ class OrderStateTestHelpers
     {
         Event::fake();
         Mail::fake();
+        Notification::fake();
 
         // Create roles if they don't exist
         if (!Role::where('name', 'admin')->exists()) {
@@ -39,44 +41,44 @@ class OrderStateTestHelpers
     {
         $user = User::factory()->create();
         $user->assignRole('user');
-        
+
         $product = Product::factory()->inStock(10)->withPrice(2500)->create();
-        
+
         $order = Order::factory()->withStatus($status)->forUser($user)->create();
-        
+
         OrderDetail::factory()
             ->forOrderAndProduct($order, $product)
             ->withQuantity(1)
             ->create();
-            
+
         return $order->fresh(['details', 'user', 'shippingAddress', 'billingAddress']);
     }
 
     /**
-     * Create a multiple items order (no illustrations)  
+     * Create a multiple items order (no illustrations)
      */
     public static function createMultipleItemsOrder(OrderStatus $status = OrderStatus::NEW): Order
     {
         $user = User::factory()->create();
         $user->assignRole('user');
-        
+
         $product1 = Product::factory()->inStock(10)->withPrice(2000)->create();
         $product2 = Product::factory()->inStock(5)->withPrice(3500)->create();
-        
+
         $order = Order::factory()->withStatus($status)->forUser($user)->create();
-        
+
         // Product 1: quantity 3
         OrderDetail::factory()
             ->forOrderAndProduct($order, $product1)
             ->withQuantity(3)
             ->create();
-            
-        // Product 2: quantity 2  
+
+        // Product 2: quantity 2
         OrderDetail::factory()
             ->forOrderAndProduct($order, $product2)
             ->withQuantity(2)
             ->create();
-            
+
         return $order->fresh(['details', 'user', 'shippingAddress', 'billingAddress']);
     }
 
@@ -87,14 +89,14 @@ class OrderStateTestHelpers
     {
         $user = User::factory()->create();
         $user->assignRole('user');
-        
+
         $order = Order::factory()->withStatus($orderStatus)->forUser($user)->create();
-        
+
         Illustration::factory()
             ->forOrder($order)
             ->withStatus(IllustrationStatus::PENDING)
             ->create();
-            
+
         return $order->fresh(['illustrations', 'user', 'shippingAddress', 'billingAddress']);
     }
 
@@ -105,23 +107,23 @@ class OrderStateTestHelpers
     {
         $user = User::factory()->create();
         $user->assignRole('user');
-        
+
         $product = Product::factory()->inStock(10)->withPrice(2500)->create();
-        
+
         $order = Order::factory()->withStatus($orderStatus)->forUser($user)->create();
-        
+
         // Add regular product
         OrderDetail::factory()
             ->forOrderAndProduct($order, $product)
             ->withQuantity(1)
             ->create();
-            
+
         // Add illustration (independent lifecycle)
         Illustration::factory()
             ->forOrder($order)
             ->withStatus(IllustrationStatus::PENDING)
             ->create();
-            
+
         return $order->fresh(['details', 'illustrations', 'user', 'shippingAddress', 'billingAddress']);
     }
 
@@ -131,13 +133,13 @@ class OrderStateTestHelpers
     public static function assertTransitionSucceeds(Order $order, OrderStatus $toStatus, array $context = []): void
     {
         $fromStatus = $order->status;
-        
+
         expect($order->canTransitionTo($toStatus))->toBeTrue(
             "Order should be able to transition from {$fromStatus->value} to {$toStatus->value}"
         );
-        
+
         $order->transitionTo($toStatus, $context);
-        
+
         expect($order->fresh()->status)->toBe($toStatus);
     }
 
@@ -156,7 +158,7 @@ class OrderStateTestHelpers
     public static function assertTransitionNotAllowed(Order $order, OrderStatus $toStatus): void
     {
         $fromStatus = $order->status;
-        
+
         expect($order->canTransitionTo($toStatus))->toBeFalse(
             "Order should NOT be able to transition from {$fromStatus->value} to {$toStatus->value}"
         );
@@ -169,7 +171,7 @@ class OrderStateTestHelpers
     {
         // Should fail without reason
         self::assertTransitionFailsValidation($order, OrderStatus::CANCELLED);
-        
+
         // Should succeed with reason
         $order->transitionTo(OrderStatus::CANCELLED, ['cancellation_reason' => 'Test cancellation reason']);
         expect($order->fresh()->status)->toBe(OrderStatus::CANCELLED);
@@ -182,7 +184,7 @@ class OrderStateTestHelpers
     {
         // Should fail without tracking
         self::assertTransitionFailsValidation($order, OrderStatus::SHIPPED);
-        
+
         // Should succeed with tracking
         $order->transitionTo(OrderStatus::SHIPPED, ['tracking_number' => 'TEST123456']);
         expect($order->fresh()->status)->toBe(OrderStatus::SHIPPED);
@@ -211,7 +213,7 @@ class OrderStateTestHelpers
     {
         $allStates = [
             OrderStatus::NEW,
-            OrderStatus::IN_PROGRESS, 
+            OrderStatus::IN_PROGRESS,
             OrderStatus::PENDING_PAYMENT,
             OrderStatus::PAID,
             OrderStatus::TO_SHIP,

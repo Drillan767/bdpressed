@@ -79,4 +79,18 @@ class OrderStateMachine
 
         return $toValue === OrderStatus::CANCELLED->value;
     }
+
+    public function requiresCancellationReason($fromState, $toState): bool
+    {
+        $toValue = is_object($toState) ? $toState->value : $toState;
+
+        return $toValue === OrderStatus::CANCELLED->value;
+    }
+
+    public function requiresTrackingNumber($fromState, $toState): bool
+    {
+        $toValue = is_object($toState) ? $toState->value : $toState;
+
+        return $toValue === OrderStatus::SHIPPED->value;
+    }
 }

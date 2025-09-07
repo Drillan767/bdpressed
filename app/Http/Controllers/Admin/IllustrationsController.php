@@ -108,10 +108,10 @@ class IllustrationsController extends Controller
     public function updateStatus(
         Request $request,
         Illustration $illustration,
-        IllustrationService $illustrationService,
     ): RedirectResponse {
         $request->validate([
             'status' => 'required|string',
+            'payload' => 'required_if:status,CANCELLED'
         ]);
 
         try {

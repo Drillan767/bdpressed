@@ -49,7 +49,6 @@ class Order extends Model
     protected static function registerStatusTransitionActions(): void
     {
         // NEW -> PENDING_PAYMENT: Create payment and send link
-
         static::afterTransition(
             OrderStatus::NEW,
             OrderStatus::PENDING_PAYMENT,
@@ -210,5 +209,13 @@ class Order extends Model
                 return $orderService->calculateStripeFeesOnly($this);
             }
         );
+    }
+
+    public function getCancellationReason(): ?string
+    {
+        return $this->statusChanges()
+            ->where('to_status', OrderStatus::CANCELLED)
+            ->first()
+            ?->reason;
     }
 }
