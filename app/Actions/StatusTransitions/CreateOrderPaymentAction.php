@@ -25,11 +25,6 @@ class CreateOrderPaymentAction extends BaseTransitionAction
         /** @var Order $order */
         $order = $model;
 
-        // Only create payment for NEW -> PENDING_PAYMENT transition
-        if ($fromState !== OrderStatus::NEW || $toState !== OrderStatus::PENDING_PAYMENT) {
-            return;
-        }
-
         // Check if we already have a pending payment for this order
         $existingPayment = $order->payments()
             ->where('type', PaymentType::ORDER_FULL)
@@ -37,11 +32,6 @@ class CreateOrderPaymentAction extends BaseTransitionAction
             ->first();
 
         if ($existingPayment) {
-            Log::info('Existing payment found for order', [
-                'order_id' => $order->id,
-                'payment_id' => $existingPayment->id,
-            ]);
-
             return;
         }
 
@@ -65,12 +55,6 @@ class CreateOrderPaymentAction extends BaseTransitionAction
 
         if ($paymentLink) {
             $payment->update(['stripe_payment_link' => $paymentLink]);
-
-            Log::info('Order payment created', [
-                'order_id' => $order->id,
-                'payment_id' => $payment->id,
-                'amount' => $finalAmount,
-            ]);
         } else {
             Log::error('Failed to create payment link for order', [
                 'order_id' => $order->id,

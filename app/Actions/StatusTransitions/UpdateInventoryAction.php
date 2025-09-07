@@ -49,15 +49,6 @@ class UpdateInventoryAction extends BaseTransitionAction
                 // Simple reduction with 0 floor
                 $newStock = max(0, $product->stock - $detail->quantity);
                 $product->update(['stock' => $newStock]);
-
-                Log::info('Inventory reduced for paid order', [
-                    'order_id' => $order->id,
-                    'product_id' => $product->id,
-                    'product_name' => $product->name,
-                    'quantity_sold' => $detail->quantity,
-                    'previous_stock' => $product->stock,
-                    'new_stock' => $newStock,
-                ]);
             }
         });
     }

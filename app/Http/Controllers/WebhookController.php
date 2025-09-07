@@ -6,7 +6,10 @@ use App\Enums\IllustrationStatus;
 use App\Enums\OrderStatus;
 use App\Enums\PaymentStatus;
 use App\Enums\PaymentType;
+use App\Models\Illustration;
+use App\Models\Order;
 use App\Models\OrderPayment;
+use App\Services\OrderStatusService;
 use App\Services\StripeService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -16,7 +19,7 @@ use Stripe\Webhook;
 
 class WebhookController extends Controller
 {
-    public function handleStripe(Request $request): Response
+    public function handleStripe(Request $request, OrderStatusService $orderStatusService): Response
     {
         $payload = $request->getContent();
         $sigHeader = $request->header('Stripe-Signature');
@@ -36,9 +39,8 @@ class WebhookController extends Controller
 
         // Handle the event
         switch ($event['type']) {
-
-            case 'checkout.session.completed':
-                $this->handleCheckoutSessionCompleted($event['data']['object'], app(StripeService::class));
+            case 'payment_intent.succeeded':
+                $this->handlePaymentIntentSucceeded($event['data']['object'], $orderStatusService, app(StripeService::class));
                 break;
 
             default:
@@ -48,62 +50,46 @@ class WebhookController extends Controller
         return response('Webhook handled', 200);
     }
 
-    private function handleCheckoutSessionCompleted($session, StripeService $stripeService): void
+    private function handlePaymentIntentSucceeded($paymentIntent, OrderStatusService $orderStatusService, StripeService $stripeService): void
     {
-        $metadata = $session['metadata'] ?? [];
-        $paymentIntentId = $session['payment_intent'] ?? null;
+        // First, try to find illustration payment data
+        $illustrationData = $stripeService->findIllustrationFromPaymentIntent($paymentIntent['id']);
 
-        if (! $paymentIntentId) {
-            Log::warning('No payment intent ID in checkout session', [
-                'session_id' => $session['id'],
-                'metadata' => $metadata,
-            ]);
+        if ($illustrationData) {
+            $this->handleIllustrationPayment($paymentIntent, $illustrationData);
 
             return;
         }
 
-        $payment = null;
+        // Fall back to order payment handling
+        $this->handleOrderPayment($paymentIntent, $orderStatusService, $stripeService);
+    }
 
-        // For illustration payments - use payment_id for exact match
-        if (isset($metadata['payment_id'])) {
-            $payment = OrderPayment::find($metadata['payment_id']);
-        }
-        // For order payments - find pending payment by order_id
-        elseif (isset($metadata['order_id'])) {
-            $payment = OrderPayment::where('order_id', $metadata['order_id'])
+    private function handleIllustrationPayment($paymentIntent, $illustrationData): void
+    {
+        $paymentId = $illustrationData['payment_id'];
+        $illustrationId = $illustrationData['illustration_id'];
+        $paymentType = $illustrationData['payment_type'];
+
+        // Find the payment record
+        $payment = OrderPayment::find($paymentId);
+        if (! $payment && $illustrationId) {
+            // Fallback: find pending payment by illustration and type
+            $payment = OrderPayment::where('illustration_id', $illustrationId)
                 ->where('status', PaymentStatus::PENDING)
+                ->where('type', PaymentType::from($paymentType))
                 ->first();
         }
 
         if (! $payment) {
-            Log::error('Payment record not found for checkout session', [
-                'session_id' => $session['id'],
-                'payment_intent_id' => $paymentIntentId,
-                'metadata' => $metadata,
+            Log::error('Illustration payment not found for payment intent', [
+                'payment_id' => $paymentId,
+                'illustration_id' => $illustrationId,
+                'payment_intent_id' => $paymentIntent['id'],
             ]);
 
             return;
         }
-
-        // Store the payment intent ID for future reference
-        if (! $payment->stripe_payment_intent_id) {
-            $payment->update(['stripe_payment_intent_id' => $paymentIntentId]);
-        }
-
-        // Get the payment intent details to process the payment
-        $stripeClient = $stripeService->getClient();
-        $paymentIntent = $stripeClient->paymentIntents->retrieve($paymentIntentId);
-
-        // Process the payment based on type
-        if ($payment->illustration_id) {
-            $this->handleIllustrationPayment($paymentIntent->toArray(), $payment);
-        } else {
-            $this->handleOrderPayment($paymentIntent->toArray(), $stripeService, $payment);
-        }
-    }
-
-    private function handleIllustrationPayment($paymentIntent, OrderPayment $payment): void
-    {
 
         // Get the actual Stripe fee by retrieving the balance transaction
         $stripeService = app(StripeService::class);
@@ -130,6 +116,7 @@ class WebhookController extends Controller
             if ($newStatus) {
                 $illustration->transitionTo($newStatus, [
                     'triggered_by' => 'webhook',
+                    'skip_notifications' => true, // We'll handle notifications manually
                     'metadata' => [
                         'payment_intent_id' => $paymentIntent['id'],
                         'stripe_event' => 'payment_intent.succeeded',
@@ -148,13 +135,30 @@ class WebhookController extends Controller
         }
     }
 
-    private function handleOrderPayment($paymentIntent, StripeService $stripeService, OrderPayment $payment): void
+    private function handleOrderPayment($paymentIntent, OrderStatusService $orderStatusService, StripeService $stripeService): void
     {
-        $order = $payment->order;
+        // Use StripeService to find order metadata from payment links
+        $orderData = $stripeService->findOrderFromPaymentIntent($paymentIntent['id']);
+
+        if (! $orderData) {
+            return; // Error already logged in StripeService
+        }
+
+        $orderId = $orderData['order_id'];
+        $orderReference = $orderData['order_reference'];
+
+        // Find the order
+        $order = null;
+        if ($orderId) {
+            $order = Order::find($orderId);
+        } elseif ($orderReference) {
+            $order = Order::where('reference', $orderReference)->first();
+        }
 
         if (! $order) {
-            Log::error('Order not found for payment', [
-                'payment_id' => $payment->id,
+            Log::error('Order not found for Stripe payment intent', [
+                'order_id' => $orderId,
+                'order_reference' => $orderReference,
                 'payment_intent_id' => $paymentIntent['id'],
             ]);
 
@@ -171,13 +175,6 @@ class WebhookController extends Controller
             'paid_at' => now(),
             'stripe_fee' => $stripeFee,
             'stripe_metadata' => $paymentIntent,
-        ]);
-
-        Log::info('Stripe payment intent completed', [
-            'order_id' => $order->id,
-            'order_reference' => $order->reference,
-            'payment_intent_id' => $paymentIntent['id'],
-            'payment_type' => $payment->type->value,
         ]);
 
         // Use state machine for Order status transition with context

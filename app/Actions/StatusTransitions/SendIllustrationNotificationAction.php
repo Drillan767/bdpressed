@@ -57,11 +57,6 @@ class SendIllustrationNotificationAction extends BaseTransitionAction
 
     private function sendDepositPaidNotification(Illustration $illustration): void
     {
-        Log::info('Illustration deposit payment completed', [
-            'illustration_id' => $illustration->id,
-            'order_id' => $illustration->order_id,
-        ]);
-
         $notification = new IllustrationDepositPaidNotification($illustration);
         $this->sendNotificationToCustomer($illustration, $notification);
     }
@@ -88,11 +83,6 @@ class SendIllustrationNotificationAction extends BaseTransitionAction
 
     private function sendCompletedNotification(Illustration $illustration): void
     {
-        Log::info('Illustration completed', [
-            'illustration_id' => $illustration->id,
-            'order_id' => $illustration->order_id,
-        ]);
-
         $notification = new IllustrationCompletedNotification($illustration);
         $this->sendNotificationToCustomer($illustration, $notification);
     }
@@ -109,11 +99,5 @@ class SendIllustrationNotificationAction extends BaseTransitionAction
         if ($order->user()->exists()) {
             $order->user->notify($notification);
         }
-
-        Log::info('Illustration notification sent', [
-            'illustration_id' => $illustration->id,
-            'notification_type' => get_class($notification),
-            'customer_notified' => $order->guest()->exists() || $order->user()->exists(),
-        ]);
     }
 }

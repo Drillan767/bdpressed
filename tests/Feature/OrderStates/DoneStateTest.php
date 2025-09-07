@@ -1,6 +1,7 @@
 <?php
 
 use App\Enums\OrderStatus;
+use App\Exceptions\InvalidStateTransitionException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Helpers\OrderStateTestHelpers;
 
@@ -90,10 +91,9 @@ describe('DONE Order State (Terminal)', function () {
             $order = OrderStateTestHelpers::createSingleItemOrder(OrderStatus::DONE);
 
             expect(fn() => $order->transitionTo(OrderStatus::NEW))
-                ->toThrow(\App\Exceptions\InvalidStateTransitionException::class);
-
-            expect(fn() => $order->transitionTo(OrderStatus::CANCELLED, ['cancellation_reason' => 'test']))
-                ->toThrow(\App\Exceptions\InvalidStateTransitionException::class);
+                ->toThrow(InvalidStateTransitionException::class)
+                ->and(fn() => $order->transitionTo(OrderStatus::CANCELLED, ['cancellation_reason' => 'test']))
+                ->toThrow(InvalidStateTransitionException::class);
         });
 
         it('maintains DONE status after failed transition attempts', function () {
@@ -101,7 +101,7 @@ describe('DONE Order State (Terminal)', function () {
 
             try {
                 $order->transitionTo(OrderStatus::CANCELLED, ['cancellation_reason' => 'test']);
-            } catch (\App\Exceptions\InvalidStateTransitionException $e) {
+            } catch (InvalidStateTransitionException $e) {
                 // Expected exception
             }
 

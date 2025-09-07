@@ -115,13 +115,6 @@ class RefundService
                 : PaymentStatus::PARTIALLY_REFUNDED,
         ]);
 
-        Log::info('Payment refund processed', [
-            'payment_id' => $payment->id,
-            'stripe_refund_id' => $stripeResult['refund_id'],
-            'amount' => $refundAmount,
-            'reason' => $reason,
-        ]);
-
         return [
             'success' => true,
             'payment_id' => $payment->id,

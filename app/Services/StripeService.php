@@ -280,7 +280,6 @@ class StripeService
             ];
 
             $stripeProduct = $this->client->products->create($productData);
-            Log::info('Stripe product created:', ['id' => $stripeProduct->id]);
 
             // Create the price in Stripe
             $stripePrice = $this->client->prices->create([
@@ -288,7 +287,6 @@ class StripeService
                 'unit_amount' => $illustrationPrice->price->cents(),
                 'currency' => 'eur',
             ]);
-            Log::info('Stripe price created:', ['id' => $stripePrice->id]);
 
             // Update the model with Stripe IDs
             $illustrationPrice->stripe_product_id = $stripeProduct->id;

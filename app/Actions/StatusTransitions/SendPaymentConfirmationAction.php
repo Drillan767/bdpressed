@@ -26,11 +26,6 @@ class SendPaymentConfirmationAction extends BaseTransitionAction
             return;
         }
 
-        Log::info('Order payment completed', [
-            'order_id' => $order->id,
-            'order_reference' => $order->reference,
-        ]);
-
         // Send confirmation to the customer
         $customerNotified = false;
         if ($order->guest()->exists()) {

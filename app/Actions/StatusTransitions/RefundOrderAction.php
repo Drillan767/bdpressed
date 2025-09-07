@@ -29,46 +29,17 @@ class RefundOrderAction extends BaseTransitionAction
         }
 
         // Check if this order requires refund based on its previous state
-        if (! $order->requiresRefundOnCancellation()) {
-            Log::info('Order cancellation does not require refund', [
-                'order_id' => $order->id,
-                'from_status' => $fromState?->value ?? 'unknown',
-            ]);
-
+        if (!$order->requiresRefundOnCancellation()) {
             return;
         }
 
         // Get cancellation reason from context
         $reason = $context['reason'] ?? 'Order cancelled';
 
-        Log::info('Processing automatic refund for cancelled order', [
-            'order_id' => $order->id,
-            'from_status' => $fromState?->value ?? 'unknown',
-            'reason' => $reason,
-        ]);
-
         // Process the refund
         $refundResult = $this->refundService->processOrderCancellationRefund($order, $reason);
 
-        if ($refundResult['success']) {
-            $refundCount = count($refundResult['refunds']);
-            Log::info('Order refund processed successfully', [
-                'order_id' => $order->id,
-                'refunds_processed' => $refundCount,
-                'message' => $refundResult['message'],
-            ]);
-        } else {
-            Log::error('Order refund processing failed', [
-                'order_id' => $order->id,
-                'error' => $refundResult['message'],
-                'refund_details' => $refundResult['refunds'],
-            ]);
-
-            // In a production system, you might want to:
-            // - Send admin notification about failed refund
-            // - Queue the refund for manual processing
-            // - Revert the status change if refund is critical
-
+        if (!$refundResult['success']) {
             throw new \Exception('Failed to process refunds for order cancellation: '.$refundResult['message']);
         }
     }

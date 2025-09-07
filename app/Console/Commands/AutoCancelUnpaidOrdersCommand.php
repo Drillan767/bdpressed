@@ -59,13 +59,6 @@ class AutoCancelUnpaidOrdersCommand extends Command
                         'reason' => 'Auto-cancelled after 7 days without payment',
                     ]);
 
-                    Log::info('Order auto-cancelled due to expiration', [
-                        'order_id' => $order->id,
-                        'order_reference' => $order->reference,
-                        'days_since_creation' => $order->created_at->diffInDays(now()),
-                        'previous_status' => $order->status->value,
-                    ]);
-
                     $cancelledCount++;
                 } catch (\Exception $e) {
                     $this->error("❌ Failed to cancel order $order->reference: {$e->getMessage()}");

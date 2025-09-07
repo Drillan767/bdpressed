@@ -49,7 +49,7 @@ describe('NEW Order State Transitions', function () {
             $order = OrderStateTestHelpers::createSingleItemOrder();
 
             OrderStateTestHelpers::assertTransitionSucceeds($order, OrderStatus::PENDING_PAYMENT);
-            OrderStateTestHelpers::assertNotificationSentTo($order->user, OrderPaymentLinkNotification::class, );
+            OrderStateTestHelpers::assertNotificationSentTo($order->user, OrderPaymentLinkNotification::class);
         });
 
         it('allows multiple items order to transition to PENDING_PAYMENT', function () {

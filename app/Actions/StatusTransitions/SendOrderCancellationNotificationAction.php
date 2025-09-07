@@ -38,13 +38,6 @@ class SendOrderCancellationNotificationAction extends BaseTransitionAction
         // Determine if a refund was processed
         $wasRefunded = $order->requiresRefundOnCancellation();
 
-        Log::info('Sending order cancellation notification', [
-            'order_id' => $order->id,
-            'order_reference' => $order->reference,
-            'reason' => $reason,
-            'was_refunded' => $wasRefunded,
-        ]);
-
         // Send notification to the customer
         $customer = $order->user ?? $order->guest;
         if ($customer) {
