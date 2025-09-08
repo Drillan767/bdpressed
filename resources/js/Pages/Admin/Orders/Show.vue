@@ -60,6 +60,9 @@ function triggerWarning() {
         return
 
     warning.value = orderChangeWarning(props.order.status, status.value)
+
+    if (!warning.value)
+        updateStatus()
 }
 
 function handleCancel() {

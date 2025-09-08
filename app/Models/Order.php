@@ -49,6 +49,7 @@ class Order extends Model
     protected static function registerStatusTransitionActions(): void
     {
         // NEW -> PENDING_PAYMENT: Create payment and send link
+
         static::afterTransition(
             OrderStatus::NEW,
             OrderStatus::PENDING_PAYMENT,
@@ -211,16 +212,4 @@ class Order extends Model
         );
     }
 
-    protected function executeAfterTransitionCallbacks($fromState, $toState, array $context): void
-    {
-        // Always log status changes regardless of specific transition
-        $this->statusChanges()->create([
-            'from_status' => $fromState?->value,
-            'to_status' => $toState->value,
-            'reason' => $context['reason'] ?? null,
-            'metadata' => $context['metadata'] ?? null,
-            'triggered_by' => $context['triggered_by'] ?? 'manual',
-            'user_id' => auth()->id(),
-        ]);
-    }
 }
