@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Log;
 class CreateOrderPaymentAction extends BaseTransitionAction
 {
     public function __construct(
-        private StripeService $stripeService
+        private readonly StripeService $stripeService
     ) {}
 
     public function execute(Model $model, $fromState, $toState, array $context = []): void

@@ -32,8 +32,7 @@ class OrderStatusService
                 return;
         }
 
-        $order->status = $newStatus;
-        $order->save();
+        $order->transitionTo($newStatus);
     }
 
     private function handlePaymentPending(Order $order, OrderStatus $newStatus): void
@@ -76,8 +75,7 @@ class OrderStatusService
             $payment = $existingPayment;
         }
 
-        $order->status = $newStatus;
-        $order->save();
+        $order->transitionTo($newStatus);
 
         if ($order->guest()->exists()) {
             $order
@@ -99,16 +97,11 @@ class OrderStatusService
     private function handlePaymentCompleted(Order $order, OrderStatus $newStatus): void
     {
         // Update status first
-        $order->status = $newStatus;
-        $order->save();
+        $order->transitionTo($newStatus);
 
-        Log::info('Order payment completed', [
-            'order_id' => $order->id,
-            'order_reference' => $order->reference,
-        ]);
 
         // Send confirmation emails (will implement next)
-        $this->sendPaymentConfirmationNotifications($order);
+       //  $this->sendPaymentConfirmationNotifications($order);
     }
 
     private function sendPaymentConfirmationNotifications(Order $order): void

@@ -78,6 +78,9 @@ function triggerWarning() {
         return
 
     warning.value = illustrationChange(props.illustration.status, status.value)
+
+    if (!warning.value)
+        updateStatus()
 }
 
 function handleCancel() {

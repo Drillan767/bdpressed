@@ -6,9 +6,9 @@ use App\Exceptions\InvalidStateTransitionException;
 
 trait HasStateMachine
 {
-    protected static $beforeTransitionCallbacks = [];
+    protected static array $beforeTransitionCallbacks = [];
 
-    protected static $afterTransitionCallbacks = [];
+    protected static array $afterTransitionCallbacks = [];
 
     public function canTransitionTo(string|object $toState): bool
     {
@@ -24,7 +24,7 @@ trait HasStateMachine
         $currentState = $this->getCurrentState();
         $toStateValue = is_object($toState) ? $toState->value : $toState;
 
-        if (! $stateMachine->canTransition($currentState, $toState)) {
+        if (!$stateMachine->canTransition($currentState, $toState)) {
             $currentStateValue = is_object($currentState) ? $currentState->value : $currentState;
             throw new InvalidStateTransitionException(
                 "Cannot transition from {$currentStateValue} to {$toStateValue}"
@@ -71,6 +71,15 @@ trait HasStateMachine
         foreach ($callbacks as $callback) {
             $callback($this, $fromState, $toState, $context);
         }
+
+        $this->statusChanges()->create([
+            'from_status' => $fromState?->value,
+            'to_status' => $toState->value,
+            'reason' => $context['reason'] ?? null,
+            'metadata' => $context['metadata'] ?? null,
+            'triggered_by' => $context['triggered_by'] ?? 'manual',
+            'user_id' => auth()->id(),
+        ]);
     }
 
     protected static function getTransitionKey($fromState, $toState): string
