@@ -26,11 +26,6 @@ class SendOrderPaymentLinkAction extends BaseTransitionAction
             return;
         }
 
-        // Skip notifications if specifically requested (e.g., from webhooks)
-        if ($context['skip_notifications'] ?? false) {
-            return;
-        }
-
         // Find the pending payment
         $payment = $order->payments()
             ->where('type', PaymentType::ORDER_FULL)

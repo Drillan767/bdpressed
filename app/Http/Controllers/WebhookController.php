@@ -7,7 +7,6 @@ use App\Enums\OrderStatus;
 use App\Enums\PaymentStatus;
 use App\Enums\PaymentType;
 use App\Models\OrderPayment;
-use App\Services\OrderStatusService;
 use App\Services\StripeService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -17,7 +16,7 @@ use Stripe\Webhook;
 
 class WebhookController extends Controller
 {
-    public function handleStripe(Request $request, OrderStatusService $orderStatusService): Response
+    public function handleStripe(Request $request): Response
     {
         $payload = $request->getContent();
         $sigHeader = $request->header('Stripe-Signature');
@@ -39,7 +38,7 @@ class WebhookController extends Controller
         switch ($event['type']) {
 
             case 'checkout.session.completed':
-                $this->handleCheckoutSessionCompleted($event['data']['object'], $orderStatusService, app(StripeService::class));
+                $this->handleCheckoutSessionCompleted($event['data']['object'], app(StripeService::class));
                 break;
 
             default:
@@ -49,7 +48,7 @@ class WebhookController extends Controller
         return response('Webhook handled', 200);
     }
 
-    private function handleCheckoutSessionCompleted($session, OrderStatusService $orderStatusService, StripeService $stripeService): void
+    private function handleCheckoutSessionCompleted($session, StripeService $stripeService): void
     {
         $metadata = $session['metadata'] ?? [];
         $paymentIntentId = $session['payment_intent'] ?? null;
@@ -99,7 +98,7 @@ class WebhookController extends Controller
         if ($payment->illustration_id) {
             $this->handleIllustrationPayment($paymentIntent->toArray(), $payment);
         } else {
-            $this->handleOrderPayment($paymentIntent->toArray(), $orderStatusService, $stripeService, $payment);
+            $this->handleOrderPayment($paymentIntent->toArray(), $stripeService, $payment);
         }
     }
 
@@ -131,7 +130,6 @@ class WebhookController extends Controller
             if ($newStatus) {
                 $illustration->transitionTo($newStatus, [
                     'triggered_by' => 'webhook',
-                    'skip_notifications' => true, // We'll handle notifications manually
                     'metadata' => [
                         'payment_intent_id' => $paymentIntent['id'],
                         'stripe_event' => 'payment_intent.succeeded',
@@ -150,7 +148,7 @@ class WebhookController extends Controller
         }
     }
 
-    private function handleOrderPayment($paymentIntent, OrderStatusService $orderStatusService, StripeService $stripeService, OrderPayment $payment): void
+    private function handleOrderPayment($paymentIntent, StripeService $stripeService, OrderPayment $payment): void
     {
         $order = $payment->order;
 
@@ -190,8 +188,5 @@ class WebhookController extends Controller
                 'stripe_event' => 'payment_intent.succeeded',
             ],
         ]);
-
-        // Trigger email notifications via OrderStatusService
-        $orderStatusService->changed($order, OrderStatus::PAID);
     }
 }

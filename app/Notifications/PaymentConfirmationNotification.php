@@ -42,7 +42,7 @@ class PaymentConfirmationNotification extends Notification implements ShouldQueu
             ->greeting('Merci pour votre paiement !')
             ->lines([
                 'Nous avons bien reçu votre paiement pour la commande '.$this->order->reference.'.',
-                'Votre commande va maintenant être préparée et expédiée dans les plus brefs délais.',
+                'Votre commande va maintenant être expédiée dans les plus brefs délais.',
                 'Vous recevrez un email de confirmation d\'expédition avec le numéro de suivi une fois votre commande envoyée.',
             ])
             ->line('Récapitulatif de votre commande :')
