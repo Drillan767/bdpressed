@@ -7,7 +7,6 @@ use App\Actions\StatusTransitions\SyncOrderStatusAction;
 use App\Casts\MoneyCast;
 use App\Enums\IllustrationStatus;
 use App\Services\IllustrationService;
-use App\Services\IllustrationStatusService;
 use App\Services\StripeService;
 use App\StateMachines\IllustrationStateMachine;
 use App\Traits\HasStateMachine;
@@ -159,24 +158,9 @@ class Illustration extends Model
 
     protected function executeAfterTransitionCallbacks($fromState, $toState, array $context): void
     {
-        $this->statusChanges()->create([
-            'from_status' => $fromState?->value,
-            'to_status' => $toState->value,
-            'reason' => $context['reason'] ?? null,
-            'metadata' => $context['metadata'] ?? null,
-            'triggered_by' => $context['triggered_by'] ?? 'manual',
-            'user_id' => auth()->id(),
-        ]);
-
         // Handle payment link generation for specific transitions
         if (! isset($context['skip_payment_creation'])) {
             $this->handlePaymentTransitions($toState);
-        }
-
-        // Handle email notifications unless skipped
-        if (! isset($context['skip_notifications'])) {
-            $illustrationStatusService = app(IllustrationStatusService::class);
-            $illustrationStatusService->changed($this, $toState);
         }
 
         // Execute any registered callbacks (from the trait)

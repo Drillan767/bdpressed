@@ -6,6 +6,7 @@ use App\Enums\IllustrationStatus;
 use App\Enums\PaymentStatus;
 use App\Enums\PaymentType;
 use App\Models\Illustration;
+use App\Models\OrderPayment;
 use App\Notifications\IllustrationCompletedNotification;
 use App\Notifications\IllustrationDepositLinkNotification;
 use App\Notifications\IllustrationDepositPaidNotification;
@@ -19,11 +20,6 @@ class SendIllustrationNotificationAction extends BaseTransitionAction
     public function execute(Model $model, $fromState, $toState, array $context = []): void
     {
         if ($this->shouldSkipAction($context)) {
-            return;
-        }
-
-        // Skip notifications if specifically requested (e.g., from webhooks)
-        if ($context['skip_notifications'] ?? false) {
             return;
         }
 
@@ -41,6 +37,7 @@ class SendIllustrationNotificationAction extends BaseTransitionAction
 
     private function sendDepositLinkNotification(Illustration $illustration): void
     {
+        /** @var OrderPayment $depositPayment */
         $depositPayment = $illustration->payments()
             ->where('type', PaymentType::ILLUSTRATION_DEPOSIT)
             ->where('status', PaymentStatus::PENDING)
@@ -71,6 +68,7 @@ class SendIllustrationNotificationAction extends BaseTransitionAction
 
     private function sendFinalPaymentLinkNotification(Illustration $illustration): void
     {
+        /** @var OrderPayment $finalPayment */
         $finalPayment = $illustration->payments()
             ->where('type', PaymentType::ILLUSTRATION_FINAL)
             ->where('status', PaymentStatus::PENDING)

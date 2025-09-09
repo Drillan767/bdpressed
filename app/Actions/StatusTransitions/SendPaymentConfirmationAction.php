@@ -26,11 +26,6 @@ class SendPaymentConfirmationAction extends BaseTransitionAction
             return;
         }
 
-        // Skip notifications if specifically requested (e.g., from webhooks that handle their own notifications)
-        if ($context['skip_notifications'] ?? false) {
-            return;
-        }
-
         Log::info('Order payment completed', [
             'order_id' => $order->id,
             'order_reference' => $order->reference,
