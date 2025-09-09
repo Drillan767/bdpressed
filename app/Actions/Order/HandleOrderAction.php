@@ -125,9 +125,9 @@ class HandleOrderAction
     private function handleIllustrationOrder(array $details, $order, IllustrationService $illustrationService): void
     {
         $type = match ($details['illustrationType']) {
-            'BUST' => 'bust',
-            'FULL_LENGTH' => 'full_length',
-            'ANIMAL' => 'animal',
+            'bust' => 'BUST',
+            'fl' => 'FULL_LENGTH',
+            'animal' => 'ANIMAL',
         };
 
         $illustration = new Illustration;
