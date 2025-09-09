@@ -24,7 +24,7 @@ trait HasStateMachine
         $currentState = $this->getCurrentState();
         $toStateValue = is_object($toState) ? $toState->value : $toState;
 
-        if (!$stateMachine->canTransition($currentState, $toState)) {
+        if (! $stateMachine->canTransition($currentState, $toState)) {
             $currentStateValue = is_object($currentState) ? $currentState->value : $currentState;
             throw new InvalidStateTransitionException(
                 "Cannot transition from {$currentStateValue} to {$toStateValue}"

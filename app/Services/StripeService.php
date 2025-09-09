@@ -462,7 +462,6 @@ class StripeService
         }
     }
 
-
     /**
      * Calculate Stripe processing fees for a given amount
      * EU rates: 1.5% + €0.25 (standard), 2.5% + €0.25 (UK/non-EU)
@@ -578,7 +577,6 @@ class StripeService
             return null;
         }
     }
-
 
     /**
      * Retrieve Stripe fee from a balance transaction
