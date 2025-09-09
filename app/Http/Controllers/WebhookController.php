@@ -6,8 +6,6 @@ use App\Enums\IllustrationStatus;
 use App\Enums\OrderStatus;
 use App\Enums\PaymentStatus;
 use App\Enums\PaymentType;
-use App\Models\Illustration;
-use App\Models\Order;
 use App\Models\OrderPayment;
 use App\Services\OrderStatusService;
 use App\Services\StripeService;
@@ -51,17 +49,17 @@ class WebhookController extends Controller
         return response('Webhook handled', 200);
     }
 
-
     private function handleCheckoutSessionCompleted($session, OrderStatusService $orderStatusService, StripeService $stripeService): void
     {
         $metadata = $session['metadata'] ?? [];
         $paymentIntentId = $session['payment_intent'] ?? null;
 
-        if (!$paymentIntentId) {
+        if (! $paymentIntentId) {
             Log::warning('No payment intent ID in checkout session', [
                 'session_id' => $session['id'],
                 'metadata' => $metadata,
             ]);
+
             return;
         }
 
@@ -78,17 +76,18 @@ class WebhookController extends Controller
                 ->first();
         }
 
-        if (!$payment) {
+        if (! $payment) {
             Log::error('Payment record not found for checkout session', [
                 'session_id' => $session['id'],
                 'payment_intent_id' => $paymentIntentId,
                 'metadata' => $metadata,
             ]);
+
             return;
         }
 
         // Store the payment intent ID for future reference
-        if (!$payment->stripe_payment_intent_id) {
+        if (! $payment->stripe_payment_intent_id) {
             $payment->update(['stripe_payment_intent_id' => $paymentIntentId]);
         }
 
@@ -103,7 +102,6 @@ class WebhookController extends Controller
             $this->handleOrderPayment($paymentIntent->toArray(), $orderStatusService, $stripeService, $payment);
         }
     }
-
 
     private function handleIllustrationPayment($paymentIntent, OrderPayment $payment): void
     {
@@ -156,11 +154,12 @@ class WebhookController extends Controller
     {
         $order = $payment->order;
 
-        if (!$order) {
+        if (! $order) {
             Log::error('Order not found for payment', [
                 'payment_id' => $payment->id,
                 'payment_intent_id' => $paymentIntent['id'],
             ]);
+
             return;
         }
 
