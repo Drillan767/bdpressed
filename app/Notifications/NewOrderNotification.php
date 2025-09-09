@@ -7,7 +7,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use Illuminate\Support\HtmlString;
-use NumberFormatter;
+use Illuminate\Support\Number;
 
 class NewOrderNotification extends Notification
 {
@@ -37,9 +37,9 @@ class NewOrderNotification extends Notification
      */
     public function toMail(object $notifiable): MailMessage
     {
-        $total = new NumberFormatter('fr_FR', NumberFormatter::CURRENCY);
-        $totalPrice = $this->order->total->euros() + $this->order->total->euros() * 0.015 + 0.25;
-        $formattedPrice = $total->formatCurrency($totalPrice, 'EUR');
+        $totalFees = $this->order->shipmentFees->euros() + $this->order->stripeFees->euros();
+        $total = $totalFees + $this->order->total->euros();
+        $formattedPrice = Number::currency($total, 'EUR', 'fr');
 
         return (new MailMessage)
             ->subject('Nouvelle commande !')

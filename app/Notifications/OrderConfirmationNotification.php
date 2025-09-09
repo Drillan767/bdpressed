@@ -74,13 +74,19 @@ class OrderConfirmationNotification extends Notification
             $table .= "<tr><td>{$detail->product->name}</td><td style='text-align: right'>{$detail->quantity}</td><td style='text-align: right'>".Number::currency($detail->price->euros(), 'EUR', 'fr').'</td></tr>';
         }
 
+        foreach ($order->illustrations as $i => $illustration) {
+            $nb = $i + 1;
+            $table .= "<tr><td>Illustration n°$nb</td><td style='text-align: right'>1</td><td style='text-align: right'>".Number::currency($illustration->price->euros(), 'EUR', 'fr').'</td></tr>';
+        }
+
         $totalFees = $order->shipmentFees->euros() + $order->stripeFees->euros();
 
         // Fees
         $table .= '<tr><td colspan="2" style="text-align: left">Frais de livraison (estimés)</td><td style="text-align: right">'.Number::currency($totalFees, 'EUR', 'fr').'</td></tr>';
 
+        $total = $totalFees + $order->total->euros();
         // Total
-        $table .= '<tr style="font-weight: bold"><td colspan="2" style="text-align: left">Total</td><td style="text-align: right">'.Number::currency($order->total->euros(), 'EUR', 'fr').'</td></tr>';
+        $table .= '<tr style="font-weight: bold"><td colspan="2" style="text-align: left">Total</td><td style="text-align: right">'.Number::currency($total, 'EUR', 'fr').'</td></tr>';
 
         $table .= '</table>';
 
