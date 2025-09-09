@@ -23,6 +23,11 @@ class StripeService
         $this->client = new StripeClient(config('app.stripe.secret_key'));
     }
 
+    public function getClient(): StripeClient
+    {
+        return $this->client;
+    }
+
     /**
      * Retrieve a product from Stripe by ID
      */
@@ -209,9 +214,7 @@ class StripeService
             }
 
             // Delete the product
-            $deletedProduct = $this->client->products->delete($product->stripe_link);
-
-            return $deletedProduct;
+            return $this->client->products->delete($product->stripe_link);
         } catch (\Exception $e) {
             Log::error('Error deleting Stripe product: '.$e->getMessage());
 
@@ -459,40 +462,6 @@ class StripeService
         }
     }
 
-    /**
-     * Find order metadata from payment intent by checking associated payment links
-     */
-    public function findOrderFromPaymentIntent(string $paymentIntentId): ?array
-    {
-        try {
-            // For payment links, we need to search through recent payment links
-            // This is a limitation of Stripe - no direct way to get a payment link from payment intent
-            $paymentLinks = $this->client->paymentLinks->all(['limit' => 100]);
-
-            foreach ($paymentLinks->data as $paymentLink) {
-                if (isset($paymentLink->metadata['order_id']) || isset($paymentLink->metadata['order_reference'])) {
-                    // We found a payment link with order metadata, return it
-                    return [
-                        'order_id' => $paymentLink->metadata['order_id'] ?? null,
-                        'order_reference' => $paymentLink->metadata['order_reference'] ?? null,
-                    ];
-                }
-            }
-
-            Log::warning('No payment link found with order metadata for payment intent', [
-                'payment_intent_id' => $paymentIntentId,
-            ]);
-
-            return null;
-
-        } catch (\Exception $e) {
-            Log::error('Error finding order from payment intent: '.$e->getMessage(), [
-                'payment_intent_id' => $paymentIntentId,
-            ]);
-
-            return null;
-        }
-    }
 
     /**
      * Calculate Stripe processing fees for a given amount
@@ -610,40 +579,6 @@ class StripeService
         }
     }
 
-    /**
-     * Find illustration payment metadata from payment intent by checking associated payment links
-     */
-    public function findIllustrationFromPaymentIntent(string $paymentIntentId): ?array
-    {
-        try {
-            // Search through recent payment links for illustration payments
-            $paymentLinks = $this->client->paymentLinks->all(['limit' => 100]);
-
-            foreach ($paymentLinks->data as $paymentLink) {
-                if (isset($paymentLink->metadata['illustration_id']) || isset($paymentLink->metadata['payment_id'])) {
-                    return [
-                        'illustration_id' => $paymentLink->metadata['illustration_id'] ?? null,
-                        'payment_id' => $paymentLink->metadata['payment_id'] ?? null,
-                        'order_id' => $paymentLink->metadata['order_id'] ?? null,
-                        'payment_type' => $paymentLink->metadata['payment_type'] ?? null,
-                    ];
-                }
-            }
-
-            Log::warning('No payment link found with illustration metadata for payment intent', [
-                'payment_intent_id' => $paymentIntentId,
-            ]);
-
-            return null;
-
-        } catch (\Exception $e) {
-            Log::error('Error finding illustration from payment intent: '.$e->getMessage(), [
-                'payment_intent_id' => $paymentIntentId,
-            ]);
-
-            return null;
-        }
-    }
 
     /**
      * Retrieve Stripe fee from a balance transaction
