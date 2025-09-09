@@ -74,14 +74,14 @@ class OrderRequest extends FormRequest
             $rules['additionalInfos'] = ['nullable', 'string'];
             $rules = [
                 ...$rules,
-                ...$this->getAddressRules()
+                ...$this->getAddressRules(),
             ];
         } else {
             // Guest/new user rules
             $rules = [
                 ...$rules,
                 ...$this->getUserRules(),
-                ...self::ADDRESS_RULES
+                ...self::ADDRESS_RULES,
             ];
         }
 
@@ -107,8 +107,9 @@ class OrderRequest extends FormRequest
                 if ($productType === 'item') {
                     // For items, check if product exists and has stock
                     $product = DB::table('products')->where('id', $value)->first();
-                    if (!$product) {
+                    if (! $product) {
                         $fail('Le produit sélectionné est invalide.');
+
                         return;
                     }
                     if ($product->stock <= 0) {

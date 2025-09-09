@@ -24,6 +24,14 @@ Route::post('/stripe/webhook', [WebhookController::class, 'handleStripe'])
     ->withoutMiddleware(['web'])
     ->name('stripe.webhook');
 
+/** Debug purpose
+Route::get('/notification', function () {
+     $mail = App\Notifications\NewOrderNotification::class;
+     $order = App\Models\Order::find(3);
+
+     return new $mail($order)->toMail(\App\Models\User::find(2));
+});
+ */
 Route::controller(VisitorsController::class)->group(function () {
     Route::get('/', 'landing')->name('landing');
     Route::get('/contact', 'contact')->name('contact');
