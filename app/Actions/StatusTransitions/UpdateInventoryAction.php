@@ -48,7 +48,8 @@ class UpdateInventoryAction extends BaseTransitionAction
 
                 // Simple reduction with 0 floor
                 $newStock = max(0, $product->stock - $detail->quantity);
-                $product->update(['stock' => $newStock]);
+                $product->stock = $newStock;
+                $product->save();
 
                 Log::info('Inventory reduced for paid order', [
                     'order_id' => $order->id,
@@ -73,7 +74,8 @@ class UpdateInventoryAction extends BaseTransitionAction
                 }
 
                 $newStock = $product->stock + $detail->quantity;
-                $product->update(['stock' => $newStock]);
+                $product->stock = $newStock;
+                $product->save();
 
                 Log::info('Inventory restored for cancelled order', [
                     'order_id' => $order->id,
