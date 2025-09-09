@@ -211,5 +211,4 @@ class Order extends Model
             }
         );
     }
-
 }

@@ -98,10 +98,6 @@ class OrderStatusService
     {
         // Update status first
         $order->transitionTo($newStatus);
-
-
-        // Send confirmation emails (will implement next)
-       //  $this->sendPaymentConfirmationNotifications($order);
     }
 
     private function sendPaymentConfirmationNotifications(Order $order): void
