@@ -77,12 +77,12 @@ export default function useStatus() {
         },
         {
             internal: IllustrationStatus.DEPOSIT_PENDING,
-            text: '💰 Accompte en attente',
+            text: '💰 Acompte en attente',
             color: '#cd0bd4',
         },
         {
             internal: IllustrationStatus.DEPOSIT_PAID,
-            text: '💶 Accompte payé',
+            text: '💶 Acompte payé',
             color: '#00C853',
         },
         {
@@ -166,7 +166,7 @@ export default function useStatus() {
         },
         {
             internal: PaymentType.ILLUSTRATION_DEPOSIT,
-            text: 'Accompte illustration',
+            text: 'Acompte illustration',
             color: '#cd0bd4',
         },
         {
