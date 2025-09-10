@@ -191,11 +191,11 @@ describe('Order Process Scenarios', function () {
                 [
                     'type' => 'illustration',
                     'illustrationDetails' => [
-                        'illustrationType' => 'BUST',
+                        'illustrationType' => 'bust',
                         'addedHuman' => 1,
                         'addedAnimal' => 0,
-                        'pose' => 'SIMPLE',
-                        'background' => 'SIMPLE',
+                        'pose' => 'simple',
+                        'background' => 'simple',
                         'print' => true,
                         'addTracking' => false,
                         'description' => 'Portrait of my character',
@@ -246,11 +246,11 @@ describe('Order Process Scenarios', function () {
                 [
                     'type' => 'illustration',
                     'illustrationDetails' => [
-                        'illustrationType' => 'BUST',
+                        'illustrationType' => 'bust',
                         'addedHuman' => 1,
                         'addedAnimal' => 0,
-                        'pose' => 'SIMPLE',
-                        'background' => 'SIMPLE',
+                        'pose' => 'simple',
+                        'background' => 'simple',
                         'print' => true,
                         'addTracking' => false,
                         'description' => 'First character',
@@ -259,11 +259,11 @@ describe('Order Process Scenarios', function () {
                 [
                     'type' => 'illustration',
                     'illustrationDetails' => [
-                        'illustrationType' => 'FULL_LENGTH',
+                        'illustrationType' => 'fl',
                         'addedHuman' => 2,
                         'addedAnimal' => 1,
-                        'pose' => 'COMPLEX',
-                        'background' => 'COMPLEX',
+                        'pose' => 'complex',
+                        'background' => 'complex',
                         'print' => false,
                         'addTracking' => true,
                         'description' => 'Group scene',
@@ -314,11 +314,11 @@ describe('Order Process Scenarios', function () {
                 [
                     'type' => 'illustration',
                     'illustrationDetails' => [
-                        'illustrationType' => 'ANIMAL',
+                        'illustrationType' => 'animal',
                         'addedHuman' => 0,
                         'addedAnimal' => 2,
-                        'pose' => 'SIMPLE',
-                        'background' => 'UNIFIED',
+                        'pose' => 'simple',
+                        'background' => 'gradient',
                         'print' => false,
                         'addTracking' => false,
                         'description' => 'Two cats together',
@@ -372,11 +372,11 @@ describe('Order Process Scenarios', function () {
                 [
                     'type' => 'illustration',
                     'illustrationDetails' => [
-                        'illustrationType' => 'ANIMAL',
+                        'illustrationType' => 'animal',
                         'addedHuman' => 0,
                         'addedAnimal' => 1,
-                        'pose' => 'SIMPLE',
-                        'background' => 'UNIFIED',
+                        'pose' => 'simple',
+                        'background' => 'gradient',
                         'print' => true,
                         'addTracking' => false,
                         'description' => 'Pet portrait',
@@ -498,11 +498,11 @@ describe('Order Process Scenarios', function () {
                 [
                     'type' => 'illustration',
                     'illustrationDetails' => [
-                        'illustrationType' => 'BUST',
+                        'illustrationType' => 'bust',
                         'addedHuman' => 1,
                         'addedAnimal' => 0,
-                        'pose' => 'SIMPLE',
-                        'background' => 'SIMPLE',
+                        'pose' => 'simple',
+                        'background' => 'simple',
                         'print' => true, // Illustrations add 15g weight when printed
                         'addTracking' => false,
                         'description' => 'Test illustration',
@@ -522,11 +522,11 @@ describe('Order Process Scenarios', function () {
             ],
         ];
 
-        $response = $this->actingAs($user)
+        $this->actingAs($user)
             ->post('/checkout', $orderData);
 
         $order = Order::where('user_id', $user->id)->first();
-        // Illustration adds 15g, which is under 400g threshold
+        // Illustration adds 15g, which is under the 400g threshold
         expect($order->shipmentFees->cents())->toBe(400); // €4 for light packages
     });
 
