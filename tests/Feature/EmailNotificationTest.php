@@ -191,9 +191,8 @@ describe('Email Notifications with Stripe Fee Logic', function () {
             $orderTable = $method->invoke($notification, $this->order);
 
             // Should contain the estimated total in euros (French format)
-            // The order table shows order total (50,00), not order total + fees
-            // So we check for the order total instead
-            expect($orderTable)->toContain('50,00');
+            // The order table shows order total (55,00), fees included for more transparency.
+            expect($orderTable)->toContain('55,00');
         });
 
         it('payment confirmation should reflect actual total correctly', function () {
