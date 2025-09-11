@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Actions\StatusTransitions\CreateOrderPaymentAction;
 use App\Actions\StatusTransitions\RefundOrderAction;
+use App\Actions\StatusTransitions\SendOrderCancellationAction;
 use App\Actions\StatusTransitions\SendOrderPaymentLinkAction;
 use App\Actions\StatusTransitions\SendPaymentConfirmationAction;
 use App\Actions\StatusTransitions\UpdateInventoryAction;
@@ -105,6 +106,31 @@ class Order extends Model
             OrderStatus::SHIPPED,
             OrderStatus::CANCELLED,
             fn ($model, $from, $to, $context) => app(UpdateInventoryAction::class)->execute($model, $from, $to, $context)
+        );
+
+        // Send cancellation notifications for all transitions to CANCELLED
+        static::afterTransition(
+            OrderStatus::NEW,
+            OrderStatus::CANCELLED,
+            fn ($model, $from, $to, $context) => app(SendOrderCancellationAction::class)->execute($model, $from, $to, $context)
+        );
+
+        static::afterTransition(
+            OrderStatus::IN_PROGRESS,
+            OrderStatus::CANCELLED,
+            fn ($model, $from, $to, $context) => app(SendOrderCancellationAction::class)->execute($model, $from, $to, $context)
+        );
+
+        static::afterTransition(
+            OrderStatus::PAID,
+            OrderStatus::CANCELLED,
+            fn ($model, $from, $to, $context) => app(SendOrderCancellationAction::class)->execute($model, $from, $to, $context)
+        );
+
+        static::afterTransition(
+            OrderStatus::TO_SHIP,
+            OrderStatus::CANCELLED,
+            fn ($model, $from, $to, $context) => app(SendOrderCancellationAction::class)->execute($model, $from, $to, $context)
         );
     }
 

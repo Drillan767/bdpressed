@@ -10,6 +10,7 @@ use App\Services\IllustrationService;
 use App\Services\StripeService;
 use App\StateMachines\IllustrationStateMachine;
 use App\Traits\HasStateMachine;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -33,7 +34,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  */
 class Illustration extends Model
 {
-    use HasStateMachine;
+    use HasFactory, HasStateMachine;
 
     protected static function boot()
     {
