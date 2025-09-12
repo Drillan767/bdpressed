@@ -15,6 +15,7 @@ use App\Notifications\OrderCancellationNotification;
 use App\Notifications\OrderPaymentLinkNotification;
 use App\Notifications\PaymentConfirmationNotification;
 use App\Services\RefundService;
+use App\Enums\PaymentStatus;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Notification;
 use Spatie\Permission\Models\Role;
@@ -190,13 +191,19 @@ trait SharedTestUtilities
         $amount = $amount ?? $order->total->cents() + 500; // Add some fees
         $stripeFee = $stripeFee ?? '87'; // €0.87
 
-        return OrderPayment::factory()->create([
+        /** @var OrderPayment $payment */
+        $payment = OrderPayment::factory()->create([
             'order_id' => $order->id,
             'amount' => $amount,
             'stripe_fee' => $stripeFee,
-            'status' => 'paid',
+            'status' => PaymentStatus::PAID,
             'stripe_payment_intent_id' => 'pi_'.uniqid(),
         ]);
+
+        // Refresh the order to include the new payment
+        $order->load('payments');
+
+        return $payment->fresh();
     }
 
     /**
@@ -278,9 +285,7 @@ trait SharedTestUtilities
             Notification::assertSentTo($order->guest, PaymentConfirmationNotification::class);
         }
 
-        // Admin notification
-        // TODO: Fix admin notification assertion - admins might not be notifiable models
-        // Notification::assertSent(AdminPaymentNotification::class);
+        Notification::assertSentTo(config('app.admin_emails', []), AdminPaymentNotification::class);
     }
 
     /**
@@ -316,7 +321,7 @@ trait SharedTestUtilities
     protected function mockRefundService(bool $shouldSucceed = true): void
     {
         $mock = $this->createMock(RefundService::class);
-        
+
         // Mock the processOrderCancellationRefund method
         $mock->method('processOrderCancellationRefund')
             ->willReturn([

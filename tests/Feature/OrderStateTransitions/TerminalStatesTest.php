@@ -1,6 +1,8 @@
 <?php
 
 use App\Enums\OrderStatus;
+use App\Enums\PaymentStatus;
+use App\StateMachines\OrderStateMachine;
 use Tests\Feature\OrderStateTransitions\SharedTestUtilities;
 
 uses(SharedTestUtilities::class);
@@ -40,8 +42,8 @@ describe('Terminal Order States (DONE & CANCELLED)', function () {
             $this->addPaymentToOrder($order);
 
             // DONE orders should have payment records
-            expect($order->payments)->toHaveCount(1);
-            expect($order->payments->first()->status)->toBe('paid');
+            expect($order->payments)->toHaveCount(1)
+                ->and($order->payments->first()->status)->toBe(PaymentStatus::PAID);
 
             // For physical items, shipping should have occurred
             if ($type !== 'illustration') {
@@ -174,8 +176,7 @@ describe('Terminal Order States (DONE & CANCELLED)', function () {
 
     describe('State machine consistency', function () {
         it('validates terminal state definitions match state machine', function () {
-            $order = $this->createSingleItemOrder();
-            $stateMachine = $order->getStateMachine();
+            $stateMachine = new OrderStateMachine();
 
             // Verify DONE has no available transitions
             $doneTransitions = $stateMachine->getAvailableTransitions(OrderStatus::DONE);
@@ -187,8 +188,7 @@ describe('Terminal Order States (DONE & CANCELLED)', function () {
         });
 
         it('validates cancellation warning requirements', function () {
-            $order = $this->createSingleItemOrder();
-            $stateMachine = $order->getStateMachine();
+            $stateMachine = new OrderStateMachine();
 
             // All transitions to CANCELLED should require warning
             $allStatuses = [

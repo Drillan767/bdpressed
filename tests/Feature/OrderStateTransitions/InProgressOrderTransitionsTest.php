@@ -18,8 +18,7 @@ describe('IN_PROGRESS Order Status Transitions', function () {
             $updatedOrder = $this->assertTransitionSucceeds($order, OrderStatus::PENDING_PAYMENT);
 
             expect($updatedOrder->status)->toBe(OrderStatus::PENDING_PAYMENT);
-            // TODO: Fix payment link notification testing when payment creation is properly mocked
-            // $this->assertPaymentLinkNotificationSent($updatedOrder);
+            $this->assertPaymentLinkNotificationSent($updatedOrder);
         })->with([
             'single user' => ['single', false],
             'single guest' => ['single', true],
@@ -39,30 +38,7 @@ describe('IN_PROGRESS Order Status Transitions', function () {
             $updatedOrder = $this->assertTransitionSucceeds($order, OrderStatus::PAID);
 
             expect($updatedOrder->status)->toBe(OrderStatus::PAID);
-            // TODO: Fix payment confirmation notification testing
-            // $this->assertPaymentConfirmationNotificationsSent($updatedOrder);
-        });
-
-        it('potentially allows direct transition for mixed orders', function () {
-            $order = $this->createMixedOrder(OrderStatus::IN_PROGRESS);
-
-            // This might be allowed based on business logic
-            // Testing to see current behavior
-            $transitionSucceeded = false;
-            try {
-                $updatedOrder = $this->assertTransitionSucceeds($order, OrderStatus::PAID);
-                expect($updatedOrder->status)->toBe(OrderStatus::PAID);
-                // TODO: Fix payment confirmation notification testing
-                // $this->assertPaymentConfirmationNotificationsSent($updatedOrder);
-                $transitionSucceeded = true;
-            } catch (\Exception $e) {
-                // If not allowed, verify it's properly blocked
-                $this->assertTransitionNotAllowed($order, OrderStatus::PAID);
-                $transitionSucceeded = false;
-            }
-
-            // Ensure we tested either success or failure
-            expect($transitionSucceeded)->toBeIn([true, false]);
+            $this->assertPaymentConfirmationNotificationsSent($updatedOrder);
         });
     });
 
