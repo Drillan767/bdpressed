@@ -1,6 +1,7 @@
 <?php
 
 use App\Enums\OrderStatus;
+use App\Enums\PaymentStatus;
 use Tests\Feature\OrderStateTransitions\SharedTestUtilities;
 
 uses(SharedTestUtilities::class);
@@ -113,8 +114,8 @@ describe('SHIPPED Order Status Transitions', function () {
             $this->addPaymentToOrder($order);
             $order = $order->fresh('payments');
 
-            expect($order->payments)->toHaveCount(1);
-            expect($order->payments->first()->status)->toBe('paid');
+            expect($order->payments)->toHaveCount(1)
+                ->and($order->payments->first()->status)->toBe(PaymentStatus::PAID);
         });
 
         it('validates inventory was properly reduced', function () {
@@ -128,8 +129,8 @@ describe('SHIPPED Order Status Transitions', function () {
 
             // The exact assertion depends on how inventory is managed
             // This test will reveal current behavior
-            expect($product)->not->toBeNull();
-            expect($detail->quantity)->toBeGreaterThan(0);
+            expect($product)->not->toBeNull()
+                ->and($detail->quantity)->toBeGreaterThan(0);
         });
     });
 
@@ -147,9 +148,9 @@ describe('SHIPPED Order Status Transitions', function () {
             $updatedOrder = $this->assertTransitionSucceeds($order, OrderStatus::DONE);
 
             // Final state validations
-            expect($updatedOrder->status)->toBe(OrderStatus::DONE);
-            expect($updatedOrder->canTransitionTo(OrderStatus::CANCELLED))->toBeFalse();
-            expect($updatedOrder->canTransitionTo(OrderStatus::NEW))->toBeFalse();
+            expect($updatedOrder->status)->toBe(OrderStatus::DONE)
+                ->and($updatedOrder->canTransitionTo(OrderStatus::CANCELLED))->toBeFalse()
+                ->and($updatedOrder->canTransitionTo(OrderStatus::NEW))->toBeFalse();
 
             // No additional notifications should be sent for completion
             $this->assertNoNotificationsSent();
