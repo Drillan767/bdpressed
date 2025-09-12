@@ -68,6 +68,9 @@ describe('PAID Order Status Transitions', function () {
             $order = $this->createOrderByScenario($type, $useGuest, OrderStatus::PAID);
             $payment = $this->addPaymentToOrder($order);
 
+            // Verify that the order requires refund BEFORE cancellation
+            expect($order->requiresRefundOnCancellation())->toBeTrue();
+
             // Should succeed with reason and trigger refund
             $updatedOrder = $this->assertTransitionSucceeds($order, OrderStatus::CANCELLED, [
                 'reason' => 'Customer changed mind',
@@ -75,9 +78,6 @@ describe('PAID Order Status Transitions', function () {
 
             expect($updatedOrder->status)->toBe(OrderStatus::CANCELLED);
             $this->assertCancellationNotificationSent($updatedOrder);
-
-            // Verify that the order requires refund
-            expect($updatedOrder->requiresRefundOnCancellation())->toBeTrue();
         })->with([
             'single user' => ['single', false],
             'single guest' => ['single', true],

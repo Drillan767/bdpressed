@@ -14,6 +14,7 @@ use App\Notifications\AdminPaymentNotification;
 use App\Notifications\OrderCancellationNotification;
 use App\Notifications\OrderPaymentLinkNotification;
 use App\Notifications\PaymentConfirmationNotification;
+use App\Services\RefundService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Notification;
 use Spatie\Permission\Models\Role;
@@ -30,6 +31,9 @@ trait SharedTestUtilities
     {
         // Only fake notifications, not all events (so state machine actions still work)
         Notification::fake();
+
+        // Mock RefundService to avoid actual Stripe API calls
+        $this->mockRefundService();
 
         // Create roles
         Role::create(['name' => 'admin']);
@@ -304,5 +308,54 @@ trait SharedTestUtilities
             'illustration' => $this->createIllustrationOnlyOrder($status, $useGuest),
             default => throw new \InvalidArgumentException("Unknown scenario type: $type")
         };
+    }
+
+    /**
+     * Mock RefundService to avoid actual Stripe API calls
+     */
+    protected function mockRefundService(bool $shouldSucceed = true): void
+    {
+        $mock = $this->createMock(RefundService::class);
+        
+        // Mock the processOrderCancellationRefund method
+        $mock->method('processOrderCancellationRefund')
+            ->willReturn([
+                'success' => $shouldSucceed,
+                'message' => $shouldSucceed ? 'All payments refunded successfully' : 'Some refunds failed',
+                'refunds' => $shouldSucceed ? [
+                    [
+                        'success' => true,
+                        'payment_id' => 1,
+                        'stripe_refund_id' => 're_test123',
+                        'amount' => 2500, // $25.00 in cents
+                        'is_full_refund' => true,
+                    ]
+                ] : [
+                    [
+                        'success' => false,
+                        'error' => 'Stripe API error',
+                        'payment_id' => 1,
+                    ]
+                ]
+            ]);
+
+        // Bind the mock to the service container
+        $this->app->instance(RefundService::class, $mock);
+    }
+
+    /**
+     * Configure RefundService to simulate failures
+     */
+    protected function mockRefundServiceFailure(): void
+    {
+        $this->mockRefundService(false);
+    }
+
+    /**
+     * Configure RefundService to simulate success
+     */
+    protected function mockRefundServiceSuccess(): void
+    {
+        $this->mockRefundService(true);
     }
 }
