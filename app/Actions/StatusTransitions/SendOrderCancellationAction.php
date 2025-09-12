@@ -46,8 +46,7 @@ class SendOrderCancellationAction extends BaseTransitionAction
         // Send notification to the customer
         $customerNotified = false;
         if ($order->guest()->exists()) {
-            Notification::route('mail', $order->guest->email)
-                ->notify($notification);
+            $order->guest->notify($notification);
             $customerNotified = true;
         }
 
