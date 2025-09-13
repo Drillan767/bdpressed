@@ -37,28 +37,13 @@ class SendShippingNotificationAction extends BaseTransitionAction
             return;
         }
 
-        Log::info('Order shipped', [
-            'order_id' => $order->id,
-            'order_reference' => $order->reference,
-            'tracking_number' => $trackingNumber,
-        ]);
-
         // Send notification to the customer
-        $customerNotified = false;
         if ($order->guest) {
             $order->guest->notify(new ShippingNotification($order, $trackingNumber));
-            $customerNotified = true;
         }
 
         if ($order->user) {
             $order->user->notify(new ShippingNotification($order, $trackingNumber));
-            $customerNotified = true;
         }
-
-        Log::info('Shipping notification sent', [
-            'order_id' => $order->id,
-            'customer_notified' => $customerNotified,
-            'tracking_number' => $trackingNumber,
-        ]);
     }
 }

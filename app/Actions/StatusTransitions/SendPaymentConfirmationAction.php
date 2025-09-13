@@ -7,7 +7,6 @@ use App\Models\Order;
 use App\Notifications\AdminPaymentNotification;
 use App\Notifications\PaymentConfirmationNotification;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
 
 class SendPaymentConfirmationAction extends BaseTransitionAction
@@ -25,11 +24,6 @@ class SendPaymentConfirmationAction extends BaseTransitionAction
         if ($toState !== OrderStatus::PAID) {
             return;
         }
-
-        Log::info('Order payment completed', [
-            'order_id' => $order->id,
-            'order_reference' => $order->reference,
-        ]);
 
         // Send confirmation to the customer
         $customerNotified = false;
@@ -52,11 +46,5 @@ class SendPaymentConfirmationAction extends BaseTransitionAction
                 ->notify(new AdminPaymentNotification($order));
             $adminNotified = true;
         }
-
-        Log::info('Payment confirmation notifications sent', [
-            'order_id' => $order->id,
-            'customer_notified' => $customerNotified,
-            'admin_notified' => $adminNotified,
-        ]);
     }
 }
