@@ -1,6 +1,6 @@
 import type { DefineComponent } from 'vue'
 
-import vuetify from '@/plugins/vuetify'
+import vuetify from '@/Plugins/vuetify'
 import { createInertiaApp } from '@inertiajs/vue3'
 import { createHead } from '@vueuse/head'
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers'
@@ -8,7 +8,7 @@ import { createPinia } from 'pinia'
 import piniaPersistedState from 'pinia-plugin-persistedstate'
 import { createApp, h } from 'vue'
 import { ZiggyVue } from 'ziggy-js'
-import '@/plugins/vee-validate'
+import '@/Plugins/vee-validate'
 
 import '../styles/main.scss'
 

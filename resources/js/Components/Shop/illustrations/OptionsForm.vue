@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { IllustrationForm } from '@/types'
-import validationConfig from '@/plugins/validationConfig'
+import validationConfig from '@/Plugins/validationConfig'
 import useIllustrationStore from '@/Stores/illustrationStore'
 import { storeToRefs } from 'pinia'
 import { useForm, useIsFormValid } from 'vee-validate'
