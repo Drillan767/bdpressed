@@ -15,11 +15,6 @@ describe('TO_SHIP Order Status Transitions', function () {
 
     describe('TO_SHIP → SHIPPED', function () {
         it('requires tracking number and sends shipping notification', function ($type, $useGuest) {
-            // Skip illustration-only orders as they shouldn't reach TO_SHIP
-            if ($type === 'illustration') {
-                $this->markTestSkipped('Illustration-only orders do not reach TO_SHIP status');
-            }
-
             $order = $this->createOrderByScenario($type, $useGuest, OrderStatus::TO_SHIP);
             $this->addPaymentToOrder($order);
 
@@ -44,18 +39,11 @@ describe('TO_SHIP Order Status Transitions', function () {
             'multiple guest' => ['multiple', true],
             'mixed user' => ['mixed', false],
             'mixed guest' => ['mixed', true],
-            'illustration user' => ['illustration', false],
-            'illustration guest' => ['illustration', true],
         ]);
     });
 
     describe('TO_SHIP → CANCELLED (with refund)', function () {
         it('allows cancellation with reason and triggers refund process', function ($type, $useGuest) {
-            // Skip illustration-only orders
-            if ($type === 'illustration') {
-                $this->markTestSkipped('Illustration-only orders do not reach TO_SHIP status');
-            }
-
             $order = $this->createOrderByScenario($type, $useGuest, OrderStatus::TO_SHIP);
             $payment = $this->addPaymentToOrder($order);
 
@@ -76,18 +64,11 @@ describe('TO_SHIP Order Status Transitions', function () {
             'multiple guest' => ['multiple', true],
             'mixed user' => ['mixed', false],
             'mixed guest' => ['mixed', true],
-            'illustration user' => ['illustration', false],
-            'illustration guest' => ['illustration', true],
         ]);
     });
 
     describe('Invalid TO_SHIP transitions', function () {
         it('prevents backward transitions', function ($type, $useGuest) {
-            // Skip illustration-only orders
-            if ($type === 'illustration') {
-                $this->markTestSkipped('Illustration-only orders do not reach TO_SHIP status');
-            }
-
             $order = $this->createOrderByScenario($type, $useGuest, OrderStatus::TO_SHIP);
             $this->addPaymentToOrder($order);
 
@@ -103,16 +84,9 @@ describe('TO_SHIP Order Status Transitions', function () {
             'multiple guest' => ['multiple', true],
             'mixed user' => ['mixed', false],
             'mixed guest' => ['mixed', true],
-            'illustration user' => ['illustration', false],
-            'illustration guest' => ['illustration', true],
         ]);
 
         it('prevents skipping to completion', function ($type, $useGuest) {
-            // Skip illustration-only orders
-            if ($type === 'illustration') {
-                $this->markTestSkipped('Illustration-only orders do not reach TO_SHIP status');
-            }
-
             $order = $this->createOrderByScenario($type, $useGuest, OrderStatus::TO_SHIP);
             $this->addPaymentToOrder($order);
 
@@ -125,8 +99,6 @@ describe('TO_SHIP Order Status Transitions', function () {
             'multiple guest' => ['multiple', true],
             'mixed user' => ['mixed', false],
             'mixed guest' => ['mixed', true],
-            'illustration user' => ['illustration', false],
-            'illustration guest' => ['illustration', true],
         ]);
     });
 

@@ -13,11 +13,6 @@ describe('PAID Order Status Transitions', function () {
 
     describe('PAID → TO_SHIP', function () {
         it('allows transition and sends no notifications', function ($type, $useGuest) {
-            // Skip illustration-only orders as they shouldn't go to shipping
-            if ($type === 'illustration') {
-                $this->markTestSkipped('Illustration-only orders skip shipping and go directly to DONE');
-            }
-
             $order = $this->createOrderByScenario($type, $useGuest, OrderStatus::PAID);
             $this->addPaymentToOrder($order);
 
@@ -32,18 +27,11 @@ describe('PAID Order Status Transitions', function () {
             'multiple guest' => ['multiple', true],
             'mixed user' => ['mixed', false],
             'mixed guest' => ['mixed', true],
-            'illustration user' => ['illustration', false],
-            'illustration guest' => ['illustration', true],
         ]);
     });
 
     describe('PAID → DONE (direct completion)', function () {
         it('allows direct completion for illustration-only orders', function ($type, $useGuest) {
-            // Only test illustration-only orders
-            if ($type !== 'illustration') {
-                $this->markTestSkipped('Only illustration-only orders can go directly from PAID to DONE');
-            }
-
             $order = $this->createOrderByScenario($type, $useGuest, OrderStatus::PAID);
             $this->addPaymentToOrder($order);
 
@@ -52,12 +40,6 @@ describe('PAID Order Status Transitions', function () {
             expect($updatedOrder->status)->toBe(OrderStatus::DONE);
             $this->assertNoNotificationsSent();
         })->with([
-            'single user' => ['single', false],
-            'single guest' => ['single', true],
-            'multiple user' => ['multiple', false],
-            'multiple guest' => ['multiple', true],
-            'mixed user' => ['mixed', false],
-            'mixed guest' => ['mixed', true],
             'illustration user' => ['illustration', false],
             'illustration guest' => ['illustration', true],
         ]);
@@ -68,7 +50,7 @@ describe('PAID Order Status Transitions', function () {
             $order = $this->createOrderByScenario($type, $useGuest, OrderStatus::PAID);
             $payment = $this->addPaymentToOrder($order);
 
-            // Verify that the order requires refund BEFORE cancellation
+            // Verify that the order requires a refund BEFORE cancellation
             expect($order->requiresRefundOnCancellation())->toBeTrue();
 
             // Should succeed with reason and trigger refund
@@ -111,15 +93,10 @@ describe('PAID Order Status Transitions', function () {
         ]);
 
         it('prevents skipping shipping for physical items', function ($type, $useGuest) {
-            // Only test orders with physical items
-            if ($type === 'illustration') {
-                $this->markTestSkipped('Illustration-only orders can go directly to DONE');
-            }
-
             $order = $this->createOrderByScenario($type, $useGuest, OrderStatus::PAID);
             $this->addPaymentToOrder($order);
 
-            // Cannot skip shipping step for physical items
+            // Cannot skip a shipping step for physical items
             $this->assertTransitionNotAllowed($order, OrderStatus::SHIPPED);
         })->with([
             'single user' => ['single', false],
@@ -128,8 +105,6 @@ describe('PAID Order Status Transitions', function () {
             'multiple guest' => ['multiple', true],
             'mixed user' => ['mixed', false],
             'mixed guest' => ['mixed', true],
-            'illustration user' => ['illustration', false],
-            'illustration guest' => ['illustration', true],
         ]);
     });
 

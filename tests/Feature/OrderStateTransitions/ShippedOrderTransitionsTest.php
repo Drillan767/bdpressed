@@ -14,11 +14,6 @@ describe('SHIPPED Order Status Transitions', function () {
 
     describe('SHIPPED → DONE', function () {
         it('allows transition and sends no notifications', function ($type, $useGuest) {
-            // Skip illustration-only orders as they shouldn't reach SHIPPED
-            if ($type === 'illustration') {
-                $this->markTestSkipped('Illustration-only orders do not reach SHIPPED status');
-            }
-
             $order = $this->createOrderByScenario($type, $useGuest, OrderStatus::SHIPPED);
             $this->addPaymentToOrder($order);
 
@@ -33,18 +28,11 @@ describe('SHIPPED Order Status Transitions', function () {
             'multiple guest' => ['multiple', true],
             'mixed user' => ['mixed', false],
             'mixed guest' => ['mixed', true],
-            'illustration user' => ['illustration', false],
-            'illustration guest' => ['illustration', true],
         ]);
     });
 
     describe('Invalid SHIPPED transitions', function () {
         it('prevents backward transitions', function ($type, $useGuest) {
-            // Skip illustration-only orders
-            if ($type === 'illustration') {
-                $this->markTestSkipped('Illustration-only orders do not reach SHIPPED status');
-            }
-
             $order = $this->createOrderByScenario($type, $useGuest, OrderStatus::SHIPPED);
             $this->addPaymentToOrder($order);
 
@@ -61,16 +49,9 @@ describe('SHIPPED Order Status Transitions', function () {
             'multiple guest' => ['multiple', true],
             'mixed user' => ['mixed', false],
             'mixed guest' => ['mixed', true],
-            'illustration user' => ['illustration', false],
-            'illustration guest' => ['illustration', true],
         ]);
 
         it('does not allow cancellation once shipped', function ($type, $useGuest) {
-            // Skip illustration-only orders
-            if ($type === 'illustration') {
-                $this->markTestSkipped('Illustration-only orders do not reach SHIPPED status');
-            }
-
             $order = $this->createOrderByScenario($type, $useGuest, OrderStatus::SHIPPED);
             $this->addPaymentToOrder($order);
 
@@ -83,8 +64,6 @@ describe('SHIPPED Order Status Transitions', function () {
             'multiple guest' => ['multiple', true],
             'mixed user' => ['mixed', false],
             'mixed guest' => ['mixed', true],
-            'illustration user' => ['illustration', false],
-            'illustration guest' => ['illustration', true],
         ]);
     });
 
@@ -92,18 +71,7 @@ describe('SHIPPED Order Status Transitions', function () {
         it('validates that shipped orders have tracking information', function () {
             $order = $this->createSingleItemOrder(OrderStatus::SHIPPED);
             $this->addPaymentToOrder($order);
-
-            // A SHIPPED order should have some tracking info
-            // This might be stored in order details, status changes, or related models
-            // Testing current state to understand the data structure
-
             expect($order->status)->toBe(OrderStatus::SHIPPED);
-
-            // Check if there are status changes recorded
-            $statusChanges = $order->statusChanges()->get();
-            // The actual implementation might track this differently
-
-            // This test helps understand how tracking is currently stored
         });
 
         it('ensures shipped orders have payment records', function () {
@@ -136,11 +104,6 @@ describe('SHIPPED Order Status Transitions', function () {
 
     describe('Customer experience validation', function () {
         it('ensures proper order completion flow', function ($type, $useGuest) {
-            // Skip illustration-only orders
-            if ($type === 'illustration') {
-                $this->markTestSkipped('Illustration-only orders do not reach SHIPPED status');
-            }
-
             $order = $this->createOrderByScenario($type, $useGuest, OrderStatus::SHIPPED);
             $this->addPaymentToOrder($order);
 
@@ -161,8 +124,6 @@ describe('SHIPPED Order Status Transitions', function () {
             'multiple guest' => ['multiple', true],
             'mixed user' => ['mixed', false],
             'mixed guest' => ['mixed', true],
-            'illustration user' => ['illustration', false],
-            'illustration guest' => ['illustration', true],
         ]);
     });
 });

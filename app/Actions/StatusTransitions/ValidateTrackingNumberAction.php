@@ -5,7 +5,6 @@ namespace App\Actions\StatusTransitions;
 use App\Enums\OrderStatus;
 use App\Models\Order;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Log;
 use InvalidArgumentException;
 
 class ValidateTrackingNumberAction extends BaseTransitionAction
