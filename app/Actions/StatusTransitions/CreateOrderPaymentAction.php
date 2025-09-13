@@ -25,8 +25,9 @@ class CreateOrderPaymentAction extends BaseTransitionAction
         /** @var Order $order */
         $order = $model;
 
-        // Only create payment for NEW -> PENDING_PAYMENT transition
-        if ($fromState !== OrderStatus::NEW || $toState !== OrderStatus::PENDING_PAYMENT) {
+        // Only create payment for transitions to PENDING_PAYMENT from NEW or IN_PROGRESS
+        if ($toState !== OrderStatus::PENDING_PAYMENT ||
+            ! in_array($fromState, [OrderStatus::NEW, OrderStatus::IN_PROGRESS])) {
             return;
         }
 

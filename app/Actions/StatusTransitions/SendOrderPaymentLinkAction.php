@@ -21,8 +21,9 @@ class SendOrderPaymentLinkAction extends BaseTransitionAction
         /** @var Order $order */
         $order = $model;
 
-        // Only send notification for NEW -> PENDING_PAYMENT transition
-        if ($fromState !== OrderStatus::NEW || $toState !== OrderStatus::PENDING_PAYMENT) {
+        // Only send notification for transitions to PENDING_PAYMENT from NEW or IN_PROGRESS
+        if ($toState !== OrderStatus::PENDING_PAYMENT ||
+            ! in_array($fromState, [OrderStatus::NEW, OrderStatus::IN_PROGRESS])) {
             return;
         }
 

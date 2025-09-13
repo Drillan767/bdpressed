@@ -284,17 +284,12 @@ trait SharedTestUtilities
      */
     protected function assertPaymentConfirmationNotificationsSent(Order $order): void
     {
-        // TODO: Enable when payment confirmation actions are added to state machine
-        // Customer notification
-        // if ($order->user) {
-        //     Notification::assertSentTo($order->user, PaymentConfirmationNotification::class);
-        // }
-        // if ($order->guest) {
-        //     Notification::assertSentTo($order->guest, PaymentConfirmationNotification::class);
-        // }
-
-        // For now, just verify no errors occurred - state transition testing is the priority
-        expect(true)->toBeTrue();
+        if ($order->user) {
+            Notification::assertSentTo($order->user, PaymentConfirmationNotification::class);
+        }
+        if ($order->guest) {
+            Notification::assertSentTo($order->guest, PaymentConfirmationNotification::class);
+        }
     }
 
     /**
