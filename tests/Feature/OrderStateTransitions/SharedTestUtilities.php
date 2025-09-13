@@ -3,6 +3,7 @@
 namespace Tests\Feature\OrderStateTransitions;
 
 use App\Enums\OrderStatus;
+use App\Enums\PaymentStatus;
 use App\Models\Guest;
 use App\Models\Illustration;
 use App\Models\Order;
@@ -10,12 +11,11 @@ use App\Models\OrderDetail;
 use App\Models\OrderPayment;
 use App\Models\Product;
 use App\Models\User;
-use App\Notifications\AdminPaymentNotification;
 use App\Notifications\OrderCancellationNotification;
 use App\Notifications\OrderPaymentLinkNotification;
 use App\Notifications\PaymentConfirmationNotification;
 use App\Services\RefundService;
-use App\Enums\PaymentStatus;
+use App\Services\StripeService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Notification;
 use Spatie\Permission\Models\Role;
@@ -35,6 +35,9 @@ trait SharedTestUtilities
 
         // Mock RefundService to avoid actual Stripe API calls
         $this->mockRefundService();
+
+        // Mock StripeService to avoid actual Stripe API calls
+        $this->mockStripeService();
 
         // Set test admin emails for notifications
         config(['app.admin_emails' => ['admin@test.com', 'manager@test.com']]);
@@ -289,7 +292,7 @@ trait SharedTestUtilities
         // if ($order->guest) {
         //     Notification::assertSentTo($order->guest, PaymentConfirmationNotification::class);
         // }
-        
+
         // For now, just verify no errors occurred - state transition testing is the priority
         expect(true)->toBeTrue();
     }
@@ -340,14 +343,14 @@ trait SharedTestUtilities
                         'stripe_refund_id' => 're_test123',
                         'amount' => 2500, // $25.00 in cents
                         'is_full_refund' => true,
-                    ]
+                    ],
                 ] : [
                     [
                         'success' => false,
                         'error' => 'Stripe API error',
                         'payment_id' => 1,
-                    ]
-                ]
+                    ],
+                ],
             ]);
 
         // Bind the mock to the service container
@@ -368,5 +371,27 @@ trait SharedTestUtilities
     protected function mockRefundServiceSuccess(): void
     {
         $this->mockRefundService(true);
+    }
+
+    /**
+     * Mock StripeService to avoid actual Stripe API calls
+     */
+    protected function mockStripeService(): void
+    {
+        $mock = $this->createMock(StripeService::class);
+
+        // Mock calculateStripeFee method
+        $mock->method('calculateStripeFee')
+            ->willReturnCallback(function ($amount) {
+                // Return a reasonable mock fee (e.g., 2.9% + €0.30 like real Stripe)
+                return (int) round($amount * 0.029 + 30);
+            });
+
+        // Mock createPaymentLink method
+        $mock->method('createPaymentLink')
+            ->willReturn('https://pay.stripe.com/test_payment_link_123');
+
+        // Bind the mock to the service container
+        $this->app->instance(StripeService::class, $mock);
     }
 }

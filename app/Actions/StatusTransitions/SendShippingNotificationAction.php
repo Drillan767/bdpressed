@@ -33,6 +33,7 @@ class SendShippingNotificationAction extends BaseTransitionAction
                 'order_id' => $order->id,
                 'order_reference' => $order->reference,
             ]);
+
             return;
         }
 
