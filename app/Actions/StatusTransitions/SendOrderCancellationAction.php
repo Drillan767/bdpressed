@@ -35,12 +35,6 @@ class SendOrderCancellationAction extends BaseTransitionAction
             return;
         }
 
-        Log::info('Order cancelled', [
-            'order_id' => $order->id,
-            'order_reference' => $order->reference,
-            'reason' => $reason,
-        ]);
-
         $notification = new OrderCancellationNotification($order, $reason);
 
         // Send notification to the customer
@@ -54,11 +48,5 @@ class SendOrderCancellationAction extends BaseTransitionAction
             $order->user->notify($notification);
             $customerNotified = true;
         }
-
-        Log::info('Order cancellation notification sent', [
-            'order_id' => $order->id,
-            'customer_notified' => $customerNotified,
-            'reason' => $reason,
-        ]);
     }
 }

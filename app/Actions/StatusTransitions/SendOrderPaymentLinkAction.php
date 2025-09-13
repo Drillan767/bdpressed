@@ -51,11 +51,5 @@ class SendOrderPaymentLinkAction extends BaseTransitionAction
         if ($order->user()->exists()) {
             $order->user->notify($notification);
         }
-
-        Log::info('Order payment link notification sent', [
-            'order_id' => $order->id,
-            'payment_id' => $payment->id,
-            'customer_notified' => $order->guest()->exists() || $order->user()->exists(),
-        ]);
     }
 }

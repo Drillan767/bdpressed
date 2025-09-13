@@ -6,7 +6,6 @@ use App\Enums\PaymentStatus;
 use App\Models\Order;
 use App\Models\OrderPayment;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class RefundService
 {
@@ -113,13 +112,6 @@ class RefundService
             'status' => $newRefundedAmount >= $payment->amount->cents()
                 ? PaymentStatus::REFUNDED
                 : PaymentStatus::PARTIALLY_REFUNDED,
-        ]);
-
-        Log::info('Payment refund processed', [
-            'payment_id' => $payment->id,
-            'stripe_refund_id' => $stripeResult['refund_id'],
-            'amount' => $refundAmount,
-            'reason' => $reason,
         ]);
 
         return [

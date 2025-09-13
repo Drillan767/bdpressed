@@ -7,7 +7,6 @@ use App\Models\Order;
 use App\Models\Product;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class UpdateInventoryAction extends BaseTransitionAction
 {
@@ -50,15 +49,6 @@ class UpdateInventoryAction extends BaseTransitionAction
                 $newStock = max(0, $product->stock - $detail->quantity);
                 $product->stock = $newStock;
                 $product->save();
-
-                Log::info('Inventory reduced for paid order', [
-                    'order_id' => $order->id,
-                    'product_id' => $product->id,
-                    'product_name' => $product->name,
-                    'quantity_sold' => $detail->quantity,
-                    'previous_stock' => $product->stock,
-                    'new_stock' => $newStock,
-                ]);
             }
         });
     }
@@ -76,15 +66,6 @@ class UpdateInventoryAction extends BaseTransitionAction
                 $newStock = $product->stock + $detail->quantity;
                 $product->stock = $newStock;
                 $product->save();
-
-                Log::info('Inventory restored for cancelled order', [
-                    'order_id' => $order->id,
-                    'product_id' => $product->id,
-                    'product_name' => $product->name,
-                    'quantity_restored' => $detail->quantity,
-                    'previous_stock' => $product->stock,
-                    'new_stock' => $newStock,
-                ]);
             }
         });
     }

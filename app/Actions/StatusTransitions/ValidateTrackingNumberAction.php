@@ -39,11 +39,5 @@ class ValidateTrackingNumberAction extends BaseTransitionAction
                 "Tracking number is required to transition order #{$order->reference} to SHIPPED status"
             );
         }
-
-        Log::info('Tracking number validation passed', [
-            'order_id' => $order->id,
-            'order_reference' => $order->reference,
-            'tracking_number' => $trackingNumber,
-        ]);
     }
 }
