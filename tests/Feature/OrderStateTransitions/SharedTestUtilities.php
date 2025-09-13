@@ -6,6 +6,7 @@ use App\Enums\OrderStatus;
 use App\Enums\PaymentStatus;
 use App\Models\Guest;
 use App\Models\Illustration;
+use App\Models\IllustrationPrice;
 use App\Models\Order;
 use App\Models\OrderDetail;
 use App\Models\OrderPayment;
@@ -33,10 +34,8 @@ trait SharedTestUtilities
         // Only fake notifications, not all events (so state machine actions still work)
         Notification::fake();
 
-        // Mock RefundService to avoid actual Stripe API calls
+        // Mock RefundService and StripeService to avoid actual Stripe API calls
         $this->mockRefundService();
-
-        // Mock StripeService to avoid actual Stripe API calls
         $this->mockStripeService();
 
         // Set test admin emails for notifications
@@ -47,7 +46,7 @@ trait SharedTestUtilities
         Role::create(['name' => 'user']);
 
         // Disable events for IllustrationPrice to avoid Stripe calls during seeding
-        \App\Models\IllustrationPrice::unsetEventDispatcher();
+        IllustrationPrice::unsetEventDispatcher();
         $this->artisan('db:seed', ['--class' => 'IllustrationPriceSeeder']);
 
         // Create test users

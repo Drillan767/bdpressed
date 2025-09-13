@@ -46,11 +46,7 @@ describe('NEW Order Status Transitions', function () {
             $updatedOrder = $this->assertTransitionSucceeds($order, OrderStatus::PENDING_PAYMENT);
 
             expect($updatedOrder->status)->toBe(OrderStatus::PENDING_PAYMENT);
-
-            // Check if payment link notification was sent
-            // Note: This requires actual payment creation and Stripe integration
-            // For now, let's test that the transition succeeds
-            // TODO: Mock payment creation or adjust test to work with real payment flow
+            $this->assertPaymentLinkNotificationSent($updatedOrder);
         })->with([
             'single user' => ['single', false],
             'single guest' => ['single', true],
