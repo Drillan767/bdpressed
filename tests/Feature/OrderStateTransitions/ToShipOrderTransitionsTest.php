@@ -29,14 +29,13 @@ describe('TO_SHIP Order Status Transitions', function () {
 
             expect($updatedOrder->status)->toBe(OrderStatus::SHIPPED);
 
-            // TODO: Implement shipping notification action and test
-            // Should send shipping notification with tracking number
-            // if ($updatedOrder->user) {
-            //     Notification::assertSentTo($updatedOrder->user, ShippingNotification::class);
-            // }
-            // if ($updatedOrder->guest) {
-            //     Notification::assertSentTo($updatedOrder->guest, ShippingNotification::class);
-            // }
+            if ($updatedOrder->user) {
+                Notification::assertSentTo($updatedOrder->user, ShippingNotification::class);
+            }
+            if ($updatedOrder->guest) {
+                 Notification::assertSentTo($updatedOrder->guest, ShippingNotification::class);
+            }
+
         })->with([
             'single user' => ['single', false],
             'single guest' => ['single', true],

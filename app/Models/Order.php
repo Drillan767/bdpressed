@@ -7,6 +7,7 @@ use App\Actions\StatusTransitions\RefundOrderAction;
 use App\Actions\StatusTransitions\SendOrderCancellationAction;
 use App\Actions\StatusTransitions\SendOrderPaymentLinkAction;
 use App\Actions\StatusTransitions\SendPaymentConfirmationAction;
+use App\Actions\StatusTransitions\SendShippingNotificationAction;
 use App\Actions\StatusTransitions\UpdateInventoryAction;
 use App\Casts\MoneyCast;
 use App\Enums\OrderStatus;
@@ -106,6 +107,13 @@ class Order extends Model
             OrderStatus::SHIPPED,
             OrderStatus::CANCELLED,
             fn ($model, $from, $to, $context) => app(UpdateInventoryAction::class)->execute($model, $from, $to, $context)
+        );
+
+        // TO_SHIP -> SHIPPED: Send shipping notification
+        static::afterTransition(
+            OrderStatus::TO_SHIP,
+            OrderStatus::SHIPPED,
+            fn ($model, $from, $to, $context) => app(SendShippingNotificationAction::class)->execute($model, $from, $to, $context)
         );
 
         // Send cancellation notifications for all transitions to CANCELLED
