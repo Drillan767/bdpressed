@@ -34,8 +34,7 @@ class SendPaymentConfirmationAction extends BaseTransitionAction
         // Send confirmation to the customer
         $customerNotified = false;
         if ($order->guest()->exists()) {
-            Notification::route('mail', $order->guest->email)
-                ->notify(new PaymentConfirmationNotification($order));
+            $order->guest->notify(new PaymentConfirmationNotification($order));
             $customerNotified = true;
         }
 

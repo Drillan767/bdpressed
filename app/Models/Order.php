@@ -64,6 +64,32 @@ class Order extends Model
             fn ($model, $from, $to, $context) => app(SendOrderPaymentLinkAction::class)->execute($model, $from, $to, $context)
         );
 
+        // IN_PROGRESS -> PENDING_PAYMENT: Create payment and send link
+        static::afterTransition(
+            OrderStatus::IN_PROGRESS,
+            OrderStatus::PENDING_PAYMENT,
+            fn ($model, $from, $to, $context) => app(CreateOrderPaymentAction::class)->execute($model, $from, $to, $context)
+        );
+
+        static::afterTransition(
+            OrderStatus::IN_PROGRESS,
+            OrderStatus::PENDING_PAYMENT,
+            fn ($model, $from, $to, $context) => app(SendOrderPaymentLinkAction::class)->execute($model, $from, $to, $context)
+        );
+
+        // IN_PROGRESS -> PAID: Send payment confirmation and update inventory (for illustration-only orders)
+        static::afterTransition(
+            OrderStatus::IN_PROGRESS,
+            OrderStatus::PAID,
+            fn ($model, $from, $to, $context) => app(SendPaymentConfirmationAction::class)->execute($model, $from, $to, $context)
+        );
+
+        static::afterTransition(
+            OrderStatus::IN_PROGRESS,
+            OrderStatus::PAID,
+            fn ($model, $from, $to, $context) => app(UpdateInventoryAction::class)->execute($model, $from, $to, $context)
+        );
+
         // PENDING_PAYMENT -> PAID: Send payment confirmation and update inventory
         static::afterTransition(
             OrderStatus::PENDING_PAYMENT,
