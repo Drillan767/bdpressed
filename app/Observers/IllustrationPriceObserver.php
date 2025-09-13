@@ -20,6 +20,10 @@ class IllustrationPriceObserver implements ShouldHandleEventsAfterCommit
      */
     public function created(IllustrationPrice $illustrationPrice): void
     {
+        if (app()->environment() === 'testing') {
+            return;
+        }
+
         $this->stripeService->handleIllustrationPriceCreation($illustrationPrice);
     }
 
@@ -28,6 +32,10 @@ class IllustrationPriceObserver implements ShouldHandleEventsAfterCommit
      */
     public function updated(IllustrationPrice $illustrationPrice): void
     {
+        if (app()->environment() === 'testing') {
+            return;
+        }
+
         $this->stripeService->handleIllustrationPriceUpdate($illustrationPrice);
     }
 
@@ -36,6 +44,10 @@ class IllustrationPriceObserver implements ShouldHandleEventsAfterCommit
      */
     public function deleted(IllustrationPrice $illustrationPrice): void
     {
+        if (app()->environment() === 'testing') {
+            return;
+        }
+
         $this->stripeService->handleIllustrationPriceDeletion($illustrationPrice);
     }
 
@@ -44,6 +56,10 @@ class IllustrationPriceObserver implements ShouldHandleEventsAfterCommit
      */
     public function restored(IllustrationPrice $illustrationPrice): void
     {
+        if (app()->environment() === 'testing') {
+            return;
+        }
+
         // Re-create the product in Stripe if needed
         $this->stripeService->handleIllustrationPriceCreation($illustrationPrice);
     }
@@ -53,6 +69,10 @@ class IllustrationPriceObserver implements ShouldHandleEventsAfterCommit
      */
     public function forceDeleted(IllustrationPrice $illustrationPrice): void
     {
+        if (app()->environment() === 'testing') {
+            return;
+        }
+
         $this->stripeService->handleIllustrationPriceDeletion($illustrationPrice);
     }
 }

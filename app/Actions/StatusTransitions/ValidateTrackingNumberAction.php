@@ -28,13 +28,6 @@ class ValidateTrackingNumberAction extends BaseTransitionAction
         $trackingNumber = $context['tracking_number'] ?? null;
 
         if (empty($trackingNumber)) {
-            Log::warning('Order transition to SHIPPED blocked - missing tracking number', [
-                'order_id' => $order->id,
-                'order_reference' => $order->reference,
-                'from_status' => $fromState->value,
-                'to_status' => $toState->value,
-            ]);
-
             throw new InvalidArgumentException(
                 "Tracking number is required to transition order #{$order->reference} to SHIPPED status"
             );
