@@ -176,7 +176,7 @@ describe('Terminal Order States (DONE & CANCELLED)', function () {
 
     describe('State machine consistency', function () {
         it('validates terminal state definitions match state machine', function () {
-            $stateMachine = new OrderStateMachine();
+            $stateMachine = new OrderStateMachine;
 
             // Verify DONE has no available transitions
             $doneTransitions = $stateMachine->getAvailableTransitions(OrderStatus::DONE);
@@ -188,7 +188,7 @@ describe('Terminal Order States (DONE & CANCELLED)', function () {
         });
 
         it('validates cancellation warning requirements', function () {
-            $stateMachine = new OrderStateMachine();
+            $stateMachine = new OrderStateMachine;
 
             // All transitions to CANCELLED should require warning
             $allStatuses = [

@@ -33,7 +33,7 @@ describe('TO_SHIP Order Status Transitions', function () {
                 Notification::assertSentTo($updatedOrder->user, ShippingNotification::class);
             }
             if ($updatedOrder->guest) {
-                 Notification::assertSentTo($updatedOrder->guest, ShippingNotification::class);
+                Notification::assertSentTo($updatedOrder->guest, ShippingNotification::class);
             }
 
         })->with([
