@@ -3,12 +3,13 @@
 namespace App\Notifications;
 
 use Illuminate\Bus\Queueable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
 class OrderPaymentLinkNotification extends Notification
 {
-    use Queueable;
+    use HasFactory, Queueable;
 
     /**
      * Create a new notification instance.
