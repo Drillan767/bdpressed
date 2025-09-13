@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { ProductForm } from '@/types'
-import validationConfig from '@/plugins/validationConfig'
+import validationConfig from '@/Plugins/validationConfig'
 import { useForm, useIsFormValid } from 'vee-validate'
 import { computed, ref, watch } from 'vue'
 

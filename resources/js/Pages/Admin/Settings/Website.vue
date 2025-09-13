@@ -2,7 +2,7 @@
 import useToast from '@/Composables/toast'
 import AdminLayout from '@/Layouts/AdminLayout.vue'
 import SettingsLayout from '@/Layouts/SettingsLayout.vue'
-import validationConfig from '@/plugins/validationConfig'
+import validationConfig from '@/Plugins/validationConfig'
 import { router } from '@inertiajs/vue3'
 import { useHead } from '@vueuse/head'
 import { useForm, useIsFormDirty, useIsFormValid } from 'vee-validate'

@@ -2,7 +2,7 @@
 import type { Comic, ComicPage } from '@/types'
 import useToast from '@/Composables/toast'
 import AdminLayout from '@/Layouts/AdminLayout.vue'
-import validationConfig from '@/plugins/validationConfig'
+import validationConfig from '@/Plugins/validationConfig'
 import { router } from '@inertiajs/vue3'
 import { useHead } from '@vueuse/head'
 import { useForm, useIsFormValid } from 'vee-validate'
