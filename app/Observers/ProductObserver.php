@@ -13,8 +13,11 @@ class ProductObserver implements ShouldHandleEventsAfterCommit
      */
     public function created(Product $product): void
     {
-        $stripeService = new StripeService;
-        $stripeService->createProduct($product);
+        if (app()->environment() === 'testing') {
+            return;
+        }
+
+        new StripeService()->createProduct($product);
     }
 
     /**
@@ -22,8 +25,7 @@ class ProductObserver implements ShouldHandleEventsAfterCommit
      */
     public function updated(Product $product): void
     {
-        $stripeService = new StripeService;
-        $stripeService->updateProduct($product);
+        new StripeService()->updateProduct($product);
     }
 
     /**
@@ -31,7 +33,6 @@ class ProductObserver implements ShouldHandleEventsAfterCommit
      */
     public function deleted(Product $product): void
     {
-        $stripeService = new StripeService;
-        $stripeService->deleteProduct($product);
+        new StripeService()->deleteProduct($product);
     }
 }
