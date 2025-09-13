@@ -9,6 +9,7 @@ use App\Actions\StatusTransitions\SendOrderPaymentLinkAction;
 use App\Actions\StatusTransitions\SendPaymentConfirmationAction;
 use App\Actions\StatusTransitions\SendShippingNotificationAction;
 use App\Actions\StatusTransitions\UpdateInventoryAction;
+use App\Actions\StatusTransitions\ValidateTrackingNumberAction;
 use App\Casts\MoneyCast;
 use App\Enums\OrderStatus;
 use App\Services\OrderService;
@@ -133,6 +134,13 @@ class Order extends Model
             OrderStatus::SHIPPED,
             OrderStatus::CANCELLED,
             fn ($model, $from, $to, $context) => app(UpdateInventoryAction::class)->execute($model, $from, $to, $context)
+        );
+
+        // TO_SHIP -> SHIPPED: Validate tracking number is provided
+        static::beforeTransition(
+            OrderStatus::TO_SHIP,
+            OrderStatus::SHIPPED,
+            fn ($model, $from, $to, $context) => app(ValidateTrackingNumberAction::class)->execute($model, $from, $to, $context)
         );
 
         // TO_SHIP -> SHIPPED: Send shipping notification

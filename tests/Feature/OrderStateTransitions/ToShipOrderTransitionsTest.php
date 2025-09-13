@@ -2,6 +2,7 @@
 
 use App\Enums\OrderStatus;
 use App\Notifications\ShippingNotification;
+use Illuminate\Support\Facades\Notification;
 use Tests\Feature\OrderStateTransitions\SharedTestUtilities;
 
 uses(SharedTestUtilities::class);
@@ -153,25 +154,19 @@ describe('TO_SHIP Order Status Transitions', function () {
             }
         });
 
-        it('handles empty tracking numbers gracefully', function () {
+        it('prevents transition to SHIPPED without tracking number', function () {
             $order = $this->createSingleItemOrder(OrderStatus::TO_SHIP);
             $this->addPaymentToOrder($order);
 
-            // Test without tracking number - should work if business logic allows it
-            // or should fail if tracking is required
-            $transitionSucceeded = false;
-            try {
-                $updatedOrder = $this->assertTransitionSucceeds($order, OrderStatus::SHIPPED);
-                expect($updatedOrder->status)->toBe(OrderStatus::SHIPPED);
-                $transitionSucceeded = true;
-            } catch (\Exception $e) {
-                // If tracking is required, the transition should be blocked
-                $this->assertTransitionNotAllowed($order, OrderStatus::SHIPPED);
-                $transitionSucceeded = false;
-            }
+            // State machine allows the transition, but validation should prevent it
+            expect($order->canTransitionTo(OrderStatus::SHIPPED))->toBeTrue();
 
-            // Ensure we tested either success or failure
-            expect($transitionSucceeded)->toBeIn([true, false]);
+            // Actual transition should fail due to missing tracking number
+            expect(fn () => $order->transitionTo(OrderStatus::SHIPPED))
+                ->toThrow(InvalidArgumentException::class, 'Tracking number is required');
+
+            // Verify order status remains unchanged
+            expect($order->fresh()->status)->toBe(OrderStatus::TO_SHIP);
         });
     });
 });
