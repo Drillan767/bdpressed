@@ -4,27 +4,29 @@ namespace App\Services;
 
 use App\Enums\IllustrationStatus;
 use App\Enums\OrderStatus;
-use App\Enums\PaymentStatus;
 use App\Models\Comic;
 use App\Models\ComicPage;
 use App\Models\Illustration;
 use App\Models\Order;
-use App\Models\OrderPayment;
 use App\Models\Product;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Number;
 
 class StatisticsService
 {
     public function getFinancialStatistics(): array
     {
+        [$lastWeek, $lastMonth] = $this->getRecentOrdersCount();
         return [
             'total_revenue' => $this->getTotalRevenue(),
             'average_order_value' => $this->getAverageOrderValue(),
+            'last_week' => $lastWeek,
+            'last_month' => $lastMonth,
             'orders_by_status' => $this->getOrdersByStatus(),
-            'recent_orders' => $this->getRecentOrdersCount(),
+            'total_commands' => $this->getTotalCommands(),
         ];
     }
 
@@ -77,26 +79,25 @@ class StatisticsService
         ];
     }
 
-    private function getTotalRevenue(): array
+    private function getTotalRevenue(): string
     {
-        $completedOrders = Order::whereIn('status', [
+        $totalRevenue = Order::whereIn('status', [
             OrderStatus::PAID,
             OrderStatus::TO_SHIP,
             OrderStatus::SHIPPED,
             OrderStatus::DONE
-        ]);
+        ])
+            ->sum('total');
 
-        $totalRevenue = $completedOrders->sum('total');
-        $orderCount = $completedOrders->count();
-
-        return [
-            'amount' => $totalRevenue,
-            'order_count' => $orderCount,
-            'formatted_amount' => number_format($totalRevenue / 100, 2) . ' €'
-        ];
+        return Number::currency($totalRevenue / 100, 'EUR', locale: 'fr');
     }
 
-    private function getAverageOrderValue(): array
+    private function getTotalCommands(): int
+    {
+        return Order::count();
+    }
+
+    private function getAverageOrderValue(): string
     {
         $completedOrders = Order::whereIn('status', [
             OrderStatus::PAID,
@@ -109,10 +110,7 @@ class StatisticsService
         $orderCount = $completedOrders->count();
         $averageValue = $orderCount > 0 ? $totalRevenue / $orderCount : 0;
 
-        return [
-            'amount' => $averageValue,
-            'formatted_amount' => number_format($averageValue / 100, 2) . ' €'
-        ];
+        return Number::currency($averageValue / 100, 'EUR', locale: 'fr');
     }
 
     private function getOrdersByStatus(): Collection
@@ -131,8 +129,8 @@ class StatisticsService
         $last30Days = Order::where('created_at', '>=', Carbon::now()->subDays(30))->count();
 
         return [
-            'last_7_days' => $last7Days,
-            'last_30_days' => $last30Days,
+            $last7Days,
+            $last30Days,
         ];
     }
 
