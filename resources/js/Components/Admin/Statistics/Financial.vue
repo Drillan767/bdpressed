@@ -46,7 +46,7 @@ onMounted(loadData)
             <VRow>
                 <VCol
                     cols="12"
-                    lg="8"
+                    lg="7"
                 >
                     <VRow class="h-100">
                         <VCol
@@ -87,9 +87,13 @@ onMounted(loadData)
                 </VCol>
                 <VCol
                     cols="12"
-                    lg="4"
+                    lg="5"
                 >
-                    <VCard class="h-100 chart-card" elevation="3">
+                    <VCard
+                        class="chart-card"
+                        elevation="3"
+                        min-height="300"
+                    >
                         <VCardTitle class="pb-2">
                             <div class="d-flex align-center">
                                 <VIcon
@@ -100,22 +104,19 @@ onMounted(loadData)
                                 Commandes par statut
                             </div>
                         </VCardTitle>
-                        <VCardText class="d-flex align-center justify-center pa-4" style="min-height: 350px;">
+                        <VCardText class="d-flex align-center justify-center">
                             <Doughnut
                                 v-if="chart"
                                 v-bind="chart"
                                 :center-text="totalCommands.toString()"
                                 center-subtext="commandes"
-                                style="width: 100%; height: 100%; max-width: 320px;"
                             />
-                            <div v-else class="text-center text-body-2 py-8">
-                                <VIcon
-                                    icon="mdi-chart-donut"
-                                    size="48"
-                                    class="mb-4 opacity-50"
-                                />
-                                <div>Aucune donnée disponible</div>
-                            </div>
+
+                            <VEmptyState
+                                v-else
+                                icon="mdi-chart-donut"
+                                title="Aucune donnée disponible"
+                            />
                         </VCardText>
                     </VCard>
                 </VCol>
@@ -127,7 +128,6 @@ onMounted(loadData)
 <style scoped>
 .stat-card {
     transition: all 0.3s ease;
-    border-radius: 16px !important;
 }
 
 .stat-card:hover {
@@ -140,7 +140,6 @@ onMounted(loadData)
     background: linear-gradient(135deg, rgb(var(--v-theme-surface)) 0%, rgba(var(--v-theme-primary), 0.02) 100%);
 }
 
-
 :deep(.v-card-title) {
     font-size: 1.1rem !important;
     font-weight: 600 !important;
@@ -149,5 +148,4 @@ onMounted(loadData)
 :deep(.v-chip) {
     font-size: 0.75rem !important;
 }
-
 </style>

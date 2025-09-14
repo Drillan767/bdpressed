@@ -1,5 +1,12 @@
 import type { OrderStatus } from '@/types/enums'
 
+interface Item {
+    id: number
+    title: string
+    value: number
+    color: string
+}
+
 export interface StatCard {
     title: string
     subtitle: string
@@ -8,10 +15,9 @@ export interface StatCard {
 }
 
 export interface ChartData {
-    labels: string[]
-    series: number[]
-    colors: string[]
-    centerValue: number
+    items: Item[]
+    centerText: string
+    centerLabel: string
 }
 
 export interface FinancialApiData {
