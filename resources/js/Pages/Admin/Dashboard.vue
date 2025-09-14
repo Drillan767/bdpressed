@@ -475,11 +475,11 @@ onMounted(async () => {
                             <VCardTitle>Types d'illustrations populaires</VCardTitle>
                             <VCardText>
                                 <VSkeletonLoader v-if="loadingBusiness" type="image" />
-                                <VPie
+<!--                                <VPie
                                     v-else-if="illustrationTypesChart.items?.length > 0"
                                     :items="illustrationTypesChart.items"
                                     height="300"
-                                />
+                                />-->
                                 <div v-else class="text-center text-body-2 py-8">
                                     Aucune donnée disponible
                                 </div>
@@ -491,11 +491,11 @@ onMounted(async () => {
                             <VCardTitle>Print vs Digital</VCardTitle>
                             <VCardText>
                                 <VSkeletonLoader v-if="loadingBusiness" type="image" />
-                                <VPie
+<!--                                <VPie
                                     v-else-if="printDigitalChart.items?.length > 0"
                                     :items="printDigitalChart.items"
                                     height="300"
-                                />
+                                />-->
                                 <div v-else class="text-center text-body-2 py-8">
                                     Aucune donnée disponible
                                 </div>
@@ -546,11 +546,11 @@ onMounted(async () => {
                             <VCardTitle>Comics publiés</VCardTitle>
                             <VCardText>
                                 <VSkeletonLoader v-if="loadingProducts" type="image" />
-                                <VPie
+<!--                                <VPie
                                     v-else-if="comicsChart.items?.length > 0"
                                     :items="comicsChart.items"
                                     height="300"
-                                />
+                                />-->
                                 <div v-else class="text-center text-body-2 py-8">
                                     Aucune donnée disponible
                                 </div>

@@ -1,6 +1,5 @@
 import { createVuetify } from 'vuetify'
 import { md3 } from 'vuetify/blueprints'
-import { VPie } from 'vuetify/labs/VPie'
 import { VStepperVertical } from 'vuetify/labs/VStepperVertical'
 import { fr } from 'vuetify/locale'
 
@@ -18,7 +17,6 @@ export default createVuetify({
 
     components: {
         VStepperVertical,
-        VPie,
     },
 
     defaults: {

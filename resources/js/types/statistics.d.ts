@@ -2,17 +2,16 @@ import type { OrderStatus } from '@/types/enums'
 
 export interface StatCard {
     title: string
-    text: string
     subtitle: string
     color: string
     icon: string
 }
 
 export interface ChartData {
-    key: number
-    value: number
-    color: string
-    title: string
+    labels: string[]
+    series: number[]
+    colors: string[]
+    centerValue: number
 }
 
 export interface FinancialApiData {

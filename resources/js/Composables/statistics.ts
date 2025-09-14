@@ -55,31 +55,33 @@ export function useStatistics() {
             },
             {
                 subtitle: 'Commandes récentes (7j)',
-                title: data.last_week || 0,
+                title: data.last_week.toString() || '0',
                 color: 'warning',
                 icon: 'mdi-calendar-week',
             },
             {
                 subtitle: 'Commandes récentes (30j)',
-                title: data.last_month || 0,
+                title: data.last_month.toString() || '0',
                 color: 'secondary',
                 icon: 'mdi-calendar-month',
             },
         ]
 
-        const chart: ChartData[] = []
+        const chart: ChartData = {
+            labels: [],
+            colors: [],
+            series: [],
+            centerValue: data.total_commands,
+        }
 
         const totalOrders = Object.values(data.orders_by_status).reduce((sum: number, count: any) => sum + count, 0)
 
         if (totalOrders > 0) {
             const colors = COLOR_SCHEMES.mixed.slice(0, Object.keys(data.orders_by_status).length)
             Object.entries(data.orders_by_status).forEach(([status, count], index) => {
-                chart.push({
-                    index: index + 1,
-                    color: colors[index],
-                    title: ORDER_STATUS_TRANSLATIONS[status] || status,
-                    value: count,
-                })
+                chart.labels.push(ORDER_STATUS_TRANSLATIONS[status] || status)
+                chart.colors.push(colors[index])
+                chart.series.push(count)
             })
         }
 
