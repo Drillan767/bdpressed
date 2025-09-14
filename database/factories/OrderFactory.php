@@ -33,7 +33,6 @@ class OrderFactory extends Factory
             'billing_address_id' => Address::factory(),
             'useSameAddress' => $this->faker->boolean(70),
             'status' => OrderStatus::NEW,
-            'refusal_reason' => null,
         ];
     }
 

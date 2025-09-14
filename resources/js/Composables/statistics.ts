@@ -1,8 +1,9 @@
 import type { OrderStatus } from '@/types/enums'
 import type { ChartData, FinancialApiData, StatCard } from '@/types/statistics'
+import useGradientGenerator from '@/Composables/colorGradient'
 
 // Translation mappings
-const ORDER_STATUS_TRANSLATIONS: Record<OrderStatus, string> = {
+const ORDER_STATUS_TRANSLATIONS: Record<string, string> = {
     NEW: 'Nouveau',
     IN_PROGRESS: 'En cours',
     PENDING_PAYMENT: 'Paiement en attente',
@@ -24,20 +25,9 @@ const ILLUSTRATION_TYPE_TRANSLATIONS: Record<string, string> = {
     // Add more as needed
 }
 
-// Color schemes
-const COLOR_SCHEMES = {
-    primary: ['#1976D2', '#42A5F5', '#90CAF9', '#E3F2FD'],
-    success: ['#388E3C', '#66BB6A', '#A5D6A7', '#E8F5E8'],
-    warning: ['#F57C00', '#FFB74D', '#FFCC02', '#FFF8E1'],
-    error: ['#D32F2F', '#EF5350', '#FFCDD2', '#FFEBEE'],
-    info: ['#0288D1', '#29B6F6', '#81D4FA', '#E1F5FE'],
-    mixed: ['#1976D2', '#388E3C', '#F57C00', '#D32F2F', '#7B1FA2', '#00796B', '#E64A19', '#455A64'],
-}
-
 export function useStatistics() {
-    /**
-     * Transform complete financial statistics from API response
-     */
+    const { generateColors } = useGradientGenerator()
+
     function transformFinancialStatistics(data: FinancialApiData) {
         // Transform cards data
         const cards: StatCard[] = [
@@ -68,20 +58,21 @@ export function useStatistics() {
         ]
 
         const chart: ChartData = {
-            labels: [],
-            colors: [],
-            series: [],
-            centerValue: data.total_commands,
+            items: [],
+            centerText: data.total_commands.toString(),
+            centerLabel: 'Commandes',
         }
 
-        const totalOrders = Object.values(data.orders_by_status).reduce((sum: number, count: any) => sum + count, 0)
+        const colors = generateColors(Object.keys(data.orders_by_status).length)
 
-        if (totalOrders > 0) {
-            const colors = COLOR_SCHEMES.mixed.slice(0, Object.keys(data.orders_by_status).length)
+        if (data.total_commands > 0) {
             Object.entries(data.orders_by_status).forEach(([status, count], index) => {
-                chart.labels.push(ORDER_STATUS_TRANSLATIONS[status] || status)
-                chart.colors.push(colors[index])
-                chart.series.push(count)
+                chart.items.push({
+                    id: index + 1,
+                    title: ORDER_STATUS_TRANSLATIONS[status] || status,
+                    value: count,
+                    color: colors[index],
+                })
             })
         }
 
@@ -115,7 +106,6 @@ export function useStatistics() {
 
     /**
      * Transform complete business performance statistics from API response
-     */
     function transformBusinessStatistics(data: any) {
         // Transform cards data
         const cards: StatCard[] = [
@@ -193,7 +183,7 @@ export function useStatistics() {
 
     /**
      * Transform complete products & comics statistics from API response
-     */
+
     function transformProductsStatistics(data: any) {
         // Transform cards data
         const cards: StatCard[] = [
@@ -252,7 +242,6 @@ export function useStatistics() {
 
     /**
      * Transform complete customer analytics from API response
-     */
     function transformCustomerStatistics(data: any) {
         const cards: StatCard[] = [
             {
@@ -282,7 +271,6 @@ export function useStatistics() {
 
     /**
      * Transform complete operational statistics from API response
-     */
     function transformOperationalStatistics(data: any) {
         const cards: StatCard[] = [
             {
@@ -313,16 +301,14 @@ export function useStatistics() {
             todaysOrders: data.todays_orders,
         }
     }
+     */
 
     return {
         // Main transformation functions
         transformFinancialStatistics,
-        transformBusinessStatistics,
-        transformProductsStatistics,
-        transformCustomerStatistics,
-        transformOperationalStatistics,
-
-        // Constants if needed elsewhere
-        COLOR_SCHEMES,
+        // transformBusinessStatistics,
+        // transformProductsStatistics,
+        // transformCustomerStatistics,
+        // transformOperationalStatistics,
     }
 }
