@@ -375,11 +375,7 @@ onMounted(async () => {
             Tableau de bord
         </h1>
 
-        <VRow>
-            <VCol cols="12" md="6">
-                <Financial />
-            </VCol>
-        </VRow>
+        <Financial />
 
 
 

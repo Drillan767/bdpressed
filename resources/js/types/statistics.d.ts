@@ -1,20 +1,25 @@
+import type { OrderStatus } from '@/types/enums'
+
 export interface StatCard {
     title: string
-    value: string | number
-    subtitle?: string
-    color?: string
-    icon?: string
+    text: string
+    subtitle: string
+    color: string
+    icon: string
 }
 
 export interface ChartData {
-    labels: string[]
-    datasets: {
-        data: number[]
-        backgroundColor?: string[]
-    }[]
-    items?: {
-        label: string
-        value: number
-        color?: string
-    }[]
+    key: number
+    value: number
+    color: string
+    title: string
+}
+
+export interface FinancialApiData {
+    total_revenue: string
+    average_order_value: string
+    last_week: number
+    last_month: number
+    total_commands: number
+    orders_by_status: Record<OrderStatus, number>
 }

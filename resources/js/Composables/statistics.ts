@@ -1,7 +1,8 @@
-import type { ChartData, StatCard } from '@/types/statistics'
+import type { OrderStatus } from '@/types/enums'
+import type { ChartData, FinancialApiData, StatCard } from '@/types/statistics'
 
 // Translation mappings
-const ORDER_STATUS_TRANSLATIONS: Record<string, string> = {
+const ORDER_STATUS_TRANSLATIONS: Record<OrderStatus, string> = {
     NEW: 'Nouveau',
     IN_PROGRESS: 'En cours',
     PENDING_PAYMENT: 'Paiement en attente',
@@ -37,38 +38,54 @@ export function useStatistics() {
     /**
      * Transform complete financial statistics from API response
      */
-    function transformFinancialStatistics(data: any) {
+    function transformFinancialStatistics(data: FinancialApiData) {
         // Transform cards data
         const cards: StatCard[] = [
             {
-                title: 'Chiffre d\'affaires total',
-                value: data.total_revenue?.formatted_amount || '0 €',
-                subtitle: `${data.total_revenue?.order_count || 0} commandes`,
+                subtitle: 'Chiffre d\'affaires total',
+                title: data.total_revenue,
                 color: 'success',
                 icon: 'mdi-currency-eur',
             },
             {
-                title: 'Valeur moyenne des commandes',
-                value: data.average_order_value?.formatted_amount || '0 €',
+                subtitle: 'Valeur moyenne des commandes',
+                title: data.average_order_value,
                 color: 'info',
                 icon: 'mdi-chart-line',
             },
             {
-                title: 'Commandes récentes (7j)',
-                value: data.recent_orders?.last_7_days || 0,
+                subtitle: 'Commandes récentes (7j)',
+                title: data.last_week || 0,
                 color: 'warning',
                 icon: 'mdi-calendar-week',
             },
             {
-                title: 'Commandes récentes (30j)',
-                value: data.recent_orders?.last_30_days || 0,
-                color: 'primary',
+                subtitle: 'Commandes récentes (30j)',
+                title: data.last_month || 0,
+                color: 'secondary',
                 icon: 'mdi-calendar-month',
             },
         ]
 
+        const chart: ChartData[] = []
+
+        const totalOrders = Object.values(data.orders_by_status).reduce((sum: number, count: any) => sum + count, 0)
+
+        if (totalOrders > 0) {
+            const colors = COLOR_SCHEMES.mixed.slice(0, Object.keys(data.orders_by_status).length)
+            Object.entries(data.orders_by_status).forEach(([status, count], index) => {
+                chart.push({
+                    index: index + 1,
+                    color: colors[index],
+                    title: ORDER_STATUS_TRANSLATIONS[status] || status,
+                    value: count,
+                })
+            })
+        }
+
         // Transform chart data
-        let chart: ChartData = { labels: [], datasets: [], items: [] }
+        // let chart: ChartData = { labels: [], datasets: [], items: [] }
+        /*
         if (data.orders_by_status) {
             const totalOrders = Object.values(data.orders_by_status).reduce((sum: number, count: any) => sum + count, 0)
 
@@ -89,7 +106,7 @@ export function useStatistics() {
                     items: chartItems,
                 }
             }
-        }
+        } */
 
         return { cards, chart }
     }
@@ -291,7 +308,7 @@ export function useStatistics() {
             cards,
             pendingIllustrations: data.pending_illustrations,
             ordersNeedingTracking: data.orders_needing_tracking,
-            todaysOrders: data.todays_orders
+            todaysOrders: data.todays_orders,
         }
     }
 
