@@ -1,24 +1,5 @@
 import { IllustrationStatus, OrderStatus, PaymentStatus, PaymentType, StatusTriggers } from '@/types/enums'
 
-/*
-interface StatusInfo {
-    internal: OrderStatus | IllustrationStatus
-    text: string
-    color: string
-}
-
-interface TriggerInfo {
-    internal: StatusTriggers
-    text: string
-    color: string
-}
-
-interface PaymentInfo {
-    internal: PaymentType
-    text: string
-}
- */
-
 interface Info<T> {
     internal: T
     text: string
