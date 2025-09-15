@@ -1,5 +1,4 @@
-import type { OrderStatus } from '@/types/enums'
-import type { ChartData, FinancialApiData, StatCard } from '@/types/statistics'
+import type { BusinessApiData, ChartData, FinancialApiData, StatCard } from '@/types/statistics'
 import useGradientGenerator from '@/Composables/colorGradient'
 
 // Translation mappings
@@ -16,7 +15,7 @@ const ORDER_STATUS_TRANSLATIONS: Record<string, string> = {
 
 const ILLUSTRATION_TYPE_TRANSLATIONS: Record<string, string> = {
     FULL_LENGTH: 'Portrait en pied',
-    HALF_BODY: 'Portrait demi-corps',
+    BUST: 'Portrait demi-corps',
     PORTRAIT: 'Portrait',
     COUPLE: 'Couple',
     GROUP: 'Groupe',
@@ -61,6 +60,7 @@ export function useStatistics() {
             items: [],
             centerText: data.total_commands.toString(),
             centerLabel: 'Commandes',
+            showLegend: true,
         }
 
         const colors = generateColors(Object.keys(data.orders_by_status).length)
@@ -76,32 +76,91 @@ export function useStatistics() {
             })
         }
 
-        // Transform chart data
-        // let chart: ChartData = { labels: [], datasets: [], items: [] }
-        /*
-        if (data.orders_by_status) {
-            const totalOrders = Object.values(data.orders_by_status).reduce((sum: number, count: any) => sum + count, 0)
-
-            if (totalOrders > 0) {
-                const colors = COLOR_SCHEMES.mixed.slice(0, Object.keys(data.orders_by_status).length)
-                const chartItems = Object.entries(data.orders_by_status).map(([status, count], index) => ({
-                    label: ORDER_STATUS_TRANSLATIONS[status] || status,
-                    value: count as number,
-                    color: colors[index],
-                }))
-
-                chart = {
-                    labels: chartItems.map(item => item.label),
-                    datasets: [{
-                        data: chartItems.map(item => item.value),
-                        backgroundColor: colors,
-                    }],
-                    items: chartItems,
-                }
-            }
-        } */
-
         return { cards, chart }
+    }
+
+    function transformBusinessStatistics(data: BusinessApiData) {
+        const cards: StatCard[] = [
+            {
+                title: data.illustrations_stats?.total_commissioned.toString() || '0',
+                subtitle: 'Illustrations commandées',
+                color: 'primary',
+                icon: 'mdi-palette',
+            },
+            {
+                title: data.illustrations_stats?.total_completed.toString() || '0',
+                subtitle: 'Illustrations terminées',
+                color: 'success',
+                icon: 'mdi-check-circle',
+            },
+            {
+                title: data.average_illustration_price || '0 €',
+                subtitle: 'Prix moyen illustration',
+                color: 'info',
+                icon: 'mdi-currency-eur',
+            },
+            {
+                title: `${data.print_vs_digital_ratio?.print_count || 0}% / ${data.print_vs_digital_ratio?.digital_count || 0}%`,
+                subtitle: 'Ratio print/digital',
+                color: 'warning',
+                icon: 'mdi-printer',
+            },
+        ]
+
+        const typeColors = generateColors(data.popular_illustration_types.length)
+        const completionColors = generateColors(2)
+
+        const charts: ChartData[] = [
+            // Types
+            {
+                items: data.popular_illustration_types.map((item, index) => ({
+                    id: index + 1,
+                    title: ILLUSTRATION_TYPE_TRANSLATIONS[item.type],
+                    value: item.count,
+                    color: typeColors[index],
+                })),
+            },
+            // Completion
+            {
+                centerLabel: 'Prix moyen d\'une illustration',
+                centerText: data.average_illustration_price,
+                showLegend: true,
+                items: [
+                    {
+                        id: 1,
+                        color: completionColors[0],
+                        value: data.illustrations_stats.total_commissioned,
+                        title: 'Total illustrations commandées',
+                    },
+                    {
+                        id: 2,
+                        color: completionColors[1],
+                        value: data.illustrations_stats.total_commissioned - data.illustrations_stats.total_completed,
+                        title: 'Total complétées',
+                    },
+                ],
+            },
+            // Repartition
+            {
+                showLegend: true,
+                items: [
+                    {
+                        id: 1,
+                        color: completionColors[0],
+                        value: data.print_vs_digital_ratio.print_count,
+                        title: 'Illustrations imprimées',
+                    },
+                    {
+                        id: 2,
+                        color: completionColors[1],
+                        value: data.print_vs_digital_ratio.digital_count,
+                        title: 'Illustrations digitales',
+                    },
+                ],
+            },
+        ]
+
+        return { cards, charts }
     }
 
     /**
@@ -306,7 +365,7 @@ export function useStatistics() {
     return {
         // Main transformation functions
         transformFinancialStatistics,
-        // transformBusinessStatistics,
+        transformBusinessStatistics,
         // transformProductsStatistics,
         // transformCustomerStatistics,
         // transformOperationalStatistics,

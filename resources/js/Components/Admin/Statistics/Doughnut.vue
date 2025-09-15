@@ -3,13 +3,15 @@ import type { ChartData } from '@/types/statistics'
 import { computed } from 'vue'
 import { useDisplay } from 'vuetify'
 
-defineProps<ChartData>()
+const props = defineProps<ChartData>()
 
 const tooltip = { subtitleFormat: '[value]%' }
 
 const { mobile } = useDisplay()
 
-const legend = computed<{ position: 'right' | 'bottom' }>(() => {
+const legend = computed<{ position: 'right' | 'bottom' } | undefined>(() => {
+    if (!props.showLegend)
+        return undefined
     return {
         position: mobile.value ? 'bottom' : 'right',
     }
@@ -38,36 +40,6 @@ const legend = computed<{ position: 'right' | 'bottom' }>(() => {
                     {{ centerLabel }}
                 </div>
             </div>
-        </template>
-        <template #legend="{ items: legends, isActive, toggle }">
-            <VList
-                class="py-0 mb-n5 mb-md-0 bg-transparent"
-                density="compact"
-                width="300"
-            >
-                <VListItem
-                    v-for="item in legends"
-                    :key="item.key"
-                    :class="{ 'opacity-40': !isActive(item) }"
-                    :title="item.title"
-                    class="my-1"
-                    rounded="lg"
-                    link
-                    @click="toggle(item)"
-                >
-                    <template #prepend>
-                        <VAvatar
-                            :color="item.color"
-                            :size="16"
-                        />
-                    </template>
-                    <template #append>
-                        <div class="font-weight-bold">
-                            {{ item.value }}%
-                        </div>
-                    </template>
-                </VListItem>
-            </VList>
         </template>
     </VPie>
 </template>

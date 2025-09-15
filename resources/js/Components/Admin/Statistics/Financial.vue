@@ -1,15 +1,16 @@
 <script setup lang="ts">
-import type { ChartData, FinancialApiData, StatCard } from '@/types/statistics'
+import type { ChartData, FinancialApiData, StatCard as StarCardType } from '@/types/statistics'
 import { useStatistics } from '@/Composables/statistics'
 import { onMounted, ref } from 'vue'
 import { route } from 'ziggy-js'
 import Doughnut from './Doughnut.vue'
+import StatCard from './StatCard.vue'
 
 const { transformFinancialStatistics } = useStatistics()
 
 const loading = ref(false)
 const totalCommands = ref(0)
-const cards = ref<StatCard[]>([])
+const cards = ref<StarCardType[]>([])
 const chart = ref<ChartData>()
 
 async function loadData() {
@@ -48,40 +49,14 @@ onMounted(loadData)
                     cols="12"
                     lg="7"
                 >
-                    <VRow class="h-100">
+                    <VRow class="h-100 align-center">
                         <VCol
                             v-for="card in cards"
                             :key="card.title"
                             cols="12"
                             sm="6"
                         >
-                            <VCard
-                                :color="card.color"
-                                variant="tonal"
-                                class="h-100 stat-card"
-                                elevation="2"
-                            >
-                                <VCardText class="pb-2">
-                                    <div class="d-flex align-center justify-space-between mb-3">
-                                        <VIcon
-                                            :color="card.color"
-                                            :icon="card.icon"
-                                            size="32"
-                                        />
-                                        <VChip
-                                            :color="card.color"
-                                            variant="elevated"
-                                            size="small"
-                                            class="font-weight-medium"
-                                        >
-                                            {{ card.subtitle }}
-                                        </VChip>
-                                    </div>
-                                    <div class="text-h4 font-weight-bold mb-1" :class="`text-${card.color}`">
-                                        {{ card.title }}
-                                    </div>
-                                </VCardText>
-                            </VCard>
+                            <StatCard v-bind="card" />
                         </VCol>
                     </VRow>
                 </VCol>
@@ -124,28 +99,3 @@ onMounted(loadData)
         </template>
     </VCard>
 </template>
-
-<style scoped>
-.stat-card {
-    transition: all 0.3s ease;
-}
-
-.stat-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15) !important;
-}
-
-.chart-card {
-    border-radius: 16px !important;
-    background: linear-gradient(135deg, rgb(var(--v-theme-surface)) 0%, rgba(var(--v-theme-primary), 0.02) 100%);
-}
-
-:deep(.v-card-title) {
-    font-size: 1.1rem !important;
-    font-weight: 600 !important;
-}
-
-:deep(.v-chip) {
-    font-size: 0.75rem !important;
-}
-</style>

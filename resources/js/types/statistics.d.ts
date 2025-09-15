@@ -16,8 +16,9 @@ export interface StatCard {
 
 export interface ChartData {
     items: Item[]
-    centerText: string
-    centerLabel: string
+    centerText?: string
+    centerLabel?: string
+    showLegend?: boolean
 }
 
 export interface FinancialApiData {
@@ -27,4 +28,20 @@ export interface FinancialApiData {
     last_month: number
     total_commands: number
     orders_by_status: Record<OrderStatus, number>
+}
+
+interface BusinessApiData {
+    illustrations_stats: {
+        total_commissioned: number
+        total_completed: number
+    }
+    popular_illustration_types: {
+        type: string
+        count: number
+    }[]
+    average_illustration_price: string
+    print_vs_digital_ratio: {
+        print_count: number
+        digital_count: number
+    }
 }
