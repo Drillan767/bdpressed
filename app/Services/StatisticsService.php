@@ -142,9 +142,6 @@ class StatisticsService
         return [
             'total_commissioned' => $totalCommissioned,
             'total_completed' => $totalCompleted,
-            'completion_rate' => $totalCommissioned > 0
-                ? round(($totalCompleted / $totalCommissioned) * 100, 2)
-                : 0
         ];
     }
 
@@ -162,27 +159,20 @@ class StatisticsService
             });
     }
 
-    private function getAverageIllustrationPrice(): array
+    private function getAverageIllustrationPrice(): string
     {
         $average = Illustration::avg('price');
-
-        return [
-            'amount' => $average,
-            'formatted_amount' => number_format($average / 100, 2) . ' €'
-        ];
+        return Number::currency($average / 100, 'EUR', locale: 'fr');
     }
 
     private function getPrintVsDigitalRatio(): array
     {
         $printCount = Illustration::where('print', true)->count();
         $digitalCount = Illustration::where('print', false)->count();
-        $total = $printCount + $digitalCount;
 
         return [
             'print_count' => $printCount,
             'digital_count' => $digitalCount,
-            'print_percentage' => $total > 0 ? round(($printCount / $total) * 100, 2) : 0,
-            'digital_percentage' => $total > 0 ? round(($digitalCount / $total) * 100, 2) : 0,
         ];
     }
 

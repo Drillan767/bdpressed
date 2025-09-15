@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import Business from "@/Components/Admin/Statistics/Business.vue";
 import Financial from '@/Components/Admin/Statistics/Financial.vue'
 import AdminLayout from '@/Layouts/AdminLayout.vue'
 import { useHead } from '@vueuse/head'
@@ -33,15 +34,12 @@ interface ChartData {
 }
 
 // Loading states
-const loadingFinancial = ref(true)
 const loadingBusiness = ref(true)
 const loadingProducts = ref(true)
 const loadingCustomers = ref(true)
 const loadingOperational = ref(true)
 
 // Statistics data
-const financialStats = ref<any>({})
-const businessStats = ref<any>({})
 const productsStats = ref<any>({})
 const customerStats = ref<any>({})
 const operationalStats = ref<any>({})
@@ -69,69 +67,7 @@ const colorSchemes = {
     mixed: ['#1976D2', '#388E3C', '#F57C00', '#D32F2F', '#7B1FA2', '#00796B', '#E64A19', '#455A64'],
 }
 
-async function loadFinancialStatistics() {
-    try {
-        const response = await fetch(route('admin.statistics.financial'))
-        const data = await response.json()
-        console.log('Financial data received:', data)
-        financialStats.value = data
-
-        financialCards.value = [
-            {
-                title: 'Chiffre d\'affaires total',
-                value: data.total_revenue?.formatted_amount || '0 €',
-                subtitle: `${data.total_revenue?.order_count || 0} commandes`,
-                color: 'success',
-                icon: 'mdi-currency-eur',
-            },
-            {
-                title: 'Valeur moyenne des commandes',
-                value: data.average_order_value?.formatted_amount || '0 €',
-                color: 'info',
-                icon: 'mdi-chart-line',
-            },
-            {
-                title: 'Commandes récentes (7j)',
-                value: data.recent_orders?.last_7_days || 0,
-                color: 'warning',
-                icon: 'mdi-calendar-week',
-            },
-            {
-                title: 'Commandes récentes (30j)',
-                value: data.recent_orders?.last_30_days || 0,
-                color: 'primary',
-                icon: 'mdi-calendar-month',
-            },
-        ]
-
-        // Order status chart
-        if (data.orders_by_status) {
-            const colors = colorSchemes.mixed.slice(0, Object.keys(data.orders_by_status).length)
-            const chartItems = Object.entries(data.orders_by_status).map(([label, value], index) => ({
-                label,
-                value: value as number,
-                color: colors[index],
-            }))
-
-            orderStatusChart.value = {
-                labels: Object.keys(data.orders_by_status),
-                datasets: [{
-                    data: Object.values(data.orders_by_status) as number[],
-                    backgroundColor: colors,
-                }],
-                items: chartItems,
-            }
-        }
-    }
-    catch (error) {
-        console.error('Error loading financial statistics:', error)
-    }
-    finally {
-        loadingFinancial.value = false
-    }
-}
-
-async function loadBusinessStatistics() {
+/*async function loadBusinessStatistics() {
     try {
         const response = await fetch(route('admin.statistics.business-performance'))
         const data = await response.json()
@@ -214,7 +150,7 @@ async function loadBusinessStatistics() {
     finally {
         loadingBusiness.value = false
     }
-}
+}*/
 
 async function loadProductsStatistics() {
     try {
@@ -360,8 +296,7 @@ async function loadOperationalStatistics() {
 onMounted(async () => {
     // Load all statistics in parallel
     await Promise.all([
-        loadFinancialStatistics(),
-        loadBusinessStatistics(),
+        // loadBusinessStatistics(),
         loadProductsStatistics(),
         loadCustomerStatistics(),
         loadOperationalStatistics(),
@@ -376,67 +311,10 @@ onMounted(async () => {
         </h1>
 
         <Financial />
-
-
-
-        <!--
-        <VCard class="mb-6">
-            <VCardTitle class="d-flex align-center">
-                <VIcon class="me-2">
-                    mdi-chart-line
-                </VIcon>
-                Statistiques financières
-            </VCardTitle>
-            <VCardText>
-                <VRow>
-                    <VCol v-for="card in financialCards" :key="card.title" cols="12" sm="6" md="3">
-                        <VCard :loading="loadingFinancial" :color="card.color" variant="tonal">
-                            <VCardText>
-                                <div class="d-flex align-center justify-space-between">
-                                    <div>
-                                        <div class="text-caption">
-                                            {{ card.title }}
-                                        </div>
-                                        <div class="text-h6">
-                                            {{ card.value }}
-                                        </div>
-                                        <div v-if="card.subtitle" class="text-caption">
-                                            {{ card.subtitle }}
-                                        </div>
-                                    </div>
-                                    <VIcon v-if="card.icon" size="40" :color="card.color">
-                                        {{ card.icon }}
-                                    </VIcon>
-                                </div>
-                            </VCardText>
-                        </VCard>
-                    </VCol>
-                </VRow>
-
-                <VRow class="mt-4">
-                    <VCol cols="12" md="6">
-                        <VCard>
-                            <VCardTitle>Commandes par statut</VCardTitle>
-                            <VCardText>
-                                <VSkeletonLoader v-if="loadingFinancial" type="image" />
-                                <VPie
-                                    v-else-if="orderStatusChart.items?.length > 0"
-                                    :items="orderStatusChart.items"
-                                    height="300"
-                                />
-                                <div v-else class="text-center text-body-2 py-8">
-                                    Aucune donnée disponible
-                                </div>
-                            </VCardText>
-                        </VCard>
-                    </VCol>
-                </VRow>
-            </VCardText>
-        </VCard>
-        -->
+        <Business />
 
         <!-- Business Performance -->
-        <VCard class="mb-6">
+<!--        <VCard class="mb-6">
             <VCardTitle class="d-flex align-center">
                 <VIcon class="me-2">
                     mdi-palette
@@ -475,11 +353,11 @@ onMounted(async () => {
                             <VCardTitle>Types d'illustrations populaires</VCardTitle>
                             <VCardText>
                                 <VSkeletonLoader v-if="loadingBusiness" type="image" />
-<!--                                <VPie
+&lt;!&ndash;                                <VPie
                                     v-else-if="illustrationTypesChart.items?.length > 0"
                                     :items="illustrationTypesChart.items"
                                     height="300"
-                                />-->
+                                />&ndash;&gt;
                                 <div v-else class="text-center text-body-2 py-8">
                                     Aucune donnée disponible
                                 </div>
@@ -491,11 +369,11 @@ onMounted(async () => {
                             <VCardTitle>Print vs Digital</VCardTitle>
                             <VCardText>
                                 <VSkeletonLoader v-if="loadingBusiness" type="image" />
-<!--                                <VPie
+&lt;!&ndash;                                <VPie
                                     v-else-if="printDigitalChart.items?.length > 0"
                                     :items="printDigitalChart.items"
                                     height="300"
-                                />-->
+                                />&ndash;&gt;
                                 <div v-else class="text-center text-body-2 py-8">
                                     Aucune donnée disponible
                                 </div>
@@ -504,7 +382,7 @@ onMounted(async () => {
                     </VCol>
                 </VRow>
             </VCardText>
-        </VCard>
+        </VCard>-->
 
         <!-- Products & Comics -->
         <VCard class="mb-6">
@@ -546,11 +424,6 @@ onMounted(async () => {
                             <VCardTitle>Comics publiés</VCardTitle>
                             <VCardText>
                                 <VSkeletonLoader v-if="loadingProducts" type="image" />
-<!--                                <VPie
-                                    v-else-if="comicsChart.items?.length > 0"
-                                    :items="comicsChart.items"
-                                    height="300"
-                                />-->
                                 <div v-else class="text-center text-body-2 py-8">
                                     Aucune donnée disponible
                                 </div>
