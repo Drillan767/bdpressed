@@ -65,3 +65,16 @@ interface StocksApiData {
         name: string
     }[]
 }
+
+interface CustomersAnalyticsApiData {
+    user_stats: {
+        total_registered_users: number
+        guest_orders: number
+        repeat_customers: number
+    }
+    top_customers: {
+        email: string
+        total_spent: string
+        order_count: string
+    }[]
+}

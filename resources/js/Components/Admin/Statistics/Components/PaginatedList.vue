@@ -15,6 +15,7 @@ defineProps<Props>()
         :title
         :loading
         :prepend-icon
+        min-height="300"
     >
         <template #text>
             <VList>
@@ -66,3 +67,9 @@ defineProps<Props>()
         </template>
     </VCard>
 </template>
+
+<style scoped>
+:deep(.v-list-item-subtitle) {
+    padding: 0.25rem 0;
+}
+</style>

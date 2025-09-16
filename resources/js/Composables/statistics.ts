@@ -1,6 +1,7 @@
 import type {
     BusinessApiData,
     ChartData,
+    CustomersAnalyticsApiData,
     FinancialApiData,
     StatCard,
     StocksApiData,
@@ -188,140 +189,32 @@ function useStatistics() {
         }
     }
 
-    /**
-     * Transform complete business performance statistics from API response
-    function transformBusinessStatistics(data: any) {
-        // Transform cards data
+    function transformCustomerStatistics(data: CustomersAnalyticsApiData) {
         const cards: StatCard[] = [
-            {
-                title: 'Illustrations commandées',
-                value: data.illustrations_stats?.total_commissioned || 0,
-                subtitle: `${data.illustrations_stats?.completion_rate || 0}% terminées`,
-                color: 'primary',
-                icon: 'mdi-palette',
+             {
+                title: data.user_stats.total_registered_users.toString(),
+                subtitle: 'Clients inscrits',
+                color: 'secondary',
+                icon: 'mdi-account-check',
             },
             {
-                title: 'Illustrations terminées',
-                value: data.illustrations_stats?.total_completed || 0,
+                title: data.user_stats.repeat_customers.toString(),
+                subtitle: 'Clients avec plusieurs commandes',
                 color: 'success',
-                icon: 'mdi-check-circle',
+                icon: 'mdi-account-heart',
             },
             {
-                title: 'Prix moyen illustration',
-                value: data.average_illustration_price?.formatted_amount || '0 €',
-                color: 'info',
-                icon: 'mdi-currency-eur',
-            },
-            {
-                title: 'Ratio print/digital',
-                value: `${data.print_vs_digital_ratio?.print_percentage || 0}% / ${data.print_vs_digital_ratio?.digital_percentage || 0}%`,
+                title: data.user_stats.guest_orders.toString(),
+                subtitle: 'Nombre de clients sans compte',
                 color: 'warning',
-                icon: 'mdi-printer',
-            },
+                icon: 'mdi-account-question',
+            }
         ]
 
-        // Transform illustration types chart
-        let illustrationTypesChart: ChartData = { labels: [], datasets: [], items: [] }
-        if (data.popular_illustration_types?.length) {
-            const colors = COLOR_SCHEMES.primary.slice(0, data.popular_illustration_types.length)
-            const chartItems = data.popular_illustration_types.map((item: any, index: number) => ({
-                label: ILLUSTRATION_TYPE_TRANSLATIONS[item.type] || item.type,
-                value: item.count,
-                color: colors[index],
-            }))
-
-            illustrationTypesChart = {
-                labels: chartItems.map(item => item.label),
-                datasets: [{
-                    data: chartItems.map(item => item.value),
-                    backgroundColor: colors,
-                }],
-                items: chartItems,
-            }
+        return {
+            cards,
+            list: data.top_customers,
         }
-
-        // Transform print vs digital chart
-        let printDigitalChart: ChartData = { labels: [], datasets: [], items: [] }
-        if (data.print_vs_digital_ratio) {
-            const total = data.print_vs_digital_ratio.print_count + data.print_vs_digital_ratio.digital_count
-
-            if (total > 0) {
-                const chartItems = [
-                    { label: 'Print', value: data.print_vs_digital_ratio.print_count, color: COLOR_SCHEMES.success[0] },
-                    { label: 'Digital', value: data.print_vs_digital_ratio.digital_count, color: COLOR_SCHEMES.info[0] },
-                ]
-
-                printDigitalChart = {
-                    labels: ['Print', 'Digital'],
-                    datasets: [{
-                        data: [data.print_vs_digital_ratio.print_count, data.print_vs_digital_ratio.digital_count],
-                        backgroundColor: [COLOR_SCHEMES.success[0], COLOR_SCHEMES.info[0]],
-                    }],
-                    items: chartItems,
-                }
-            }
-        }
-
-        return { cards, illustrationTypesChart, printDigitalChart }
-    }
-
-    /**
-     * Transform complete products & comics statistics from API response
-
-    function transformProductsStatistics(data: any) {
-        // Transform cards data
-        const cards: StatCard[] = [
-            {
-                title: 'Total produits',
-                value: data.products_stats?.total_products || 0,
-                subtitle: `${data.products_stats?.in_stock_products || 0} en stock`,
-                color: 'primary',
-                icon: 'mdi-package-variant',
-            },
-            {
-                title: 'Produits en rupture',
-                value: data.products_stats?.out_of_stock_products || 0,
-                color: 'error',
-                icon: 'mdi-alert-circle',
-            },
-            {
-                title: 'Comics publiés',
-                value: data.comics_stats?.published_comics || 0,
-                subtitle: `${data.comics_stats?.total_comics || 0} total`,
-                color: 'success',
-                icon: 'mdi-book-open',
-            },
-            {
-                title: 'Pages de comics',
-                value: data.total_comic_pages || 0,
-                color: 'info',
-                icon: 'mdi-file-document',
-            },
-        ]
-
-        // Transform comics chart
-        let comicsChart: ChartData = { labels: [], datasets: [], items: [] }
-        if (data.comics_stats) {
-            const total = data.comics_stats.published_comics + data.comics_stats.unpublished_comics
-
-            if (total > 0) {
-                const chartItems = [
-                    { label: 'Publiés', value: data.comics_stats.published_comics, color: COLOR_SCHEMES.success[0] },
-                    { label: 'Non publiés', value: data.comics_stats.unpublished_comics, color: COLOR_SCHEMES.warning[0] },
-                ]
-
-                comicsChart = {
-                    labels: ['Publiés', 'Non publiés'],
-                    datasets: [{
-                        data: [data.comics_stats.published_comics, data.comics_stats.unpublished_comics],
-                        backgroundColor: [COLOR_SCHEMES.success[0], COLOR_SCHEMES.warning[0]],
-                    }],
-                    items: chartItems,
-                }
-            }
-        }
-
-        return { cards, comicsChart, lowStockAlerts: data.low_stock_alerts }
     }
 
     /**
@@ -388,10 +281,10 @@ function useStatistics() {
      */
 
     return {
-        // Main transformation functions
         transformFinancialStatistics,
         transformBusinessStatistics,
         transformStocksStatistics,
+        transformCustomerStatistics,
         // transformProductsStatistics,
         // transformCustomerStatistics,
         // transformOperationalStatistics,
