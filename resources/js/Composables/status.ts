@@ -172,8 +172,20 @@ export default function useStatus() {
         return status
     }
 
-    function listAvailableStatuses(states: OrderStatus[]) {
-        return orderStatus.filter(item => states.includes(item.internal))
+    function listAvailableStatuses(states: OrderStatus[], currentStatus?: OrderStatus) {
+        console.log({ states })
+        const filteredStates = states.filter(state => {
+            // Exclude fast pass transitions that should only be triggered automatically
+            if (currentStatus === OrderStatus.IN_PROGRESS && state === OrderStatus.PAID) {
+                return false // Only allow through illustration workflow completion
+            }
+            if (currentStatus === OrderStatus.PAID && state === OrderStatus.DONE) {
+                return false // Only allow automatically for digital-only illustration orders
+            }
+            return true
+        })
+
+        return orderStatus.filter(item => filteredStates.includes(item.internal))
     }
 
     function getIllustrationStatus(label: IllustrationStatus): Info<OrderStatus | IllustrationStatus> {
