@@ -56,16 +56,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::middleware('role:admin')->group(function () {
         Route::get('/administration', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
 
-        Route::prefix('/administration/statistics')->group(function () {
-            Route::get('/financial', [AdminDashboardController::class, 'getFinancialStatistics'])->name('admin.statistics.financial');
-            Route::get('/business-performance', [AdminDashboardController::class, 'getBusinessPerformanceStatistics'])->name('admin.statistics.business-performance');
-            Route::get('/stocks', [AdminDashboardController::class, 'getStocksStatistics'])->name('admin.statistics.stocks');
-            Route::get('/customer-analytics', [AdminDashboardController::class, 'getCustomerAnalytics'])->name('admin.statistics.customer-analytics');
-            Route::get('/operational', [AdminDashboardController::class, 'getOperationalStatistics'])->name('admin.statistics.operational');
-            Route::get('/all', [AdminDashboardController::class, 'getAllStatistics'])->name('admin.statistics.all');
-        });
-
         Route::prefix('/administration')->group(function () {
+            Route::prefix('/statistics')->controller(AdminDashboardController::class)->group(function () {
+                Route::get('/financial', 'getFinancialStatistics')->name('admin.statistics.financial');
+                Route::get('/business-perfomance', 'getBusinessPerformanceStatistics')->name('admin.statistics.business-performance');
+                Route::get('/stocks', 'getStocksStatistics')->name('admin.statistics.stocks');
+                Route::get('/customer-analytics', 'getCustomerAnalytics')->name('admin.statistics.customer-analytics');
+            });
+
             Route::controller(ProductController::class)->group(function () {
                 Route::get('/articles', 'index')->name('products.index');
                 Route::get('/article/api/{product}', 'showApi')->name('products.showApi');

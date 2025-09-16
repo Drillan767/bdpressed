@@ -38,8 +38,9 @@ class GenerateFakeDataCommand extends Command
      */
     public function handle()
     {
-        if (!app()->environment(['local', 'testing'])) {
+        if (! app()->environment(['local', 'testing'])) {
             $this->error('This command can only be run in local or testing environments.');
+
             return 1;
         }
 
@@ -74,7 +75,7 @@ class GenerateFakeDataCommand extends Command
         $this->info("✅ Created {$products->count()} products");
 
         // Generate orders with realistic distribution
-        $this->info("🛒 Creating orders...");
+        $this->info('🛒 Creating orders...');
         $totalOrders = 0;
         $orderStatuses = OrderStatus::cases();
 
@@ -186,9 +187,15 @@ class GenerateFakeDataCommand extends Command
         // Weight towards fewer orders: 40% have 0, 30% have 1, 20% have 2, 10% have 3+
         $rand = mt_rand(1, 100);
 
-        if ($rand <= 40) return 0;
-        if ($rand <= 70) return 1;
-        if ($rand <= 90) return 2;
+        if ($rand <= 40) {
+            return 0;
+        }
+        if ($rand <= 70) {
+            return 1;
+        }
+        if ($rand <= 90) {
+            return 2;
+        }
 
         return mt_rand(3, $max);
     }

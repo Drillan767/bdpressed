@@ -38,14 +38,4 @@ class DashboardController extends Controller
     {
         return response()->json($this->statisticsService->getCustomerAnalytics());
     }
-
-    public function getOperationalStatistics(): JsonResponse
-    {
-        return response()->json($this->statisticsService->getOperationalStatistics());
-    }
-
-    public function getAllStatistics(): JsonResponse
-    {
-        return response()->json($this->statisticsService->getAllStatistics());
-    }
 }
