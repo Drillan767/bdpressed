@@ -46,3 +46,22 @@ interface BusinessApiData {
         digital_count: number
     }
 }
+
+interface StocksApiData {
+    top_sellers: {
+        id: number
+        name: string
+        total_sold: number
+    }[]
+    low_stock_alerts: {
+        id: number
+        slug: string
+        name: string
+        stock: number
+    }[]
+    out_of_stock: {
+        id: number
+        slug: string
+        name: string
+    }[]
+}

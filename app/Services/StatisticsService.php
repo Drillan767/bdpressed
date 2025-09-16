@@ -4,8 +4,6 @@ namespace App\Services;
 
 use App\Enums\IllustrationStatus;
 use App\Enums\OrderStatus;
-use App\Models\Comic;
-use App\Models\ComicPage;
 use App\Models\Illustration;
 use App\Models\Order;
 use App\Models\Product;
@@ -40,13 +38,12 @@ class StatisticsService
         ];
     }
 
-    public function getProductsAndComicsStatistics(): array
+    public function getStocksStatistics(): array
     {
         return [
-            'products_stats' => $this->getProductsStats(),
+            'top_sellers' => $this->getTopSellersStats(),
             'low_stock_alerts' => $this->getLowStockAlerts(),
-            'comics_stats' => $this->getComicsStats(),
-            'total_comic_pages' => $this->getTotalComicPages(),
+            'ouf_of_stock' => $this->getOutOfStockItems(),
         ];
     }
 
@@ -73,7 +70,7 @@ class StatisticsService
         return [
             'financial' => $this->getFinancialStatistics(),
             'business_performance' => $this->getBusinessPerformanceStatistics(),
-            'products_comics' => $this->getProductsAndComicsStatistics(),
+            'stocks' => $this->getStocksStatistics(),
             'customer_analytics' => $this->getCustomerAnalytics(),
             'operational' => $this->getOperationalStatistics(),
         ];
@@ -176,42 +173,39 @@ class StatisticsService
         ];
     }
 
-    private function getProductsStats(): array
+    private function getTopSellersStats(): Collection
     {
-        $totalProducts = Product::count();
-        $inStockProducts = Product::where('stock', '>', 0)->count();
-
-        return [
-            'total_products' => $totalProducts,
-            'in_stock_products' => $inStockProducts,
-            'out_of_stock_products' => $totalProducts - $inStockProducts,
-        ];
+        return Product::leftJoin('order_details', 'products.id', '=', 'order_details.product_id')
+            ->select(
+                'products.id',
+                'products.name',
+                DB::raw('COALESCE(SUM(order_details.quantity), 0) as total_sold')
+            )
+            ->groupBy('products.id', 'products.name')
+            ->orderByDesc('total_sold')
+            ->get()
+            ->map(function ($product) {
+                return [
+                    'id' => $product->id,
+                    'name' => $product->name,
+                    'total_sold' => (int) $product->total_sold,
+                ];
+            });
     }
 
     private function getLowStockAlerts(): Collection
     {
         return Product::where('stock', '<', 5)
             ->where('stock', '>', 0)
-            ->select('id', 'name', 'stock')
+            ->select('id', 'slug', 'name', 'stock')
             ->get();
     }
 
-    private function getComicsStats(): array
+    private function getOutOfStockItems(): Collection
     {
-        $totalComics = Comic::count();
-        $publishedComics = Comic::where('is_published', true)->count();
-        $unpublishedComics = $totalComics - $publishedComics;
-
-        return [
-            'total_comics' => $totalComics,
-            'published_comics' => $publishedComics,
-            'unpublished_comics' => $unpublishedComics,
-        ];
-    }
-
-    private function getTotalComicPages(): int
-    {
-        return ComicPage::count();
+        return Product::where('stock', 0)
+            ->select('id', 'name', 'slug')
+            ->get();
     }
 
     private function getUserStats(): array
