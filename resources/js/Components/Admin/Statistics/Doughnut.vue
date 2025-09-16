@@ -5,8 +5,6 @@ import { useDisplay } from 'vuetify'
 
 const props = defineProps<ChartData>()
 
-const tooltip = { subtitleFormat: '[value]%' }
-
 const { mobile } = useDisplay()
 
 const legend = computed<{ position: 'right' | 'bottom' } | undefined>(() => {
@@ -22,13 +20,14 @@ const legend = computed<{ position: 'right' | 'bottom' } | undefined>(() => {
     <VPie
         :items
         :legend
-        :tooltip
+        :title
         inner-cut="70"
         item-key="id"
         gap="2"
         rounded="2"
         reveal
         animation
+        tooltip
         hide-slice
     >
         <template #center>

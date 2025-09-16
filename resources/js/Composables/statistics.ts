@@ -15,11 +15,11 @@ const ORDER_STATUS_TRANSLATIONS: Record<string, string> = {
 
 const ILLUSTRATION_TYPE_TRANSLATIONS: Record<string, string> = {
     FULL_LENGTH: 'Portrait en pied',
-    BUST: 'Portrait demi-corps',
+    BUST: 'Buste',
     PORTRAIT: 'Portrait',
     COUPLE: 'Couple',
     GROUP: 'Groupe',
-    PET: 'Animal',
+    ANIMAL: 'Animaux',
     LANDSCAPE: 'Paysage',
     // Add more as needed
 }
@@ -99,12 +99,6 @@ export function useStatistics() {
                 color: 'info',
                 icon: 'mdi-currency-eur',
             },
-            {
-                title: `${data.print_vs_digital_ratio?.print_count || 0}% / ${data.print_vs_digital_ratio?.digital_count || 0}%`,
-                subtitle: 'Ratio print/digital',
-                color: 'warning',
-                icon: 'mdi-printer',
-            },
         ]
 
         const typeColors = generateColors(data.popular_illustration_types.length)
@@ -113,6 +107,7 @@ export function useStatistics() {
         const charts: ChartData[] = [
             // Types
             {
+                title: 'Types d\'illustrations',
                 items: data.popular_illustration_types.map((item, index) => ({
                     id: index + 1,
                     title: ILLUSTRATION_TYPE_TRANSLATIONS[item.type],
@@ -122,27 +117,28 @@ export function useStatistics() {
             },
             // Completion
             {
+
+                title: 'Statut des illustrations',
                 centerLabel: 'Prix moyen d\'une illustration',
                 centerText: data.average_illustration_price,
-                showLegend: true,
                 items: [
                     {
                         id: 1,
                         color: completionColors[0],
-                        value: data.illustrations_stats.total_commissioned,
-                        title: 'Total illustrations commandées',
+                        value: data.illustrations_stats.total_commissioned - data.illustrations_stats.total_completed,
+                        title: 'Illustrations en cours',
                     },
                     {
                         id: 2,
                         color: completionColors[1],
-                        value: data.illustrations_stats.total_commissioned - data.illustrations_stats.total_completed,
+                        value: data.illustrations_stats.total_completed,
                         title: 'Total complétées',
                     },
                 ],
             },
             // Repartition
             {
-                showLegend: true,
+                title: 'Commandes digitales / imprimées',
                 items: [
                     {
                         id: 1,
@@ -194,7 +190,7 @@ export function useStatistics() {
                 icon: 'mdi-printer',
             },
         ]
-
+     
         // Transform illustration types chart
         let illustrationTypesChart: ChartData = { labels: [], datasets: [], items: [] }
         if (data.popular_illustration_types?.length) {
@@ -204,7 +200,7 @@ export function useStatistics() {
                 value: item.count,
                 color: colors[index],
             }))
-
+     
             illustrationTypesChart = {
                 labels: chartItems.map(item => item.label),
                 datasets: [{
@@ -214,18 +210,18 @@ export function useStatistics() {
                 items: chartItems,
             }
         }
-
+     
         // Transform print vs digital chart
         let printDigitalChart: ChartData = { labels: [], datasets: [], items: [] }
         if (data.print_vs_digital_ratio) {
             const total = data.print_vs_digital_ratio.print_count + data.print_vs_digital_ratio.digital_count
-
+     
             if (total > 0) {
                 const chartItems = [
                     { label: 'Print', value: data.print_vs_digital_ratio.print_count, color: COLOR_SCHEMES.success[0] },
                     { label: 'Digital', value: data.print_vs_digital_ratio.digital_count, color: COLOR_SCHEMES.info[0] },
                 ]
-
+     
                 printDigitalChart = {
                     labels: ['Print', 'Digital'],
                     datasets: [{
@@ -236,13 +232,13 @@ export function useStatistics() {
                 }
             }
         }
-
+     
         return { cards, illustrationTypesChart, printDigitalChart }
     }
-
+     
     /**
      * Transform complete products & comics statistics from API response
-
+     
     function transformProductsStatistics(data: any) {
         // Transform cards data
         const cards: StatCard[] = [
@@ -273,18 +269,18 @@ export function useStatistics() {
                 icon: 'mdi-file-document',
             },
         ]
-
+     
         // Transform comics chart
         let comicsChart: ChartData = { labels: [], datasets: [], items: [] }
         if (data.comics_stats) {
             const total = data.comics_stats.published_comics + data.comics_stats.unpublished_comics
-
+     
             if (total > 0) {
                 const chartItems = [
                     { label: 'Publiés', value: data.comics_stats.published_comics, color: COLOR_SCHEMES.success[0] },
                     { label: 'Non publiés', value: data.comics_stats.unpublished_comics, color: COLOR_SCHEMES.warning[0] },
                 ]
-
+     
                 comicsChart = {
                     labels: ['Publiés', 'Non publiés'],
                     datasets: [{
@@ -295,10 +291,10 @@ export function useStatistics() {
                 }
             }
         }
-
+     
         return { cards, comicsChart, lowStockAlerts: data.low_stock_alerts }
     }
-
+     
     /**
      * Transform complete customer analytics from API response
     function transformCustomerStatistics(data: any) {
@@ -324,10 +320,10 @@ export function useStatistics() {
                 icon: 'mdi-account-heart',
             },
         ]
-
+     
         return { cards, topCustomers: data.top_customers }
     }
-
+     
     /**
      * Transform complete operational statistics from API response
     function transformOperationalStatistics(data: any) {
@@ -352,7 +348,7 @@ export function useStatistics() {
                 icon: 'mdi-calendar-today',
             },
         ]
-
+     
         return {
             cards,
             pendingIllustrations: data.pending_illustrations,

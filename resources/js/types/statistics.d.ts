@@ -16,6 +16,7 @@ export interface StatCard {
 
 export interface ChartData {
     items: Item[]
+    title?: string
     centerText?: string
     centerLabel?: string
     showLegend?: boolean
