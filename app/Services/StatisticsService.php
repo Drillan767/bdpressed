@@ -51,7 +51,6 @@ class StatisticsService
     {
         return [
             'user_stats' => $this->getUserStats(),
-            'repeat_customers' => $this->getRepeatCustomers(),
             'top_customers' => $this->getTopCustomers(),
         ];
     }
@@ -211,33 +210,17 @@ class StatisticsService
     private function getUserStats(): array
     {
         $totalUsers = User::count();
-        $ordersWithUsers = Order::whereNotNull('user_id')->distinct('user_id')->count();
         $guestOrders = Order::whereNotNull('guest_id')->count();
-
-        return [
-            'total_registered_users' => $totalUsers,
-            'users_with_orders' => $ordersWithUsers,
-            'guest_orders' => $guestOrders,
-        ];
-    }
-
-    private function getRepeatCustomers(): array
-    {
         $repeatCustomers = Order::select('user_id')
             ->whereNotNull('user_id')
             ->groupBy('user_id')
             ->havingRaw('count(*) > 1')
             ->count();
 
-        $totalCustomersWithOrders = Order::whereNotNull('user_id')
-            ->distinct('user_id')
-            ->count();
-
         return [
-            'count' => $repeatCustomers,
-            'percentage' => $totalCustomersWithOrders > 0
-                ? round(($repeatCustomers / $totalCustomersWithOrders) * 100, 2)
-                : 0
+            'total_registered_users' => $totalUsers,
+            'guest_orders' => $guestOrders,
+            'repeat_customers' => $repeatCustomers,
         ];
     }
 
@@ -260,8 +243,7 @@ class StatisticsService
                 return [
                     'email' => $customer->email,
                     'order_count' => $customer->order_count,
-                    'total_spent' => $customer->total_spent,
-                    'formatted_total_spent' => number_format($customer->total_spent / 100, 2) . ' €'
+                    'total_spent' => Number::currency($customer->total_spent / 100, 'EUR', locale: 'fr'),
                 ];
             });
     }
