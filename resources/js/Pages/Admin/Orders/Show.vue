@@ -41,7 +41,7 @@ const status = ref<OrderStatus>()
 const warning = ref<TransitionWarning<OrderStatus>>()
 const scw = ref<InstanceType<typeof StatusChangeWarning>>()
 
-const statusList = computed(() => listAvailableStatuses(props.allowedStatuses))
+const statusList = computed(() => listAvailableStatuses(props.allowedStatuses, props.order.status))
 
 const statusChangesDisplay = computed(() => {
     return props.order.status_changes.map(change => ({
