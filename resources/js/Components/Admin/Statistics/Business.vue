@@ -38,8 +38,7 @@ onMounted(loadData)
                     v-for="card in cards"
                     :key="card.title"
                     cols="12"
-                    sm="6"
-                    md="3"
+                    md="4"
                 >
                     <StatCard
                         v-bind="card"
@@ -52,7 +51,7 @@ onMounted(loadData)
                     :key="i"
                     cols="12"
                     md="4"
-                    class="mb-4"
+                    class="mb-4 d-flex justify-center"
                 >
                     <Doughnut v-bind="chart" />
                 </VCol>
