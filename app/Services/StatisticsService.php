@@ -18,6 +18,7 @@ class StatisticsService
     public function getFinancialStatistics(): array
     {
         [$lastWeek, $lastMonth] = $this->getRecentOrdersCount();
+
         return [
             'total_revenue' => $this->getTotalRevenue(),
             'average_order_value' => $this->getAverageOrderValue(),
@@ -55,33 +56,13 @@ class StatisticsService
         ];
     }
 
-    public function getOperationalStatistics(): array
-    {
-        return [
-            'pending_illustrations' => $this->getPendingIllustrations(),
-            'orders_needing_tracking' => $this->getOrdersNeedingTracking(),
-            'todays_orders' => $this->getTodaysOrders(),
-        ];
-    }
-
-    public function getAllStatistics(): array
-    {
-        return [
-            'financial' => $this->getFinancialStatistics(),
-            'business_performance' => $this->getBusinessPerformanceStatistics(),
-            'stocks' => $this->getStocksStatistics(),
-            'customer_analytics' => $this->getCustomerAnalytics(),
-            'operational' => $this->getOperationalStatistics(),
-        ];
-    }
-
     private function getTotalRevenue(): string
     {
         $totalRevenue = Order::whereIn('status', [
             OrderStatus::PAID,
             OrderStatus::TO_SHIP,
             OrderStatus::SHIPPED,
-            OrderStatus::DONE
+            OrderStatus::DONE,
         ])
             ->sum('total');
 
@@ -99,7 +80,7 @@ class StatisticsService
             OrderStatus::PAID,
             OrderStatus::TO_SHIP,
             OrderStatus::SHIPPED,
-            OrderStatus::DONE
+            OrderStatus::DONE,
         ]);
 
         $totalRevenue = $completedOrders->sum('total');
@@ -150,7 +131,7 @@ class StatisticsService
             ->map(function ($item) {
                 return [
                     'type' => $item->type,
-                    'count' => $item->count
+                    'count' => $item->count,
                 ];
             });
     }
@@ -158,6 +139,7 @@ class StatisticsService
     private function getAverageIllustrationPrice(): string
     {
         $average = Illustration::avg('price');
+
         return Number::currency($average / 100, 'EUR', locale: 'fr');
     }
 
@@ -233,7 +215,7 @@ class StatisticsService
                 OrderStatus::PAID,
                 OrderStatus::TO_SHIP,
                 OrderStatus::SHIPPED,
-                OrderStatus::DONE
+                OrderStatus::DONE,
             ])
             ->groupBy('users.id', 'users.email')
             ->orderByDesc('total_spent')
@@ -246,65 +228,5 @@ class StatisticsService
                     'total_spent' => Number::currency($customer->total_spent / 100, 'EUR', locale: 'fr'),
                 ];
             });
-    }
-
-    private function getPendingIllustrations(): Collection
-    {
-        return Illustration::whereIn('status', [
-            IllustrationStatus::DEPOSIT_PAID,
-            IllustrationStatus::IN_PROGRESS,
-            IllustrationStatus::CLIENT_REVIEW,
-        ])
-        ->with('order')
-        ->select('id', 'order_id', 'type', 'status', 'created_at')
-        ->get()
-        ->map(function ($illustration) {
-            return [
-                'id' => $illustration->id,
-                'order_reference' => $illustration->order->reference,
-                'type' => $illustration->type,
-                'status' => $illustration->status->value,
-                'days_pending' => Carbon::parse($illustration->created_at)->diffInDays(Carbon::now())
-            ];
-        });
-    }
-
-    private function getOrdersNeedingTracking(): Collection
-    {
-        return Order::join('illustrations', 'orders.id', '=', 'illustrations.order_id')
-            ->where('illustrations.addTracking', true)
-            ->where(function ($query) {
-                $query->whereNull('illustrations.trackingNumber')
-                      ->orWhere('illustrations.trackingNumber', '');
-            })
-            ->where('orders.status', OrderStatus::TO_SHIP)
-            ->select('orders.id', 'orders.reference', 'orders.created_at')
-            ->distinct()
-            ->get()
-            ->map(function ($order) {
-                return [
-                    'id' => $order->id,
-                    'reference' => $order->reference,
-                    'days_waiting' => Carbon::parse($order->created_at)->diffInDays(Carbon::now())
-                ];
-            });
-    }
-
-    private function getTodaysOrders(): array
-    {
-        $today = Carbon::today();
-        $todaysOrders = Order::whereDate('created_at', $today);
-
-        $totalCount = $todaysOrders->count();
-        $needingProcessing = $todaysOrders->whereIn('status', [
-            OrderStatus::NEW,
-            OrderStatus::IN_PROGRESS,
-            OrderStatus::PENDING_PAYMENT
-        ])->count();
-
-        return [
-            'total_today' => $totalCount,
-            'needing_processing' => $needingProcessing,
-        ];
     }
 }
