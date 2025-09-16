@@ -29,9 +29,9 @@ class DashboardController extends Controller
         return response()->json($this->statisticsService->getBusinessPerformanceStatistics());
     }
 
-    public function getProductsAndComicsStatistics(): JsonResponse
+    public function getStocksStatistics(): JsonResponse
     {
-        return response()->json($this->statisticsService->getProductsAndComicsStatistics());
+        return response()->json($this->statisticsService->getStocksStatistics());
     }
 
     public function getCustomerAnalytics(): JsonResponse

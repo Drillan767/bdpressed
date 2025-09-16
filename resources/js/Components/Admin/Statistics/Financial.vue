@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import type { ChartData, FinancialApiData, StatCard as StarCardType } from '@/types/statistics'
-import { useStatistics } from '@/Composables/statistics'
+import useStatistics from '@/Composables/statistics'
 import { onMounted, ref } from 'vue'
 import { route } from 'ziggy-js'
-import Doughnut from './Doughnut.vue'
-import StatCard from './StatCard.vue'
+import Doughnut from './Components/Doughnut.vue'
+import StatCard from './Components/StatCard.vue'
 
 const { transformFinancialStatistics } = useStatistics()
 

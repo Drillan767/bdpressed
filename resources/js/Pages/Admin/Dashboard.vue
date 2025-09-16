@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import Business from "@/Components/Admin/Statistics/Business.vue";
+import Business from '@/Components/Admin/Statistics/Business.vue'
 import Financial from '@/Components/Admin/Statistics/Financial.vue'
+import Stocks from '@/Components/Admin/Statistics/Stocks.vue'
 import AdminLayout from '@/Layouts/AdminLayout.vue'
 import { useHead } from '@vueuse/head'
-import { onMounted, ref } from 'vue'
+import { ref } from 'vue'
 import { route } from 'ziggy-js'
 
 defineOptions({ layout: AdminLayout })
@@ -67,7 +68,7 @@ const colorSchemes = {
     mixed: ['#1976D2', '#388E3C', '#F57C00', '#D32F2F', '#7B1FA2', '#00796B', '#E64A19', '#455A64'],
 }
 
-/*async function loadBusinessStatistics() {
+/* async function loadBusinessStatistics() {
     try {
         const response = await fetch(route('admin.statistics.business-performance'))
         const data = await response.json()
@@ -150,7 +151,7 @@ const colorSchemes = {
     finally {
         loadingBusiness.value = false
     }
-}*/
+} */
 
 async function loadProductsStatistics() {
     try {
@@ -293,6 +294,7 @@ async function loadOperationalStatistics() {
     }
 }
 
+/*
 onMounted(async () => {
     // Load all statistics in parallel
     await Promise.all([
@@ -302,6 +304,7 @@ onMounted(async () => {
         loadOperationalStatistics(),
     ])
 })
+*/
 </script>
 
 <template>
@@ -312,9 +315,10 @@ onMounted(async () => {
 
         <Financial />
         <Business />
+        <Stocks />
 
         <!-- Business Performance -->
-<!--        <VCard class="mb-6">
+        <!--        <VCard class="mb-6">
             <VCardTitle class="d-flex align-center">
                 <VIcon class="me-2">
                     mdi-palette
@@ -382,9 +386,10 @@ onMounted(async () => {
                     </VCol>
                 </VRow>
             </VCardText>
-        </VCard>-->
+        </VCard> -->
 
         <!-- Products & Comics -->
+        <!--
         <VCard class="mb-6">
             <VCardTitle class="d-flex align-center">
                 <VIcon class="me-2">
@@ -456,6 +461,7 @@ onMounted(async () => {
                 </VRow>
             </VCardText>
         </VCard>
+        -->
 
         <!-- Customer Analytics -->
         <VCard class="mb-6">

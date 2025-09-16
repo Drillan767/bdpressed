@@ -59,7 +59,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::prefix('/administration/statistics')->group(function () {
             Route::get('/financial', [AdminDashboardController::class, 'getFinancialStatistics'])->name('admin.statistics.financial');
             Route::get('/business-performance', [AdminDashboardController::class, 'getBusinessPerformanceStatistics'])->name('admin.statistics.business-performance');
-            Route::get('/products-comics', [AdminDashboardController::class, 'getProductsAndComicsStatistics'])->name('admin.statistics.products-comics');
+            Route::get('/stocks', [AdminDashboardController::class, 'getStocksStatistics'])->name('admin.statistics.stocks');
             Route::get('/customer-analytics', [AdminDashboardController::class, 'getCustomerAnalytics'])->name('admin.statistics.customer-analytics');
             Route::get('/operational', [AdminDashboardController::class, 'getOperationalStatistics'])->name('admin.statistics.operational');
             Route::get('/all', [AdminDashboardController::class, 'getAllStatistics'])->name('admin.statistics.all');

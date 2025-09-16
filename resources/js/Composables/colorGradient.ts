@@ -20,8 +20,6 @@ export default function useGradientGenerator() {
             return [startColor, endColor]
         }
 
-        console.log({ startColor, endColor })
-
         const hexToRgb = (hex: string): [number, number, number] => {
             const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
             if (!result) {

@@ -1,4 +1,10 @@
-import type { BusinessApiData, ChartData, FinancialApiData, StatCard } from '@/types/statistics'
+import type {
+    BusinessApiData,
+    ChartData,
+    FinancialApiData,
+    StatCard,
+    StocksApiData,
+} from '@/types/statistics'
 import useGradientGenerator from '@/Composables/colorGradient'
 
 // Translation mappings
@@ -24,7 +30,7 @@ const ILLUSTRATION_TYPE_TRANSLATIONS: Record<string, string> = {
     // Add more as needed
 }
 
-export function useStatistics() {
+function useStatistics() {
     const { generateColors } = useGradientGenerator()
 
     function transformFinancialStatistics(data: FinancialApiData) {
@@ -159,6 +165,29 @@ export function useStatistics() {
         return { cards, charts }
     }
 
+    function transformStocksStatistics(data: StocksApiData) {
+        const topSellersColor = generateColors(data.top_sellers.length)
+
+        const chart = {
+            title: 'Meilleures ventes',
+            items: data.top_sellers.map((item, i) => ({
+                id: item.id,
+                color: topSellersColor[i],
+                value: item.total_sold,
+                title: item.name,
+            })),
+        }
+
+        const warningList = data.low_stock_alerts
+        const outOfStock = data.out_of_stock
+
+        return {
+            chart,
+            warningList,
+            outOfStock,
+        }
+    }
+
     /**
      * Transform complete business performance statistics from API response
     function transformBusinessStatistics(data: any) {
@@ -190,7 +219,7 @@ export function useStatistics() {
                 icon: 'mdi-printer',
             },
         ]
-     
+
         // Transform illustration types chart
         let illustrationTypesChart: ChartData = { labels: [], datasets: [], items: [] }
         if (data.popular_illustration_types?.length) {
@@ -200,7 +229,7 @@ export function useStatistics() {
                 value: item.count,
                 color: colors[index],
             }))
-     
+
             illustrationTypesChart = {
                 labels: chartItems.map(item => item.label),
                 datasets: [{
@@ -210,18 +239,18 @@ export function useStatistics() {
                 items: chartItems,
             }
         }
-     
+
         // Transform print vs digital chart
         let printDigitalChart: ChartData = { labels: [], datasets: [], items: [] }
         if (data.print_vs_digital_ratio) {
             const total = data.print_vs_digital_ratio.print_count + data.print_vs_digital_ratio.digital_count
-     
+
             if (total > 0) {
                 const chartItems = [
                     { label: 'Print', value: data.print_vs_digital_ratio.print_count, color: COLOR_SCHEMES.success[0] },
                     { label: 'Digital', value: data.print_vs_digital_ratio.digital_count, color: COLOR_SCHEMES.info[0] },
                 ]
-     
+
                 printDigitalChart = {
                     labels: ['Print', 'Digital'],
                     datasets: [{
@@ -232,13 +261,13 @@ export function useStatistics() {
                 }
             }
         }
-     
+
         return { cards, illustrationTypesChart, printDigitalChart }
     }
-     
+
     /**
      * Transform complete products & comics statistics from API response
-     
+
     function transformProductsStatistics(data: any) {
         // Transform cards data
         const cards: StatCard[] = [
@@ -269,18 +298,18 @@ export function useStatistics() {
                 icon: 'mdi-file-document',
             },
         ]
-     
+
         // Transform comics chart
         let comicsChart: ChartData = { labels: [], datasets: [], items: [] }
         if (data.comics_stats) {
             const total = data.comics_stats.published_comics + data.comics_stats.unpublished_comics
-     
+
             if (total > 0) {
                 const chartItems = [
                     { label: 'Publiés', value: data.comics_stats.published_comics, color: COLOR_SCHEMES.success[0] },
                     { label: 'Non publiés', value: data.comics_stats.unpublished_comics, color: COLOR_SCHEMES.warning[0] },
                 ]
-     
+
                 comicsChart = {
                     labels: ['Publiés', 'Non publiés'],
                     datasets: [{
@@ -291,10 +320,10 @@ export function useStatistics() {
                 }
             }
         }
-     
+
         return { cards, comicsChart, lowStockAlerts: data.low_stock_alerts }
     }
-     
+
     /**
      * Transform complete customer analytics from API response
     function transformCustomerStatistics(data: any) {
@@ -320,10 +349,10 @@ export function useStatistics() {
                 icon: 'mdi-account-heart',
             },
         ]
-     
+
         return { cards, topCustomers: data.top_customers }
     }
-     
+
     /**
      * Transform complete operational statistics from API response
     function transformOperationalStatistics(data: any) {
@@ -348,7 +377,7 @@ export function useStatistics() {
                 icon: 'mdi-calendar-today',
             },
         ]
-     
+
         return {
             cards,
             pendingIllustrations: data.pending_illustrations,
@@ -362,8 +391,11 @@ export function useStatistics() {
         // Main transformation functions
         transformFinancialStatistics,
         transformBusinessStatistics,
+        transformStocksStatistics,
         // transformProductsStatistics,
         // transformCustomerStatistics,
         // transformOperationalStatistics,
     }
 }
+
+export default useStatistics
