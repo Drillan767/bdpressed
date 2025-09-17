@@ -43,8 +43,8 @@ class RegisteredUserController extends Controller
 
         Auth::login($user);
 
-        $redirectTo = $user->hasRole('admin') ? 'admin.dashboard' : 'user.dashboard';
+        $user->sendEmailVerificationNotification();
 
-        return redirect(route($redirectTo, absolute: false));
+        return redirect(route('verification.notice'));
     }
 }
